@@ -1,0 +1,64 @@
+databases:
+  # ── 1. PostgreSQL Database (Render Managed) ──────────────────────────────────
+  - name: weathergpt-db
+    plan: free
+    databaseName: weathergpt
+    user: weathergpt
+
+services:
+
+  # ── 2. FastAPI Backend Web Service ──────────────────────────────────────────
+  - type: web
+    name: weathergpt-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 10000              # Render assigns $PORT; this is just a hint
+      - key: DEMO_MODE
+        value: "False"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: weathergpt-db
+          property: connectionString
+      - key: ALLOWED_ORIGINS
+        value: "https://weathergpt-frontend.onrender.com,https://weathergpt.vercel.app,http://localhost:3000"
+      - key: JWT_SECRET_KEY
+        generateValue: true       # Render auto-generates a secure random value
+      - key: JWT_EXPIRE_MINUTES
+        value: "60"
+      - key: WEATHER_CACHE_TTL_SECONDS
+        value: "600"
+      - key: GEMINI_API_KEY
+        sync: false               # Set in Render Dashboard → Environment
+      - key: GEMINI_MODEL
+        value: "gemini-3.6-flash"
+      - key: OPENROUTER_API_KEY
+        sync: false               # Set in Render Dashboard → Environment
+      - key: OPENROUTER_BACKUP_API_KEY
+        sync: false               # Set in Render Dashboard → Environment
+      - key: OPENROUTER_MODEL
+        value: "openrouter/auto"
+      - key: OPENWEATHER_API_KEY
+        sync: false               # Set in Render Dashboard → Environment
+
+  # ── 3. Next.js Frontend Web Service ─────────────────────────────────────────
+  - type: web
+    name: weathergpt-frontend
+    runtime: node
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: NEXT_PUBLIC_API_URL
+        value: https://weathergpt-backend.onrender.com
+      - key: NEXT_PUBLIC_WS_URL
+        value: wss://weathergpt-backend.onrender.com
