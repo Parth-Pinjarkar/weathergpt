@@ -575,7 +575,7 @@ Risk Assessment:
                 "frequency_penalty": 0.3,
                 "presence_penalty": 0.3
             }
-            res = _AI_HTTP_SESSION.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload, timeout=4.0)
+            res = _AI_HTTP_SESSION.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload, timeout=8.0)
             if res.status_code == 200:
                 res_data = res.json()
                 choices = res_data.get("choices", [])
@@ -609,11 +609,11 @@ Risk Assessment:
         except Exception as e:
             print(f"OpenRouter Key {key_idx+1} generation error: {e}")
 
-    # 3. Try Gemini as secondary AI provider with strict 4s timeout
+    # 3. Try Gemini as secondary AI provider with 8s timeout
     if GEMINI_AVAILABLE and client:
         try:
             import concurrent.futures
-            model_name = settings.GEMINI_MODEL or "gemini-2.0-flash"
+            model_name = settings.GEMINI_MODEL or "gemini-3.6-flash"
             gemini_prompt = system_message + "\n\n"
             if conversation_history:
                 for msg in conversation_history[-10:]:
@@ -623,7 +623,7 @@ Risk Assessment:
             
             with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                 future = executor.submit(client.models.generate_content, model=model_name, contents=gemini_prompt)
-                response = future.result(timeout=4.0)
+                response = future.result(timeout=8.0)
                 
             if response and response.text:
                 answer_text = clean_markdown_response(response.text.strip())

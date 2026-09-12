@@ -271,8 +271,11 @@ Return pure JSON matching this exact schema:
             return PhotoObservation(**parsed)
 
         except Exception as e:
-            # Graceful fallback to Mock Vision on API error or rate-limit
-            return MockVisionProvider().analyze_image(image_bytes, mime_type, filename)
+            # Fallback to OpenRouter Vision, then to Mock Vision
+            try:
+                return OpenAIVisionProvider().analyze_image(image_bytes, mime_type, filename)
+            except Exception:
+                return MockVisionProvider().analyze_image(image_bytes, mime_type, filename)
 
 
 # ── OpenAI / OpenRouter Vision Provider ───────────────────────────────────────
@@ -288,40 +291,45 @@ class OpenAIVisionProvider(BaseVisionProvider):
         mime_type: str,
         filename: Optional[str] = None
     ) -> PhotoObservation:
-        api_key = settings.OPENROUTER_API_KEY or os.environ.get("OPENROUTER_API_KEY")
-        if not api_key:
+        keys_to_try = [k for k in [
+            settings.OPENROUTER_API_KEY or os.environ.get("OPENROUTER_API_KEY"),
+            settings.OPENROUTER_BACKUP_API_KEY or os.environ.get("OPENROUTER_BACKUP_API_KEY")
+        ] if k]
+
+        if not keys_to_try:
             return MockVisionProvider().analyze_image(image_bytes, mime_type, filename)
 
-        try:
-            b64_img = base64.b64encode(image_bytes).decode("utf-8")
-            data_url = f"data:{mime_type};base64,{b64_img}"
-            
-            headers = {
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-                "HTTP-Referer": "https://weathergpt.gov.in",
-                "X-Title": "WeatherGPT Photo Intelligence"
-            }
-            payload = {
-                "model": "google/gemini-2.0-flash-001" if "openrouter" in str(settings.OPENROUTER_MODEL) else "openai/gpt-4o-mini",
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": "Analyze visible weather. Return pure JSON matching: {weather_condition, precipitation_visible, cloud_condition, visibility_condition, road_condition, flooding_indicator, wind_effect_indicator, lightning_visible, fog_visible, haze_visible, environmental_hazards: [], confidence: int, observations: [], limitations: []}. Never fabricate exact temperature in °C."},
-                            {"type": "image_url", "image_url": {"url": data_url}}
-                        ]
-                    }
-                ],
-                "response_format": {"type": "json_object"}
-            }
-            resp = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload, timeout=8)
-            if resp.status_code == 200:
-                content = resp.json()["choices"][0]["message"]["content"]
-                parsed = json.loads(content)
-                return PhotoObservation(**parsed)
-        except Exception:
-            pass
+        b64_img = base64.b64encode(image_bytes).decode("utf-8")
+        data_url = f"data:{mime_type};base64,{b64_img}"
+
+        for api_key in keys_to_try:
+            try:
+                headers = {
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": "https://weathergpt.gov.in",
+                    "X-Title": "WeatherGPT Photo Intelligence"
+                }
+                payload = {
+                    "model": "openai/gpt-4o-mini",
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": [
+                                {"type": "text", "text": "Analyze visible weather. Return pure JSON matching: {weather_condition, precipitation_visible, cloud_condition, visibility_condition, road_condition, flooding_indicator, wind_effect_indicator, lightning_visible, fog_visible, haze_visible, environmental_hazards: [], confidence: int, observations: [], limitations: []}. Never fabricate exact temperature in °C."},
+                                {"type": "image_url", "image_url": {"url": data_url}}
+                            ]
+                        }
+                    ],
+                    "response_format": {"type": "json_object"}
+                }
+                resp = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload, timeout=8)
+                if resp.status_code == 200:
+                    content = resp.json()["choices"][0]["message"]["content"]
+                    parsed = json.loads(content)
+                    return PhotoObservation(**parsed)
+            except Exception:
+                continue
 
         return MockVisionProvider().analyze_image(image_bytes, mime_type, filename)
 
