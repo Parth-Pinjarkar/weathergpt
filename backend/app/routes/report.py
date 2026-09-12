@@ -32,6 +32,7 @@ def generate_weather_report(req: ReportRequest, db: Session = Depends(get_db)):
         
         advice_map = {
             "daily": "General public is advised to monitor peak rainfall hours and keep umbrella handy.",
+            "weekly": "Agricultural bulletin: Weekly precipitation outlook indicates favorable soil moisture conditions. Delay foliar chemical spraying during projected peak shower windows.",
             "travel": "Travellers on Western Ghats highways should expect reduced visibility during afternoon rain cells.",
             "farmer": "Farmers should postpone chemical spraying due to anticipated precipitation and check soil drainage.",
             "disaster": "Command center alert active. Prioritize low-lying river areas for emergency observation."

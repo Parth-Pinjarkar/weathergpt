@@ -2750,6 +2750,7 @@ export default function WeatherGPT() {
         onClose={() => setReportModalOpen(false)}
         location={weather?.location || searchLocation || 'Pune'}
         lang={currentLang}
+        weatherData={weather}
       />
       <AuthModal
         isOpen={authModalOpen}
