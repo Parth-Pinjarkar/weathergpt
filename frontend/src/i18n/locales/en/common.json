@@ -1,0 +1,140 @@
+{
+  "app_title": "WeatherGPT",
+  "tagline": "Understand the weather. Predict the risk. Take action.",
+  "placeholder_search": "Search location (e.g., Pune, Mumbai, Delhi)...",
+  "placeholder_chat": "Ask WeatherGPT about weather, travel safety, or crop advisory...",
+  "status_online": "Online",
+  "status_offline": "Offline Mode",
+  "login_guest": "Login / Guest",
+  "guest_tag": "Guest",
+  "gps_location": "GPS Location",
+
+  "nav": {
+    "dashboard": "Dashboard",
+    "map": "Live Map",
+    "route": "Route Intel",
+    "alerts": "Official Alerts",
+    "disaster": "Command Center",
+    "settings": "Settings",
+    "photo_ai": "Photo Weather AI",
+    "disaster_sim": "Disaster Simulator",
+    "emergency_center": "Emergency Hub",
+    "climate_insights": "Climate Insights",
+    "export_report": "Export PDF Dossier",
+    "advanced_tools": "Advanced Tools"
+  },
+
+  "dashboard": {
+    "current_weather": "Current Weather",
+    "source": "Source",
+    "feels_like": "Feels Like",
+    "humidity": "Humidity",
+    "wind": "Wind",
+    "precipitation": "Precipitation",
+    "atm_pressure": "Atm Pressure",
+    "visibility": "Visibility",
+    "uv_index": "UV Index",
+    "air_quality": "Air Quality",
+    "sunrise": "Sunrise",
+    "sunset": "Sunset",
+    "forecast_7day": "7-Day Forecast",
+    "hourly_forecast": "Hourly Forecast",
+    "day_details": "Day Details",
+    "ai_advice": "AI Advice:",
+    "trend_title": "7-Day Meteorological Trend",
+    "trend_subtitle": "Interactive forecast analytics & precipitation variance",
+    "tab_precipitation": "Precipitation (%)",
+    "tab_temperature": "Temperature (°C)",
+    "nwp_consensus": "Ensemble Consensus",
+    "hubs_title": "Prominent Hubs",
+    "voice_query": "Voice Query"
+  },
+
+  "modes": {
+    "title": "Operational Weather Intelligence Mode",
+    "general": "General Public",
+    "farmer": "🌾 Farmer / Kisan Crop Advisory",
+    "traveller": "🚗 Highway & Route Safety",
+    "disaster": "🚨 Disaster Operations Directive",
+    "school": "🏫 Campus & Outdoor Activity",
+    "aviation": "✈️ Aviation & Marine Weather Briefing",
+    "smartcity": "🏙️ Smart City Weather Monitoring",
+    "pill_public": "👤 Public",
+    "pill_farmer": "🌾 Kisan / Agri",
+    "pill_traveller": "🚗 Traveller",
+    "pill_disaster": "🚨 Disaster",
+    "pill_school": "🏫 School",
+    "pill_aviation": "✈️ Aviation",
+    "pill_smartcity": "🏙️ Smart City"
+  },
+
+  "risk": {
+    "title": "Weather Risk Engine",
+    "why": "Risk Factors & Drivers",
+    "no_indicators": "Nominal parameters — no severe weather hazard flags active.",
+    "level_low": "Low",
+    "level_moderate": "Moderate",
+    "level_high": "High",
+    "level_severe": "Severe",
+    "disclaimer": "Ground-truth sensor telemetry normalized against official IMD alert thresholds."
+  },
+
+  "alerts": {
+    "active_warning": "ACTIVE WARNING",
+    "no_active": "No Active Warnings",
+    "clear_area": "Atmospheric telemetry normal. No severe meteorological hazards detected.",
+    "potential_impacts": "Potential Impacts:",
+    "recommended_actions": "Recommended Emergency Actions:"
+  },
+
+  "disaster": {
+    "active_alerts": "Active Alerts",
+    "high_risk_areas": "High Risk Areas",
+    "flood_zones": "Flood Risk Zones",
+    "heavy_rain_districts": "Heavy Rain Districts",
+    "severe_storms": "Severe Storms",
+    "tactical_summary": "AI Tactical Situation Summary",
+    "priority_districts": "Priority Districts"
+  },
+
+  "route": {
+    "title": "Weather Route Intelligence",
+    "subtitle": "Analyze meteorological hazards and safe driving corridors along your route.",
+    "from": "Start Location",
+    "to": "Destination Location",
+    "calculate": "Analyze Highway Route",
+    "recommended_departure": "Recommended Departure Window",
+    "overall_risk": "Route Risk Score"
+  },
+
+  "photo": {
+    "title": "Photo Weather Intelligence",
+    "subtitle": "Upload or capture a weather photo to analyze visible conditions using multimodal AI.",
+    "upload_btn": "Upload Photo",
+    "take_btn": "Take Photo",
+    "drag_drop": "Drag & drop your weather photo here, or browse files",
+    "analyze_btn": "Analyze Weather from Photo",
+    "demo_heading": "Smart India Hackathon Demo Presets",
+    "visual_obs": "Visual Weather Observations",
+    "live_comparison": "Live Meteorological Correlation",
+    "consistency": "Weather Consistency",
+    "hazards": "Detected Environmental Hazards",
+    "confidence": "AI Confidence",
+    "recommendation": "Decision-Support Recommendation",
+    "limitations": "Scientific Limitation & Disclaimer",
+    "ask_heading": "Ask WeatherGPT About This Photo"
+  },
+
+  "settings": {
+    "title": "WeatherGPT Controls & Settings",
+    "subtitle": "Configure user personas, default languages, units, and simulated network environments.",
+    "role_label": "Personalized User Role Mode",
+    "lang_label": "Application Language",
+    "units_label": "Measurement Units",
+    "temp_unit": "Temperature Unit",
+    "wind_unit": "Wind Velocity Unit",
+    "distance_unit": "Distance Unit",
+    "offline_label": "Offline Resilience Simulator",
+    "offline_desc": "Simulate Offline Environment (Forces local cache lookups)"
+  }
+}

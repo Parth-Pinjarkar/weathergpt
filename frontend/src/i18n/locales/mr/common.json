@@ -1,0 +1,140 @@
+{
+  "app_title": "WeatherGPT",
+  "tagline": "फक्त हवामान नाही, हवामानाची बुद्धिमान माहिती आणि जोखीम निवारण.",
+  "placeholder_search": "स्थान शोधा (उदा. पुणे, मुंबई, नाशिक)...",
+  "placeholder_chat": "हवामान, प्रवास सुरक्षा किंवा कृषी सल्ल्याबद्दल WeatherGPT ला विचारा...",
+  "status_online": "ऑनलाइन",
+  "status_offline": "ऑफलाइन मोड",
+  "login_guest": "लॉगिन / अतिथी",
+  "guest_tag": "अतिथी",
+  "gps_location": "जीपीएस स्थान",
+
+  "nav": {
+    "dashboard": "डॅशबोर्ड",
+    "map": "थेट नकाशा",
+    "route": "मार्ग विश्लेषण",
+    "alerts": "अधिकृत इशारे",
+    "disaster": "आपत्ती नियंत्रण",
+    "settings": "सेटिंग्ज",
+    "photo_ai": "फोटो हवामान AI",
+    "disaster_sim": "आपत्ती सिम्युलेटर",
+    "emergency_center": "आपत्कालीन केंद्र",
+    "climate_insights": "हवामान विश्लेषण",
+    "export_report": "पीडीएफ अहवाल",
+    "advanced_tools": "प्रगत साधने"
+  },
+
+  "dashboard": {
+    "current_weather": "सध्याचे हवामान",
+    "source": "स्रोत",
+    "feels_like": "जाणवणारे तापमान",
+    "humidity": "आर्द्रता",
+    "wind": "वाऱ्याचा वेग",
+    "precipitation": "पावसाची शक्यता",
+    "atm_pressure": "हवेचा दाब",
+    "visibility": "दृश्यमानता",
+    "uv_index": "यूव्ही निर्देशांक",
+    "air_quality": "हवेची गुणवत्ता",
+    "sunrise": "सूर्योदय",
+    "sunset": "सूर्यास्त",
+    "forecast_7day": "७ दिवसांचा अंदाज",
+    "hourly_forecast": "तासाचा अंदाज",
+    "day_details": "दिवसाचा तपशील",
+    "ai_advice": "AI सल्ला:",
+    "trend_title": "७ दिवसांचा हवामान कल",
+    "trend_subtitle": "हवामान विश्लेषण व पावसाची तफावत",
+    "tab_precipitation": "पावसाची शक्यता (%)",
+    "tab_temperature": "तापमान (°C)",
+    "nwp_consensus": "मॉडेल अंदाज",
+    "hubs_title": "प्रमुख शहरे",
+    "voice_query": "बोलून विचारा"
+  },
+
+  "modes": {
+    "title": "हवामान कार्यप्रणाली",
+    "general": "सर्वसामान्य नागरिक",
+    "farmer": "🌾 शेतकरी कृषी हवामान सल्ला",
+    "traveller": "🚗 महामार्ग व प्रवास सुरक्षा",
+    "disaster": "🚨 आपत्ती व्यवस्थापन निर्देश",
+    "school": "🏫 शाळा व मैदानी सुरक्षा",
+    "aviation": "✈️ विमान वाहतूक व सागरी हवामान",
+    "smartcity": "🏙️ स्मार्ट सिटी पर्यावरण नियंत्रण",
+    "pill_public": "👤 नागरिक",
+    "pill_farmer": "🌾 शेतकरी",
+    "pill_traveller": "🚗 प्रवासी",
+    "pill_disaster": "🚨 आपत्ती",
+    "pill_school": "🏫 शाळा",
+    "pill_aviation": "✈️ विमान",
+    "pill_smartcity": "🏙️ स्मार्ट सिटी"
+  },
+
+  "risk": {
+    "title": "हवामान जोखीम प्रणाली",
+    "why": "जोखमीचे मुख्य घटक",
+    "no_indicators": "सामान्य परिस्थिती — कोणताही गंभीर हवामान धोका नाही.",
+    "level_low": "कमी",
+    "level_moderate": "मध्यम",
+    "level_high": "उच्च",
+    "level_severe": "गंभीर",
+    "disclaimer": "हवामान विभागाच्या मानकांनुसार जोखमीचे विश्लेषण."
+  },
+
+  "alerts": {
+    "active_warning": "सक्रिय इशारा",
+    "no_active": "कोणताही इशारा नाही",
+    "clear_area": "हवामान सामान्य आहे. कोणताही गंभीर धोका नाही.",
+    "potential_impacts": "संभाव्य परिणाम:",
+    "recommended_actions": "तातडीने करावयाच्या उपाययोजना:"
+  },
+
+  "disaster": {
+    "active_alerts": "सक्रिय इशारे",
+    "high_risk_areas": "उच्च जोखीम क्षेत्रे",
+    "flood_zones": "पूरप्रवण क्षेत्रे",
+    "heavy_rain_districts": "मुसळधार पाऊस जिल्हे",
+    "severe_storms": "तीव्र वादळे",
+    "tactical_summary": "AI आपत्ती परिस्थिती सारांश",
+    "priority_districts": "प्राधान्य जिल्हे"
+  },
+
+  "route": {
+    "title": "मार्ग हवामान विश्लेषण",
+    "subtitle": "प्रवास मार्गावरील हवामान धोके आणि सुरक्षित प्रवासाची खात्री करा.",
+    "from": "प्रारंभिक स्थान",
+    "to": "गंतव्य स्थान",
+    "calculate": "मार्गाचे विश्लेषण करा",
+    "recommended_departure": "प्रवासाची योग्य वेळ",
+    "overall_risk": "मार्ग जोखीम गुण"
+  },
+
+  "photo": {
+    "title": "फोटो हवामान बुद्धिमत्ता",
+    "subtitle": "फोटो अपलोड करून किंवा कॅमेऱ्याने काढून दृश्यमान हवामानाचे AI द्वारे विश्लेषण करा.",
+    "upload_btn": "फोटो अपलोड करा",
+    "take_btn": "फोटो काढा",
+    "drag_drop": "हवामानाचा फोटो येथे ड्रॅग करा किंवा निवडा",
+    "analyze_btn": "फोटोमधील हवामान तपासा",
+    "demo_heading": "स्मार्ट इंडिया हॅकाथॉन डेमो पर्याय",
+    "visual_obs": "दृश्यमान हवामान निरीक्षणे",
+    "live_comparison": "थेट हवामान माहितीशी पडताळणी",
+    "consistency": "हवामान सुसंगतता",
+    "hazards": "आढळलेले संभाव्य धोके",
+    "confidence": "AI अचूकता",
+    "recommendation": "सुरक्षा शिफारस",
+    "limitations": "तांत्रिक मर्यादा व अस्वीकरण",
+    "ask_heading": "या फोटोबद्दल WeatherGPT ला प्रश्न विचारा"
+  },
+
+  "settings": {
+    "title": "WeatherGPT नियंत्रणे आणि सेटिंग्ज",
+    "subtitle": "वापरकर्ता मोड, भाषा, एकके आणि ऑफलाइन वातावरण निवडा.",
+    "role_label": "वापरकर्ता मोड",
+    "lang_label": "अॅपची भाषा",
+    "units_label": "मापन एकके",
+    "temp_unit": "तापमान एकक",
+    "wind_unit": "वाऱ्याचा वेग एकक",
+    "distance_unit": "अंतर एकक",
+    "offline_label": "ऑफलाइन सिम्युलेटर",
+    "offline_desc": "ऑफलाइन वातावरणाचा अनुभव घ्या (स्थानिक कॅश वापरले जाते)"
+  }
+}

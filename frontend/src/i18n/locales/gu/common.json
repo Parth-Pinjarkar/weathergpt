@@ -1,0 +1,140 @@
+{
+  "app_title": "WeatherGPT",
+  "tagline": "હવામાન સમજો. જોખમની આગાહી કરો. સુરક્ષિત નિર્ણય લો.",
+  "placeholder_search": "સ્થળ શોધો (દા.ત. અમદાવાદ, સુરત, વડોદરા)...",
+  "placeholder_chat": "હવામાન, મુસાફરી સુરક્ષા કે ખેતી સલાહ વિશે WeatherGPT ને પૂછો...",
+  "status_online": "ઓનલાઇન",
+  "status_offline": "ઓફલાઇન મોડ",
+  "login_guest": "લૉગિન / અતિથિ",
+  "guest_tag": "અતિથિ",
+  "gps_location": "જીપીએસ સ્થાન",
+
+  "nav": {
+    "dashboard": "ડેશબોર્ડ",
+    "map": "લાઈવ નકશો",
+    "route": "માર્ગ સુરક્ષા",
+    "alerts": "સત્તાવાર ચેતવણીઓ",
+    "disaster": "આપત્તિ કેન્દ્ર",
+    "settings": "સેટિંગ્સ",
+    "photo_ai": "ફોટો વેધર AI",
+    "disaster_sim": "આપત્તિ સિમ્યુલેટર",
+    "emergency_center": "ઇમરજન્સી હબ",
+    "climate_insights": "આબોહવા વિશ્લેષણ",
+    "export_report": "પીડીએફ રિપોર્ટ",
+    "advanced_tools": "અદ્યતન સાધનો"
+  },
+
+  "dashboard": {
+    "current_weather": "હાલનું હવામાન",
+    "source": "સ્ત્રોત",
+    "feels_like": "અનુભવાતું તાપમાન",
+    "humidity": "ભેજ",
+    "wind": "પવનની ગતિ",
+    "precipitation": "વરસાદની શક્યતા",
+    "atm_pressure": "વાતાવરણીય દબાણ",
+    "visibility": "દૃશ્યતા",
+    "uv_index": "યુવી ઇન્ડેક્સ",
+    "air_quality": "હવાની ગુણવત્તા",
+    "sunrise": "સૂર્યોદય",
+    "sunset": "સૂર્યાસ્ત",
+    "forecast_7day": "૭ દિવસની આગાહી",
+    "hourly_forecast": "કલાકદીઠ આગાહી",
+    "day_details": "દિવસની વિગતો",
+    "ai_advice": "AI સલાહ:",
+    "trend_title": "૭ દિવસનું હવામાન વલણ",
+    "trend_subtitle": "હવામાન વિશ્લેષણ અને વરસાદમાં તફાવત",
+    "tab_precipitation": "વરસાદ શક્યતા (%)",
+    "tab_temperature": "તાપમાન (°C)",
+    "nwp_consensus": "મોડેલ આગાહી",
+    "hubs_title": "મુખ્ય શહેરો",
+    "voice_query": "બોલીને પૂછો"
+  },
+
+  "modes": {
+    "title": "હવામાન સંચાલન મોડ",
+    "general": "સામાન્ય નાગરિક",
+    "farmer": "🌾 ખેડૂત કૃષિ હવામાન સલાહ",
+    "traveller": "🚗 હાઇવે અને મુસાફરી સુરક્ષા",
+    "disaster": "🚨 આપત્તિ વ્યવસ્થાપન નિર્દેશ",
+    "school": "🏫 શાળા અને આઉટડોર સુરક્ષા",
+    "aviation": "✈️ ઉડ્ડયન અને દરિયાઈ હવામાન",
+    "smartcity": "🏙️ સ્માર્ટ સિટી પર્યાવરણ દેખરેખ",
+    "pill_public": "👤 નાગરિક",
+    "pill_farmer": "🌾 ખેડૂત",
+    "pill_traveller": "🚗 મુસાફર",
+    "pill_disaster": "🚨 આપત્તિ",
+    "pill_school": "🏫 શાળા",
+    "pill_aviation": "✈️ ઉડ્ડયન",
+    "pill_smartcity": "🏙️ સ્માર્ટ સિટી"
+  },
+
+  "risk": {
+    "title": "હવામાન જોખમ એન્જિન",
+    "why": "જોખમના મુખ્ય પરિબળો",
+    "no_indicators": "સામાન્ય પરિસ્થિતિ — કોઈ ગંભીર હવામાન જોખમ નથી.",
+    "level_low": "ઓછું",
+    "level_moderate": "મધ્યમ",
+    "level_high": "વધુ",
+    "level_severe": "ગંભીર",
+    "disclaimer": "હવામાન વિભાગની માર્ગદર્શિકા મુજબ જોખમનું મૂલ્યાંકન."
+  },
+
+  "alerts": {
+    "active_warning": "સક્રિય ચેતવણી",
+    "no_active": "કોઈ ચેતવણી નથી",
+    "clear_area": "હવામાન સામાન્ય છે. કોઈ ગંભીર જોખમ નથી.",
+    "potential_impacts": "સંભવિત અસરો:",
+    "recommended_actions": "ભલામણ કરેલ કટોકટીનાં પગલાં:"
+  },
+
+  "disaster": {
+    "active_alerts": "સક્રિય ચેતવણીઓ",
+    "high_risk_areas": "ઉચ્ચ જોખમી વિસ્તારો",
+    "flood_zones": "પૂર સંભવિત વિસ્તારો",
+    "heavy_rain_districts": "ભારે વરસાદવાળા જિલ્લાઓ",
+    "severe_storms": "તીવ્ર વાવાઝોડું",
+    "tactical_summary": "AI આપત્તિ સ્થિતિ સારાંશ",
+    "priority_districts": "પ્રાથમિકતાવાળા જિલ્લાઓ"
+  },
+
+  "route": {
+    "title": "માર્ગ હવામાન માહિતી",
+    "subtitle": "મુસાફરીના માર્ગ પર હવામાન જોખમો અને સલામત ડ્રાઇવિંગ તપાસો.",
+    "from": "શરૂઆતનું સ્થળ",
+    "to": "ગંતવ્ય સ્થળ",
+    "calculate": "માર્ગનું વિશ્લેષણ કરો",
+    "recommended_departure": "મુસાફરીનો ઉત્તમ સમય",
+    "overall_risk": "માર્ગ જોખમ સ્કોર"
+  },
+
+  "photo": {
+    "title": "ફોટો વેધર ઇન્ટેલિજન્સ",
+    "subtitle": "હવામાનનો ફોટો અપલોડ કરી અથવા પાડીને AI દ્વારા દૃશ્યમાન હવામાનનું વિશ્લેષણ કરો.",
+    "upload_btn": "ફોટો અપલોડ કરો",
+    "take_btn": "ફોટો પાડો",
+    "drag_drop": "હવામાનનો ફોટો અહીં ડ્રેગ કરો અથવા ફાઇલ પસંદ કરો",
+    "analyze_btn": "ફોટોમાંથી હવામાન તપાસો",
+    "demo_heading": "સ્માર્ટ ઇન્ડિયા હેકાથોન ડેમો દ્રશ્યો",
+    "visual_obs": "દૃશ્યમાન હવામાન અવલોકન",
+    "live_comparison": "લાઇવ હવામાન સાથે સરખામણી",
+    "consistency": "હવામાન સુસંગતતા",
+    "hazards": "ઓળખાયેલા પર્યાવરણીય જોખમો",
+    "confidence": "AI ચોકસાઈ",
+    "recommendation": "સુરક્ષા ભલામણ",
+    "limitations": "વૈજ્ઞાનિક મર્યાદા અને અસ્વીકરણ",
+    "ask_heading": "આ ફોટો વિશે WeatherGPT ને પૂછો"
+  },
+
+  "settings": {
+    "title": "WeatherGPT સેટિંગ્સ",
+    "subtitle": "વપરાશકર્તા મોડ, એપ્લિકેશન ભાષા, માપનના એકમો અને ઓફલાઇન વાતાવરણ બદલો.",
+    "role_label": "વપરાશકર્તા મોડ",
+    "lang_label": "એપ્લિકેશન ભાષા",
+    "units_label": "માપનના એકમો",
+    "temp_unit": "તાપમાન એકમ",
+    "wind_unit": "પવન ગતિ એકમ",
+    "distance_unit": "અંતર એકક",
+    "offline_label": "ઓફલાઇન સિમ્યુલેટર",
+    "offline_desc": "ઇન્ટરનેટ વિનાનું વાતાવરણ ચકાસો (સ્થાનિક કેશનો ઉપયોગ)"
+  }
+}

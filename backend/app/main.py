@@ -94,8 +94,12 @@ from app.routes import ws
 app.include_router(ws.router, prefix="/api")
 
 # Analytics / product insights endpoints
-from app.routes import analytics
+from app.routes import analytics, rag, user, health, photo_analysis
 app.include_router(analytics.router, prefix="/api")
+app.include_router(rag.router, prefix="/api")
+app.include_router(user.router, prefix="/api")
+app.include_router(health.router, prefix="/api")
+app.include_router(photo_analysis.router, prefix="/api")
 
 
 # ── Core endpoints ────────────────────────────────────────────────────────────

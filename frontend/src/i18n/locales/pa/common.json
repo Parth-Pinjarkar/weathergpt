@@ -1,0 +1,140 @@
+{
+  "app_title": "WeatherGPT",
+  "tagline": "ਮੌਸਮ ਨੂੰ ਸਮਝੋ। ਖ਼ਤਰੇ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਓ। ਸੁਰੱਖਿਅਤ ਰਹੋ।",
+  "placeholder_search": "ਸਥਾਨ ਖੋਜੋ (ਜਿਵੇਂ ਅੰਮ੍ਰਿਤਸਰ, ਲੁਧਿਆਣਾ, ਚੰਡੀਗੜ੍ਹ)...",
+  "placeholder_chat": "ਮੌਸਮ, ਯਾਤਰਾ ਸੁਰੱਖਿਆ ਜਾਂ ਖੇਤੀ ਸਲਾਹ ਬਾਰੇ WeatherGPT ਨੂੰ ਪੁੱਛੋ...",
+  "status_online": "ਆਨਲਾਈਨ",
+  "status_offline": "ਆਫ਼ਲਾਈਨ ਮੋਡ",
+  "login_guest": "ਲੌਗਇਨ / ਮਹਿਮਾਨ",
+  "guest_tag": "ਮਹਿਮਾਨ",
+  "gps_location": "ਜੀਪੀਐਸ ਸਥਾਨ",
+
+  "nav": {
+    "dashboard": "ਡੈਸ਼ਬੋਰਡ",
+    "map": "ਲਾਈਵ ਨਕਸ਼ਾ",
+    "route": "ਰੂਟ ਜਾਣਕਾਰੀ",
+    "alerts": "ਅਧਿਕਾਰਤ ਚੇਤਾਵਨੀਆਂ",
+    "disaster": "ਆਫ਼ਤ ਕੇਂਦਰ",
+    "settings": "ਸੈਟਿੰਗਾਂ",
+    "photo_ai": "ਫੋਟੋ ਮੌਸਮ AI",
+    "disaster_sim": "ਆਫ਼ਤ ਸਿਮੂਲੇਟਰ",
+    "emergency_center": "ਐਮਰਜੈਂਸੀ ਹੱਬ",
+    "climate_insights": "ਜਲਵਾਯੂ ਵਿਸ਼ਲੇਸ਼ਣ",
+    "export_report": "ਪੀਡੀਐਫ ਰਿਪੋਰਟ",
+    "advanced_tools": "ਉੱਨਤ ਸਾਧਨ"
+  },
+
+  "dashboard": {
+    "current_weather": "ਮੌਜੂਦਾ ਮੌਸਮ",
+    "source": "ਸਰੋਤ",
+    "feels_like": "ਮਹਿਸੂਸ ਹੁੰਦਾ ਤਾਪਮਾਨ",
+    "humidity": "ਨਮੀ",
+    "wind": "ਹਵਾ ਦੀ ਰਫ਼ਤਾਰ",
+    "precipitation": "ਮੀਂਹ ਦੀ ਸੰਭਾਵਨਾ",
+    "atm_pressure": "ਵਾਯੂਮੰਡਲੀ ਦਬਾਅ",
+    "visibility": "ਦਿੱਖ",
+    "uv_index": "ਯੂਵੀ ਇੰਡੈਕਸ",
+    "air_quality": "ਹਵਾ ਦੀ ਗੁਣਵੱਤਾ",
+    "sunrise": "ਸੂਰਜ ਚੜ੍ਹਨਾ",
+    "sunset": "ਸੂਰਜ ਡੁੱਬਣਾ",
+    "forecast_7day": "੭ ਦਿਨਾਂ ਦੀ ਭਵਿੱਖਬਾਣੀ",
+    "hourly_forecast": "ਘੰਟੇਵਾਰ ਭਵਿੱਖਬਾਣੀ",
+    "day_details": "ਦਿਨ ਦਾ ਵੇਰਵਾ",
+    "ai_advice": "AI ਸਲਾਹ:",
+    "trend_title": "੭ ਦਿਨਾਂ ਦਾ ਮੌਸਮ ਰੁਝਾਨ",
+    "trend_subtitle": "ਮੌਸਮ ਵਿਸ਼ਲੇਸ਼ਣ ਅਤੇ ਮੀਂਹ ਦੀ ਤਬਦੀਲੀ",
+    "tab_precipitation": "ਮੀਂਹ ਦੀ ਸੰਭਾਵਨਾ (%)",
+    "tab_temperature": "ਤਾਪਮਾਨ (°C)",
+    "nwp_consensus": "ਮਾਡਲ ਅੰਦਾਜ਼ਾ",
+    "hubs_title": "ਪ੍ਰਮੁੱਖ ਸ਼ਹਿਰ",
+    "voice_query": "ਬੋਲ ਕੇ ਪੁੱਛੋ"
+  },
+
+  "modes": {
+    "title": "ਮੌਸਮ ਸੰਚਾਲਨ ਮੋਡ",
+    "general": "ਆਮ ਜਨਤਾ",
+    "farmer": "🌾 ਕਿਸਾਨ ਖੇਤੀਬਾੜੀ ਮੌਸਮ ਸਲਾਹ",
+    "traveller": "🚗 ਹਾਈਵੇਅ ਅਤੇ ਯਾਤਰਾ ਸੁਰੱਖਿਆ",
+    "disaster": "🚨 ਆਫ਼ਤ ਪ੍ਰਬੰਧਨ ਨਿਰਦੇਸ਼",
+    "school": "🏫 ਸਕੂਲ ਅਤੇ ਬਾਹਰੀ ਸੁਰੱਖਿਆ",
+    "aviation": "✈️ ਹਵਾਬਾਜ਼ੀ ਅਤੇ ਸਮੁੰਦਰੀ ਮੌਸਮ",
+    "smartcity": "🏙️ ਸਮਾਰਟ ਸਿਟੀ ਵਾਤਾਵਰਣ ਨਿਗਰਾਨੀ",
+    "pill_public": "👤 ਨਾਗਰਿਕ",
+    "pill_farmer": "🌾 ਕਿਸਾਨ",
+    "pill_traveller": "🚗 ਮੁਸਾਫ਼ਰ",
+    "pill_disaster": "🚨 ਆਫ਼ਤ",
+    "pill_school": "🏫 ਸਕੂਲ",
+    "pill_aviation": "✈️ ਹਵਾਈ ਜਹਾਜ਼",
+    "pill_smartcity": "🏙️ ਸਮਾਰਟ ਸਿਟੀ"
+  },
+
+  "risk": {
+    "title": "ਮੌਸਮ ਖ਼ਤਰਾ ਇੰਜਣ",
+    "why": "ਖ਼ਤਰੇ ਦੇ ਮੁੱਖ ਕਾਰਨ",
+    "no_indicators": "ਆਮ ਸਥਿਤੀ — ਕੋਈ ਗੰਭੀਰ ਮੌਸਮੀ ਖ਼ਤਰਾ ਨਹੀਂ।",
+    "level_low": "ਘੱਟ",
+    "level_moderate": "ਦਰਮਿਆਨਾ",
+    "level_high": "ਉੱਚ",
+    "level_severe": "ਗੰਭੀਰ",
+    "disclaimer": "ਮੌਸਮ ਵਿਭਾਗ ਦੇ ਮਾਪਦੰਡਾਂ ਅਨੁਸਾਰ ਖ਼ਤਰੇ ਦਾ ਮੁਲਾਂਕਣ।"
+  },
+
+  "alerts": {
+    "active_warning": "ਸਰਗਰਮ ਚੇਤਾਵਨੀ",
+    "no_active": "ਕੋਈ ਚੇਤਾਵਨੀ ਨਹੀਂ",
+    "clear_area": "ਮੌਸਮ ਆਮ ਹੈ। ਕੋਈ ਗੰਭੀਰ ਖ਼ਤਰਾ ਨਹੀਂ ਮਿਲਿਆ।",
+    "potential_impacts": "ਸੰਭਾਵੀ ਪ੍ਰਭਾਵ:",
+    "recommended_actions": "ਸਿਫ਼ਾਰਸ਼ ਕੀਤੇ ਐਮਰਜੈਂਸੀ ਕਦਮ:"
+  },
+
+  "disaster": {
+    "active_alerts": "ਸਰਗਰਮ ਚੇਤਾਵਨੀਆਂ",
+    "high_risk_areas": "ਉੱਚ ਖ਼ਤਰੇ ਵਾਲੇ ਖੇਤਰ",
+    "flood_zones": "ਹੜ੍ਹ ਖ਼ਤਰਾ ਖੇਤਰ",
+    "heavy_rain_districts": "ਭਾਰੀ ਮੀਂਹ ਵਾਲੇ ਜ਼ਿਲ੍ਹੇ",
+    "severe_storms": "ਤੇਜ਼ ਤੂਫ਼ਾਨ",
+    "tactical_summary": "AI ਆਫ਼ਤ ਸਥਿਤੀ ਸਾਰਾਂਸ਼",
+    "priority_districts": "ਤਰਜੀਹੀ ਜ਼ਿਲ੍ਹੇ"
+  },
+
+  "route": {
+    "title": "ਰੂਟ ਮੌਸਮ ਜਾਣਕਾਰੀ",
+    "subtitle": "ਆਪਣੇ ਯਾਤਰਾ ਰੂਟ 'ਤੇ ਮੌਸਮ ਦੇ ਖ਼ਤਰਿਆਂ ਅਤੇ ਸੁਰੱਖਿਅਤ ਡਰਾਈਵਿੰਗ ਦੀ ਜਾਂਚ ਕਰੋ।",
+    "from": "ਸ਼ੁਰੂਆਤੀ ਸਥਾਨ",
+    "to": "ਮੰਜ਼ਿਲ",
+    "calculate": "ਰੂਟ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕਰੋ",
+    "recommended_departure": "ਯਾਤਰਾ ਦਾ ਢੁਕਵਾਂ ਸਮਾਂ",
+    "overall_risk": "ਰੂਟ ਖ਼ਤਰਾ ਸਕੋਰ"
+  },
+
+  "photo": {
+    "title": "ਫੋਟੋ ਮੌਸਮ ਖੁਫ਼ੀਆ ਜਾਣਕਾਰੀ",
+    "subtitle": "ਮੌਸਮ ਦੀ ਫੋਟੋ ਅਪਲੋਡ ਕਰੋ ਜਾਂ ਖਿੱਚੋ ਅਤੇ AI ਰਾਹੀਂ ਮੌਸਮ ਦੀ ਸਥਿਤੀ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕਰੋ।",
+    "upload_btn": "ਫੋਟੋ ਅਪਲੋਡ ਕਰੋ",
+    "take_btn": "ਫੋਟੋ ਖਿੱਚੋ",
+    "drag_drop": "ਮੌਸਮ ਦੀ ਫੋਟੋ ਇੱਥੇ ਸੁੱਟੋ ਜਾਂ ਫਾਈਲ ਚੁਣੋ",
+    "analyze_btn": "ਫੋਟੋ ਤੋਂ ਮੌਸਮ ਦੀ ਜਾਂਚ ਕਰੋ",
+    "demo_heading": "ਸਮਾਰਟ ਇੰਡੀਆ ਹੈਕਾਥੌਨ ਡੈਮੋ ਦ੍ਰਿਸ਼",
+    "visual_obs": "ਦਿੱਖਣ ਵਾਲੇ ਮੌਸਮ ਨਿਰੀਖਣ",
+    "live_comparison": "ਲਾਈਵ ਮੌਸਮ ਨਾਲ ਮਿਲਾਨ",
+    "consistency": "ਮੌਸਮ ਦੀ ਇਕਸਾਰਤਾ",
+    "hazards": "ਪਛਾਣੇ ਗਏ ਵਾਤਾਵਰਣ ਖ਼ਤਰੇ",
+    "confidence": "AI ਵਿਸ਼ਵਾਸ ਪੱਧਰ",
+    "recommendation": "ਸੁਰੱਖਿਆ ਸਿਫ਼ਾਰਸ਼",
+    "limitations": "ਵਿਗਿਆਨਕ ਸੀਮਾ ਅਤੇ ਬੇਦਾਅਵਾ",
+    "ask_heading": "ਇਸ ਫੋਟੋ ਬਾਰੇ WeatherGPT ਨੂੰ ਪੁੱਛੋ"
+  },
+
+  "settings": {
+    "title": "WeatherGPT ਸੈਟਿੰਗਾਂ",
+    "subtitle": "ਉਪਭੋਗਤਾ ਮੋਡ, ਐਪ ਭਾਸ਼ਾ, ਮਾਪ ਇਕਾਈਆਂ ਅਤੇ ਆਫ਼ਲਾਈਨ ਵਾਤਾਵਰਣ ਬਦਲੋ।",
+    "role_label": "ਉਪਭੋਗਤਾ ਮੋਡ",
+    "lang_label": "ਐਪ ਭਾਸ਼ਾ",
+    "units_label": "ਮਾਪ ਇਕਾਈਆਂ",
+    "temp_unit": "ਤਾਪਮਾਨ ਇਕਾਈ",
+    "wind_unit": "ਹਵਾ ਗਤੀ ਇਕਾਈ",
+    "distance_unit": "ਦੂਰੀ ਇਕਾਈ",
+    "offline_label": "ਆਫ਼ਲਾਈਨ ਸਿਮੂਲੇਟਰ",
+    "offline_desc": "ਇੰਟਰਨੈਟ ਤੋਂ ਬਿਨਾਂ ਵਾਤਾਵਰਣ ਦੀ ਜਾਂਚ ਕਰੋ (ਸਥਾਨਕ ਕੈਸ਼ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ)"
+  }
+}

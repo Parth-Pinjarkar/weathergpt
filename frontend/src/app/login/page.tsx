@@ -8,7 +8,7 @@ import {
   Sparkles, CheckCircle2, AlertCircle, ArrowRight, UserCheck, 
   Car, Wheat, Flame, GraduationCap, Sun, Moon, Globe
 } from 'lucide-react';
-import { LOCALIZATION, SupportedLanguage } from '../i18n';
+import { LOCALIZATION, SupportedLanguage, SUPPORTED_LANGUAGES, getSavedLanguage, saveLanguagePreference } from '../i18n';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -32,10 +32,7 @@ export default function LoginPage() {
 
   // Load language and theme preference
   useEffect(() => {
-    const savedLang = localStorage.getItem('weathergpt_lang') as SupportedLanguage;
-    if (savedLang && (savedLang === 'en' || savedLang === 'hi' || savedLang === 'mr')) {
-      setLang(savedLang);
-    }
+    setLang(getSavedLanguage());
     const savedTheme = localStorage.getItem('weathergpt_theme') as 'dark' | 'light';
     if (savedTheme) {
       setTheme(savedTheme);
@@ -62,7 +59,7 @@ export default function LoginPage() {
 
   const handleLanguageChange = (newLang: SupportedLanguage) => {
     setLang(newLang);
-    localStorage.setItem('weathergpt_lang', newLang);
+    saveLanguagePreference(newLang);
   };
 
   const personaOptions = [
@@ -227,21 +224,20 @@ export default function LoginPage() {
         </Link>
 
         <div className="flex items-center gap-3">
-          {/* Language Switcher */}
-          <div className="flex bg-slate-900 border border-slate-800 rounded-xl p-0.5 text-xs font-bold">
-            {(['en', 'hi', 'mr'] as SupportedLanguage[]).map((l) => (
-              <button
-                key={l}
-                onClick={() => handleLanguageChange(l)}
-                className={`px-2.5 py-1 rounded-lg transition uppercase cursor-pointer ${
-                  lang === l 
-                    ? 'bg-emerald-500 text-white shadow-sm' 
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                {l}
-              </button>
-            ))}
+          {/* 10-Language Switcher */}
+          <div className="flex items-center gap-1.5 bg-slate-900 border border-slate-800 rounded-xl px-2 py-1 text-xs font-bold">
+            <Globe className="h-3.5 w-3.5 text-emerald-400" />
+            <select
+              value={lang}
+              onChange={(e) => handleLanguageChange(e.target.value as SupportedLanguage)}
+              className="bg-transparent text-slate-200 focus:outline-none cursor-pointer"
+            >
+              {SUPPORTED_LANGUAGES.map((l) => (
+                <option key={l.code} value={l.code} className="bg-slate-900 text-slate-200">
+                  {l.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Theme Toggle */}
@@ -332,7 +328,7 @@ export default function LoginPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="user@weathergpt.gov.in"
+                    placeholder={t.auth_email_placeholder}
                     className="w-full bg-slate-950/60 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
@@ -376,7 +372,7 @@ export default function LoginPage() {
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Dr. Rajesh Sharma"
+                    placeholder={t.auth_name_placeholder}
                     className="w-full bg-slate-950/60 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
@@ -391,7 +387,7 @@ export default function LoginPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="rajesh@imd.gov.in"
+                    placeholder={t.auth_email_placeholder}
                     className="w-full bg-slate-950/60 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>

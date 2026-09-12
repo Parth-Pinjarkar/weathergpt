@@ -10,6 +10,8 @@ from app.config.settings import settings
 from app.services.weather_service import get_weather, normalize_city_name
 from app.services.risk_service import calculate_weather_risk
 from app.services.route_service import analyze_route_weather
+from app.services.rag_service import search_knowledge_base
+from app.prompts import SYSTEM_PROMPT, STRICT_GROUNDING_INSTRUCTION, get_persona_prompt
 
 # Reusable HTTP session for fast AI API calls
 _AI_HTTP_SESSION = requests.Session()
@@ -73,27 +75,86 @@ KEYWORDS_LANG = {
 
 
 def detect_language(query: str) -> str:
-    """Detects if user is querying in Marathi, Hindi, or English (Devanagari or Romanized)."""
+    """
+    Detects language of the user query across 10 supported languages:
+    en, hi, mr, ta, te, bn, gu, kn, ml, pa (both native scripts and common romanized keywords).
+    """
     q_lower = query.lower()
-    
-    # Marathi checks (Devanagari and common Romanized Marathi keywords)
-    mr_words = [
-        "पाऊस", "पुण्यात", "उद्या", "का", "तापमान", "पिके", "शेतकरी", "प्रवास", "लोणावळा", "पाणी", "हवामान",
-        "paus", "paaus", "udya", "kiti", "ahe", "aahe", "sang", "sheti", "pani", "havaman", "padel", "padnar"
-    ]
+
+    # 1. Unicode Script Range Detection
+    if re.search(r'[\u0B80-\u0BFF]', query): return "ta" # Tamil
+    if re.search(r'[\u0C00-\u0C7F]', query): return "te" # Telugu
+    if re.search(r'[\u0980-\u09FF]', query): return "bn" # Bengali
+    if re.search(r'[\u0A80-\u0AFF]', query): return "gu" # Gujarati
+    if re.search(r'[\u0C80-\u0CFF]', query): return "kn" # Kannada
+    if re.search(r'[\u0D00-\u0D7F]', query): return "ml" # Malayalam
+    if re.search(r'[\u0A00-\u0A7F]', query): return "pa" # Gurmukhi / Punjabi
+
+    # 2. Devanagari Differentiation (Marathi vs Hindi)
+    if re.search(r'[\u0900-\u097F]', query):
+        mr_markers = ["पाऊस", "पुण्यात", "उद्या", "तापमान", "पिके", "शेतकरी", "प्रवास", "लोणावळा", "पाणी", "हवामान", "आहे", "होईल", "पडेल", "सांगा"]
+        for w in mr_markers:
+            if w in query:
+                return "mr"
+        return "hi" # Default Devanagari to Hindi
+
+    # 3. Romanized / Code-Mixed Keyword Detection
+    # Marathi Romanized
+    mr_words = ["paus", "paaus", "udya", "kiti", "ahe", "aahe", "sang", "sheti", "pani", "havaman", "padel", "padnar"]
     for w in mr_words:
-        if (re.search(r'\b' + re.escape(w) + r'\b', q_lower) if w.isascii() else w in q_lower):
+        if re.search(r'\b' + re.escape(w) + r'\b', q_lower):
             return "mr"
-        
-    # Hindi checks (Devanagari and common Romanized Hindi keywords)
+
+    # Tamil Romanized
+    ta_words = ["mazhai", "vanilai", "eppadi", "varuma", "chennai", "katru"]
+    for w in ta_words:
+        if re.search(r'\b' + re.escape(w) + r'\b', q_lower):
+            return "ta"
+
+    # Telugu Romanized
+    te_words = ["varsham", "vatavaranam", "ela", "paduthundi", "hyderabad", "gaali"]
+    for w in te_words:
+        if re.search(r'\b' + re.escape(w) + r'\b', q_lower):
+            return "te"
+
+    # Bengali Romanized
+    bn_words = ["brishti", "abohawa", "kemon", "kolkata", "hobe", "batash"]
+    for w in bn_words:
+        if re.search(r'\b' + re.escape(w) + r'\b', q_lower):
+            return "bn"
+
+    # Gujarati Romanized
+    gu_words = ["varsad", "havaman", "kevu", "ahmedabad", "aavshe", "pavan"]
+    for w in gu_words:
+        if re.search(r'\b' + re.escape(w) + r'\b', q_lower):
+            return "gu"
+
+    # Kannada Romanized
+    kn_words = ["male", "havamana", "hegide", "bengaluru", "barutha", "gaali"]
+    for w in kn_words:
+        if re.search(r'\b' + re.escape(w) + r'\b', q_lower):
+            return "kn"
+
+    # Malayalam Romanized
+    ml_words = ["mazha", "kalavastha", "engane", "kochi", "varumo", "kaattu"]
+    for w in ml_words:
+        if re.search(r'\b' + re.escape(w) + r'\b', q_lower):
+            return "ml"
+
+    # Punjabi Romanized
+    pa_words = ["meeh", "mausam", "kiven", "punjab", "barsaat", "painda"]
+    for w in pa_words:
+        if re.search(r'\b' + re.escape(w) + r'\b', q_lower):
+            return "pa"
+
+    # Hindi / Hinglish Romanized
     hi_words = [
-        "बारिश", "मौसम", "क्या", "कल", "तापमान", "खेती", "सिंचाई", "यात्रा", "रास्ता", "पानी", "कैसा", "होगी", "होगा", "बताओ",
         "barish", "baarish", "mausam", "kaisa", "hogi", "hoga", "kya", "kal", "aaj", "batao", "khet", "sichai", "tapman"
     ]
     for w in hi_words:
-        if (re.search(r'\b' + re.escape(w) + r'\b', q_lower) if w.isascii() else w in q_lower):
+        if re.search(r'\b' + re.escape(w) + r'\b', q_lower):
             return "hi"
-        
+
     return "en"
 
 
@@ -181,6 +242,30 @@ def get_local_nlp_response(query: str, db: Session, role: str, lang: str, defaul
                 "type": "greeting",
                 "weather_details": weather_data,
                 "risk_details": risk_data
+            }
+        }
+
+    # 0.5 Knowledge / RAG Intent (Disaster, Meteorological Guidelines, UV, WBGT, Lightning, etc.)
+    is_knowledge_query = any(w in q_lower for w in [
+        "what is", "what does", "precaution", "safety", "rule", "guideline", "standard",
+        "uv index", "lightning", "thunder", "flash flood", "cusecs", "heatwave", "wet bulb",
+        "wbgt", "cape", "cyclone", "aqi", "30-30", "ndma", "imd manual"
+    ])
+    rag_matches = search_knowledge_base(query, top_k=2) if is_knowledge_query else []
+    if rag_matches and rag_matches[0].get("similarity_score", 0) > 0.12:
+        best = rag_matches[0]
+        rec = best["content"]
+        ans_text = f"📚 **{best['title']}** ({best['source']}):\n{rec}"
+        return {
+            "answer_text": ans_text,
+            "data_sources": f"WeatherGPT RAG Knowledge Base ({best['source']})",
+            "confidence_note": f"Grounded in verified meteorological documentation (Confidence: {best['confidence_percent']}%).",
+            "alert_level": "INFO",
+            "metadata": {
+                "type": "rag_knowledge",
+                "document_id": best["id"],
+                "source": best["source"],
+                "confidence": best["confidence_percent"]
             }
         }
 
@@ -379,16 +464,53 @@ def generate_chat_response(
             "conditions, forecasts, travel safety, and simple safety measures."
         )
 
-    # Build language enforcement rule
-    if lang == "hi":
-        lang_instruction = "- MANDATORY LANGUAGE: You MUST respond strictly in Hindi (हिंदी) using Devanagari script. Do not respond in English."
-        lang_user_prompt = f'User Question: "{query}"\n\nमहत्वपूर्ण निर्देश: कृपया अपना पूरा उत्तर केवल हिंदी (हिंदी) में देवनागरी लिपि में दें।'
-    elif lang == "mr":
-        lang_instruction = "- MANDATORY LANGUAGE: You MUST respond strictly in Marathi (मराठी) using Devanagari script. Do not respond in English."
-        lang_user_prompt = f'User Question: "{query}"\n\nमहत्त्वाची सूचना: कृपया आपले संपूर्ण उत्तर फक्त मराठीत (मराठी) देवनागरी लिपीमध्ये द्या.'
-    else:
-        lang_instruction = "- Language: Respond in clear English."
-        lang_user_prompt = f'User Question: "{query}"\n\nReturn a clear, well-formatted response with practical insights.'
+    # Build language enforcement rule for 10 supported languages
+    LANG_CONFIGS = {
+        "hi": {
+            "instruction": "- MANDATORY LANGUAGE: You MUST respond strictly in Hindi (हिंदी) using Devanagari script. Do not respond in English.",
+            "prompt": f'User Question: "{query}"\n\nमहत्वपूर्ण निर्देश: कृपया अपना पूरा उत्तर केवल हिंदी (हिंदी) में देवनागरी लिपि में दें।'
+        },
+        "mr": {
+            "instruction": "- MANDATORY LANGUAGE: You MUST respond strictly in Marathi (मराठी) using Devanagari script. Do not respond in English.",
+            "prompt": f'User Question: "{query}"\n\nमहत्त्वाची सूचना: कृपया आपले संपूर्ण उत्तर फक्त मराठीत (मराठी) देवनागरी लिपीमध्ये द्या.'
+        },
+        "ta": {
+            "instruction": "- MANDATORY LANGUAGE: You MUST respond strictly in Tamil (தமிழ்). Do not respond in English.",
+            "prompt": f'User Question: "{query}"\n\nமுக்கிய அறிவுறுத்தல்: உங்கள் பதிலை முழுமையாக தமிழில் (தமிழ்) மட்டுமே தரவும்.'
+        },
+        "te": {
+            "instruction": "- MANDATORY LANGUAGE: You MUST respond strictly in Telugu (తెలుగు). Do not respond in English.",
+            "prompt": f'User Question: "{query}"\n\nముఖ్యమైన సూచన: దయచేసి మీ పూర్తి సమాధానాన్ని తెలుగులో (తెలుగు) మాత్రమే ఇవ్వండి.'
+        },
+        "bn": {
+            "instruction": "- MANDATORY LANGUAGE: You MUST respond strictly in Bengali (বাংলা). Do not respond in English.",
+            "prompt": f'User Question: "{query}"\n\nগুরুত্বপূর্ণ নির্দেশ: অনুগ্রহ করে আপনার সম্পূর্ণ উত্তর বাংলায় (বাংলা) দিন।'
+        },
+        "gu": {
+            "instruction": "- MANDATORY LANGUAGE: You MUST respond strictly in Gujarati (ગુજરાતી). Do not respond in English.",
+            "prompt": f'User Question: "{query}"\n\nમહત્વપૂર્ણ સૂચના: કૃપા કરીને તમારો સંપૂર્ણ જવાબ ગુજરાતીમાં (ગુજરાતી) આપો.'
+        },
+        "kn": {
+            "instruction": "- MANDATORY LANGUAGE: You MUST respond strictly in Kannada (ಕನ್ನಡ). Do not respond in English.",
+            "prompt": f'User Question: "{query}"\n\nಪ್ರಮುಖ ಸೂಚನೆ: ದಯವಿಟ್ಟು ನಿಮ್ಮ ಸಂಪೂರ್ಣ ಉತ್ತರವನ್ನು ಕನ್ನಡದಲ್ಲಿ (ಕನ್ನಡ) ನೀಡಿ.'
+        },
+        "ml": {
+            "instruction": "- MANDATORY LANGUAGE: You MUST respond strictly in Malayalam (മലയാളം). Do not respond in English.",
+            "prompt": f'User Question: "{query}"\n\nപ്രധാന നിർദ്ദേശം: ദയവായി നിങ്ങളുടെ മുഴുവൻ ഉത്തരവും മലയാളത്തിൽ (മലയാളം) നൽകുക.'
+        },
+        "pa": {
+            "instruction": "- MANDATORY LANGUAGE: You MUST respond strictly in Punjabi (ਪੰਜਾਬੀ) using Gurmukhi script. Do not respond in English.",
+            "prompt": f'User Question: "{query}"\n\nਮਹੱਤਵਪੂਰਨ ਨਿਰਦੇਸ਼: ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਪੂਰਾ ਜਵਾਬ ਪੰਜਾਬੀ (ਪੰਜਾਬੀ) ਵਿੱਚ ਦਿਓ।'
+        },
+        "en": {
+            "instruction": "- Language: Respond in clear, natural English.",
+            "prompt": f'User Question: "{query}"\n\nReturn a clear, well-formatted response with practical insights.'
+        }
+    }
+
+    selected_cfg = LANG_CONFIGS.get(lang, LANG_CONFIGS["en"])
+    lang_instruction = selected_cfg["instruction"]
+    lang_user_prompt = selected_cfg["prompt"]
 
     # Build system message with weather data
     system_message = f"""System instructions:

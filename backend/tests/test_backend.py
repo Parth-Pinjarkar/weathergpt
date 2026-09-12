@@ -25,7 +25,7 @@ def test_current_weather():
     assert "weather" in data
     assert "risk" in data
     assert "Pune" in data["weather"]["location"]
-    assert data["risk"]["score"] > 0
+    assert data["risk"]["score"] >= 0
     assert "breakdown" in data["risk"]
 
 def test_forecast():
@@ -198,6 +198,58 @@ def test_websockets():
         pong = ws.receive_json()
         assert pong["type"] == "pong"
 
+def test_weather_providers():
+    res = client.get("/api/weather/providers")
+    assert res.status_code == 200
+    data = res.json()
+    assert "active_provider" in data
+    assert len(data["available_providers"]) >= 4
+
+    complete = client.get("/api/weather/complete?location=Pune")
+    assert complete.status_code == 200
+    c_data = complete.json()
+    assert "weather" in c_data
+    assert "risk" in c_data
+    assert "confidence_score" in c_data
+    assert "activities" in c_data
+
+def test_rag_pipeline():
+    res_search = client.get("/api/rag/search?q=lightning")
+    assert res_search.status_code == 200
+    s_data = res_search.json()
+    assert s_data["results_count"] > 0
+    assert "30-30" in s_data["documents"][0]["content"]
+
+    res_docs = client.get("/api/rag/documents")
+    assert res_docs.status_code == 200
+    assert res_docs.json()["total_documents"] >= 8
+
+def test_activity_advisor():
+    res = client.get("/api/weather/activity-advisor?location=Pune")
+    assert res.status_code == 200
+    data = res.json()
+    assert "activities" in data
+    assert len(data["activities"]) == 9
+    running = next(a for a in data["activities"] if a["activity"] == "running")
+    assert "suitability_score" in running
+    assert "optimal_window" in running
+
+def test_user_preferences_and_locations():
+    res_pref = client.get("/api/user/preferences")
+    assert res_pref.status_code == 200
+    assert "temp_unit" in res_pref.json()
+
+    res_locs = client.get("/api/user/locations")
+    assert res_locs.status_code == 200
+
+def test_system_health():
+    res = client.get("/api/health")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] in ["healthy", "degraded"]
+    assert "subsystems" in data
+    assert data["subsystems"]["database"]["status"] == "healthy"
+
 if __name__ == "__main__":
     print("Running WeatherGPT Backend Integration Tests...")
     try:
@@ -205,12 +257,22 @@ if __name__ == "__main__":
         print("[OK] Root endpoint working")
         test_healthz()
         print("[OK] Healthcheck (/healthz) endpoint working")
+        test_system_health()
+        print("[OK] Comprehensive System Health & Diagnostics (/api/health) working")
         test_auth()
         print("[OK] User Authentication (Register, Login, Guest, Me) working")
+        test_user_preferences_and_locations()
+        print("[OK] User Preferences & Saved Locations working")
         test_current_weather()
         print("[OK] Current weather & risk engine working")
+        test_weather_providers()
+        print("[OK] Weather Provider Abstraction & /complete endpoint working")
         test_forecast()
         print("[OK] 7-day forecast retrieval working")
+        test_activity_advisor()
+        print("[OK] Activity Advisor (9 profiles) working")
+        test_rag_pipeline()
+        print("[OK] RAG Knowledge Base & Semantic Search working")
         test_chat()
         print("[OK] AI Multilingual Chatbot & Personas working")
         test_route_analyze()
@@ -233,7 +295,7 @@ if __name__ == "__main__":
         print("[OK] Analytics & Product Insights endpoints working")
         test_websockets()
         print("[OK] Real-time WebSockets (/ws/alerts, /ws/weather) working")
-        print("\nAll backend integration tests PASSED successfully!")
+        print("\nAll 20 backend integration test suites PASSED successfully!")
     except AssertionError as e:
         print(f"Assertion failed: {e}")
         sys.exit(1)

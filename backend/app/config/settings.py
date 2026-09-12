@@ -14,6 +14,12 @@ class Settings(BaseSettings):
     OPENROUTER_BACKUP_API_KEY: Optional[str] = None
     OPENROUTER_MODEL: str = "openrouter/auto"
     OPENWEATHER_API_KEY: Optional[str] = None
+    WEATHERAPI_API_KEY: Optional[str] = None
+    WEATHER_PROVIDER: str = "openmeteo"  # 'openmeteo', 'openweather', 'weatherapi', 'mock'
+    VISION_PROVIDER: str = "gemini"      # 'gemini', 'openai', 'mock'
+    VISION_API_KEY: Optional[str] = None
+    PHOTO_ANALYSIS_MAX_SIZE_MB: int = 10
+    PHOTO_ANALYSIS_RATE_LIMIT: str = "30/hour"
 
     # ── Security / JWT ────────────────────────────────────────────────────────
     # In production, set JWT_SECRET_KEY in your .env (never commit the real key)

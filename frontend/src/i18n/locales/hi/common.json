@@ -1,0 +1,140 @@
+{
+  "app_title": "WeatherGPT",
+  "tagline": "मौसम को समझें। जोखिम का पूर्वानुमान करें। सुरक्षित निर्णय लें।",
+  "placeholder_search": "स्थान खोजें (जैसे पुणे, मुंबई, दिल्ली)...",
+  "placeholder_chat": "मौसम, यात्रा सुरक्षा, या कृषि सलाह के बारे में WeatherGPT से पूछें...",
+  "status_online": "ऑनलाइन",
+  "status_offline": "ऑफ़लाइन मोड",
+  "login_guest": "लॉगिन / अतिथि",
+  "guest_tag": "अतिथि",
+  "gps_location": "जीपीएस स्थान",
+
+  "nav": {
+    "dashboard": "डैशबोर्ड",
+    "map": "लाइव मैप",
+    "route": "मार्ग सुरक्षा",
+    "alerts": "आधिकारिक चेतावनियां",
+    "disaster": "आपदा केंद्र",
+    "settings": "सेटिंग्स",
+    "photo_ai": "फोटो मौसम AI",
+    "disaster_sim": "आपदा सिम्युलेटर",
+    "emergency_center": "आपातकालीन केंद्र",
+    "climate_insights": "जलवायु विश्लेषण",
+    "export_report": "पीडीएफ रिपोर्ट",
+    "advanced_tools": "उन्नत टूल्स"
+  },
+
+  "dashboard": {
+    "current_weather": "वर्तमान मौसम",
+    "source": "स्रोत",
+    "feels_like": "महसूस तापमान",
+    "humidity": "आर्द्रता",
+    "wind": "हवा की गति",
+    "precipitation": "वर्षा की संभावना",
+    "atm_pressure": "वायुमंडलीय दबाव",
+    "visibility": "दृश्यता",
+    "uv_index": "यूवी इंडेक्स",
+    "air_quality": "वायु गुणवत्ता",
+    "sunrise": "सूर्योदय",
+    "sunset": "सूर्यास्त",
+    "forecast_7day": "7-दिवसीय पूर्वानुमान",
+    "hourly_forecast": "प्रति घंटा पूर्वानुमान",
+    "day_details": "दिन का विवरण",
+    "ai_advice": "AI सलाह:",
+    "trend_title": "7-दिवसीय मौसम रुझान",
+    "trend_subtitle": "मौसम विश्लेषण और वर्षा में बदलाव",
+    "tab_precipitation": "वर्षा संभावना (%)",
+    "tab_temperature": "तापमान (°C)",
+    "nwp_consensus": "मॉडल सर्वसम्मति",
+    "hubs_title": "प्रमुख शहर",
+    "voice_query": "बोलकर पूछें"
+  },
+
+  "modes": {
+    "title": "मौसम संचालन मोड",
+    "general": "सामान्य नागरिक",
+    "farmer": "🌾 किसान कृषि मौसम सलाह",
+    "traveller": "🚗 राजमार्ग एवं यात्रा सुरक्षा",
+    "disaster": "🚨 आपदा नियंत्रण निर्देश",
+    "school": "🏫 स्कूल व आउटडोर सुरक्षा",
+    "aviation": "✈️ विमानन एवं समुद्री मौसम",
+    "smartcity": "🏙️ स्मार्ट सिटी पर्यावरण निगरानी",
+    "pill_public": "👤 नागरिक",
+    "pill_farmer": "🌾 किसान",
+    "pill_traveller": "🚗 यात्री",
+    "pill_disaster": "🚨 आपदा",
+    "pill_school": "🏫 स्कूल",
+    "pill_aviation": "✈️ विमानन",
+    "pill_smartcity": "🏙️ स्मार्ट सिटी"
+  },
+
+  "risk": {
+    "title": "मौसम जोखिम इंजन",
+    "why": "जोखिम के मुख्य कारक",
+    "no_indicators": "सामान्य स्थिति — कोई गंभीर मौसम खतरा सक्रिय नहीं है।",
+    "level_low": "कम",
+    "level_moderate": "मध्यम",
+    "level_high": "उच्च",
+    "level_severe": "गंभीर",
+    "disclaimer": "आईएमडी मानक चेतावनियों के आधार पर मूल्यांकित जोखिम।"
+  },
+
+  "alerts": {
+    "active_warning": "सक्रिय चेतावनी",
+    "no_active": "कोई सक्रिय चेतावनी नहीं",
+    "clear_area": "मौसम सामान्य है। कोई गंभीर मौसमी खतरा दर्ज नहीं हुआ।",
+    "potential_impacts": "संभावित प्रभाव:",
+    "recommended_actions": "अनुशंसित आपातकालीन कदम:"
+  },
+
+  "disaster": {
+    "active_alerts": "सक्रिय अलर्ट",
+    "high_risk_areas": "उच्च जोखिम क्षेत्र",
+    "flood_zones": "बाढ़ संभावित क्षेत्र",
+    "heavy_rain_districts": "भारी बारिश वाले जिले",
+    "severe_storms": "गंभीर तूफान",
+    "tactical_summary": "AI सामरिक स्थिति सारांश",
+    "priority_districts": "प्राथमिकता वाले जिले"
+  },
+
+  "route": {
+    "title": "मार्ग मौसम सुरक्षा",
+    "subtitle": "अपने यात्रा मार्ग पर मौसमी खतरों और सुरक्षित ड्राइविंग का विश्लेषण करें।",
+    "from": "प्रारंभिक स्थान",
+    "to": "गंतव्य स्थान",
+    "calculate": "मार्ग का विश्लेषण करें",
+    "recommended_departure": "प्रस्थान का सुरक्षित समय",
+    "overall_risk": "मार्ग जोखिम स्कोर"
+  },
+
+  "photo": {
+    "title": "फोटो मौसम बुद्धिमत्ता",
+    "subtitle": "मल्टीमॉडल AI से दृश्यमान मौसम स्थितियों का विश्लेषण करने के लिए फोटो अपलोड करें या खींचें।",
+    "upload_btn": "फोटो अपलोड करें",
+    "take_btn": "फोटो खींचें",
+    "drag_drop": "अपनी मौसम फोटो यहाँ खींचकर लाएँ या फ़ाइल चुनें",
+    "analyze_btn": "फोटो से मौसम का विश्लेषण करें",
+    "demo_heading": "स्मार्ट इंडिया हैकाथॉन डेमो परिदृश्य",
+    "visual_obs": "दृश्यमान मौसम अवलोकन",
+    "live_comparison": "लाइव मौसम डेटा मिलान",
+    "consistency": "मौसम निरंतरता",
+    "hazards": "पहचाने गए मौसमी खतरे",
+    "confidence": "AI विश्वास स्तर",
+    "recommendation": "सुरक्षा सिफारिश",
+    "limitations": "वैज्ञानिक सीमा एवं अस्वीकरण",
+    "ask_heading": "इस फोटो के बारे में WeatherGPT से पूछें"
+  },
+
+  "settings": {
+    "title": "WeatherGPT नियंत्रण एवं सेटिंग्स",
+    "subtitle": "उपयोगकर्ता भूमिका, भाषा, इकाइयाँ और ऑफ़लाइन वातावरण कॉन्फ़िगर करें।",
+    "role_label": "उपयोगकर्ता भूमिका मोड",
+    "lang_label": "एप्लिकेशन भाषा",
+    "units_label": "माप इकाइयाँ",
+    "temp_unit": "तापमान इकाई",
+    "wind_unit": "हवा गति इकाई",
+    "distance_unit": "दूरी इकाई",
+    "offline_label": "ऑफ़लाइन सिमुलेटर",
+    "offline_desc": "ऑफ़लाइन वातावरण का अनुकरण करें (स्थानीय कैश का उपयोग)"
+  }
+}

@@ -47,6 +47,7 @@ A next-generation, multilingual, offline-resilient weather intelligence and disa
 
 ### The Problem in India and Developing Regions
 Weather reporting across India has historically suffered from three critical bottlenecks:
+
 1. **Raw Data Overload Without Human Context**: Official bulletins often output technical statistics (e.g., *"72mm cumulative precipitation, 45 km/h gusts, 982 hPa"*). For a farmer, a truck driver, or an urban commuter, these numbers fail to answer: *Will my field waterlog? Can I take the Pune-Mumbai Expressway safely? Will schools close?*
 2. **Language and Accessibility Barriers**: Vulnerable populations—especially rural agricultural workers and elderly citizens—need guidance in regional languages (**Hindi**, **Marathi**, etc.) via both text and voice, not complex English PDF bulletins.
 3. **Disjointed Emergency Response**: Commuters, schools, emergency responders, and farmers each require fundamentally different situational guidance during the same weather event.
@@ -691,6 +692,26 @@ WeatherGPT includes a **9-Step Hackathon & Presentation Story Bar** integrated d
 - **Rate-Limiting Protection**: SlowAPI middleware enforces rate limits (120 req/min general, stricter limits on LLM endpoints) to guard against denial-of-service and quota exhaustion.
 - **Official Warning Demarcation**: Official government warnings (🔴 NDMA / IMD) are visually and semantically demarcated from AI-generated recommendations.
 - **Responsible AI Disclaimers**: All AI persona outputs include explicit guidance reminding users to comply with local civil defense and disaster authority orders in emergency situations.
+
+---
+
+## ⚠️ Main Remaining Limitations & Transparent Classification
+
+| Limitation | Core MVP Blocked? | SIH Demo Blocked? | Production Enhancement |
+|---|:---:|:---:|:---:|
+| **Official IMD Doppler Radar API Access** | No | No | Yes (Pending Official Authorization) |
+| **Managed Redis for High Concurrency** | No | No | Yes (Recommended for Distributed Scale) |
+
+1. **Official IMD Doppler Radar Imagery**:
+   - Official live IMD Doppler weather radar imagery requires authorized access to official IMD radar/API infrastructure, which is currently unavailable to this project.
+   - *Current Solution*: WeatherGPT supplements radar-dependent functionality using WMO WIS 2.0 telemetry where applicable and high-resolution Open-Meteo NWP forecast models.
+   - *Architecture*: The modular architecture retains a pluggable slot for `IMDRadarProvider` once official authorization and API access are obtained.
+   - *Transparency Rule*: The platform does NOT simulate official IMD radar imagery or claim equivalence to official live Doppler radar.
+
+2. **Managed Redis for High Concurrency**:
+   - The application supports Redis via `REDIS_URL` in `app/config/settings.py`. In local, development, and SIH demonstration environments, a graceful in-memory TTL cache fallback is utilized.
+   - *Impact*: In-memory caching provides sub-millisecond execution for single-instance setups, but is process-local and not shared across horizontally autoscaling container pods.
+   - *Production Recommendation*: For multi-instance high-concurrency production deployments, attach a managed Redis instance (`REDIS_URL=redis://...`) alongside PostgreSQL.
 
 ---
 

@@ -9,7 +9,7 @@ import {
   Map as MapIcon, Send, Mic, Volume2, Heart, Settings as SettingsIcon,
   ChevronRight, RefreshCw, Layers, CheckCircle2, User, Activity, GraduationCap,
   Sliders, PhoneCall, TrendingUp, FileText, Droplets, Thermometer, Sparkles, LogIn,
-  Wifi, WifiOff, Calendar, Clock, Plane, Building2, Radio, Globe
+  Wifi, WifiOff, Calendar, Clock, Plane, Building2, Radio, Globe, Camera, ChevronDown
 } from 'lucide-react';
 
 import DisasterSimulationModal from './components/DisasterSimulationModal';
@@ -21,12 +21,20 @@ import LocationSearchBar, { LocationItem } from './components/LocationSearchBar'
 import { getBackendUrl } from './utils/apiUrl';
 import { 
   LOCALIZATION, 
+  SUPPORTED_LANGUAGES,
+  LANGUAGE_MAP,
+  SupportedLanguage,
   translateCondition, 
   translateRiskCategory, 
   translateRiskFactor, 
   translateDay, 
-  translateRecommendation, 
-  SupportedLanguage 
+  translateRecommendation,
+  formatTemperature,
+  formatWindSpeed,
+  formatDistance,
+  getSavedLanguage,
+  saveLanguagePreference,
+  t
 } from './i18n';
 
 // TypeScript Interfaces for WeatherGPT data structures
@@ -337,7 +345,11 @@ const DEFAULT_RISK: RiskData = {
 export default function WeatherGPT() {
   // Navigation & Localization States
   const [activeTab, setActiveTab] = useState<'dashboard' | 'map' | 'route' | 'alerts' | 'disaster' | 'settings'>('dashboard');
-  const [currentLang, setCurrentLang] = useState<'en' | 'hi' | 'mr'>('en');
+  const [currentLang, setCurrentLang] = useState<SupportedLanguage>('en');
+  const [langMenuOpen, setLangMenuOpen] = useState<boolean>(false);
+  const [tempUnit, setTempUnit] = useState<'celsius' | 'fahrenheit'>('celsius');
+  const [windUnit, setWindUnit] = useState<'kmh' | 'mph'>('kmh');
+  const [distanceUnit, setDistanceUnit] = useState<'km' | 'miles'>('km');
   const [currentMode, setCurrentMode] = useState<'general' | 'traveller' | 'farmer' | 'disaster' | 'school' | 'aviation' | 'smartcity'>('general');
   const [selectedNwpModel, setSelectedNwpModel] = useState<'best_match' | 'gfs' | 'ecmwf' | 'icon'>('best_match');
   const [searchLocation, setSearchLocation] = useState<string>('Pune');
@@ -421,10 +433,8 @@ export default function WeatherGPT() {
         setCurrentMode(savedMode as any);
       }
 
-      const savedLang = localStorage.getItem('weathergpt_lang') as 'en' | 'hi' | 'mr';
-      if (savedLang && ['en', 'hi', 'mr'].includes(savedLang)) {
-        setCurrentLang(savedLang);
-      }
+      const savedLang = getSavedLanguage();
+      setCurrentLang(savedLang);
 
       const win = window as unknown as SpeechRecognitionWindow;
       const SpeechRecognition = win.SpeechRecognition || win.webkitSpeechRecognition;
@@ -433,25 +443,53 @@ export default function WeatherGPT() {
           setSpeechSupported(true);
         }, 0);
       }
+
+      const savedChatSessionId = localStorage.getItem('weathergpt_chat_session');
+      if (savedChatSessionId) {
+        fetch(`${BACKEND_URL}/api/chat/history/${savedChatSessionId}`)
+          .then(async (res) => {
+            if (!res.ok) throw new Error(`Chat history returned HTTP ${res.status}`);
+            return res.json();
+          })
+          .then((data) => {
+            if (Array.isArray(data.messages) && data.messages.length > 0) {
+              setChatSessionId(data.session_id);
+              setChatMessages(data.messages);
+            } else {
+              localStorage.removeItem('weathergpt_chat_session');
+            }
+          })
+          .catch((error) => {
+            console.error('Chat history error:', error);
+            localStorage.removeItem('weathergpt_chat_session');
+          });
+      }
     }
   }, []);
 
-  const handleLanguageChange = (newLang: 'en' | 'hi' | 'mr') => {
+  const handleLanguageChange = (newLang: SupportedLanguage) => {
     setCurrentLang(newLang);
-    localStorage.setItem('weathergpt_lang', newLang);
+    saveLanguagePreference(newLang, currentUser?.token, BACKEND_URL);
     
-    // Update initial greeting if user hasn't started a full conversation
-    const welcomeMessages = {
+    // Update initial greeting in selected language
+    const welcomeMessages: Record<SupportedLanguage, string> = {
       en: "Hello! I am WeatherGPT, your AI-powered meteorology copilot. How can I help you today?",
       hi: "नमस्ते! मैं WeatherGPT हूँ, आपका AI मौसम सहायक। आज मैं आपकी क्या मदद कर सकता हूँ?",
-      mr: "नमस्कार! मी WeatherGPT आहे, आपला AI हवामान सहाय्यक. आज मी आपली काय मदत करू शकतो?"
+      mr: "नमस्कार! मी WeatherGPT आहे, आपला AI हवामान सहाय्यक. आज मी आपली काय मदत करू शकतो?",
+      ta: "வணக்கம்! நான் WeatherGPT, உங்கள் AI வானிலை வழிகாட்டி. இன்று நான் உங்களுக்கு எவ்வாறு உதவ முடியும்?",
+      te: "నమస్కారం! నేను WeatherGPT, మీ AI వాతావరణ సహాయకుడిని. నేడు నేను మీకు ఎలా సహాయపడగలను?",
+      bn: "নমস্কার! আমি WeatherGPT, আপনার AI আবহাওয়া সহকারী। আজ আমি আপনাকে কীভাবে সাহায্য করতে পারি?",
+      gu: "નમસ્તે! હું WeatherGPT છું, તમારો AI હવામાન સહાયક. આજે હું તમને કેવી રીતે મદદ કરી શકું?",
+      kn: "ನಮಸ್ಕಾರ! ನಾನು WeatherGPT, ನಿಮ್ಮ AI ಹವಾಮಾನ ಸಹಾಯಕ. ಇಂದು ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?",
+      ml: "നമസ്കാരം! ഞാൻ WeatherGPT, നിങ്ങളുടെ AI കാലാവസ്ഥാ സഹായി. ഇന്ന് ഞാൻ നിങ്ങളെ എങ്ങനെ സഹായിക്കണം?",
+      pa: "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ WeatherGPT ਹਾਂ, ਤੁਹਾਡਾ AI ਮੌਸਮ ਸਹਾਇਕ। ਅੱਜ ਮੈਂ ਤੁਹਾਡੀ ਕੀ ਮਦਦ ਕਰ ਸਕਦਾ ਹਾਂ?"
     };
     setChatMessages(prev => {
       if (prev.length <= 1) {
         return [{
           id: 1,
           role: 'assistant',
-          content: welcomeMessages[newLang],
+          content: welcomeMessages[newLang] || welcomeMessages.en,
           created_at: new Date().toISOString()
         }];
       }
@@ -774,6 +812,7 @@ export default function WeatherGPT() {
     };
     setChatMessages(prev => [...prev, userMsg]);
     setChatInput('');
+    setIsTyping(true);
     if (isOffline) {
       const qLower = textToSend.toLowerCase();
       const locDisplay = weather?.location?.replace(/\s*\(.*?\)/, '') || searchLocation || 'Pune';
@@ -858,6 +897,7 @@ export default function WeatherGPT() {
       if (res.ok) {
         const data = await res.json();
         setChatSessionId(data.session_id);
+        localStorage.setItem('weathergpt_chat_session', data.session_id);
         
         const assistantMsg: ChatMessage = {
           id: generateMessageId() + 1,
@@ -935,7 +975,7 @@ export default function WeatherGPT() {
 
     try {
       const recognition = new SpeechRecognition();
-      recognition.lang = currentLang === 'hi' ? 'hi-IN' : (currentLang === 'mr' ? 'mr-IN' : 'en-US');
+      recognition.lang = LANGUAGE_MAP[currentLang]?.speechLocale || 'en-IN';
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
 
@@ -1100,6 +1140,14 @@ export default function WeatherGPT() {
               <FileText className="h-4 w-4 text-emerald-400" />
               <span>{text.export_report}</span>
             </button>
+
+            <Link
+              href="/photo-analysis"
+              className="flex w-full items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-bold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition shadow-sm"
+            >
+              <Camera className="h-4 w-4 text-amber-400" />
+              <span>📷 Photo Weather AI</span>
+            </Link>
           </div>
         </nav>
 
@@ -1161,26 +1209,39 @@ export default function WeatherGPT() {
               <span>{isOffline ? `${text.status_offline}` : text.status_online}</span>
             </button>
 
-            {/* Language Selection */}
-            <div className="flex bg-slate-900 border border-slate-800 rounded-xl p-0.5 shadow-md">
+            {/* 🌐 10-Language Dropdown Selector */}
+            <div className="relative">
               <button 
-                onClick={() => handleLanguageChange('en')} 
-                className={`px-2.5 py-1 text-xs font-bold rounded-lg transition ${currentLang === 'en' ? 'bg-emerald-500 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
+                onClick={() => setLangMenuOpen(prev => !prev)}
+                className="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-xl text-xs font-bold text-slate-200 transition shadow-md cursor-pointer"
+                title="Change Language"
               >
-                EN
+                <Globe className="h-3.5 w-3.5 text-emerald-400" />
+                <span>{LANGUAGE_MAP[currentLang]?.name || 'English'}</span>
+                <ChevronDown className="h-3 w-3 text-slate-400" />
               </button>
-              <button 
-                onClick={() => handleLanguageChange('hi')} 
-                className={`px-2.5 py-1 text-xs font-bold rounded-lg transition ${currentLang === 'hi' ? 'bg-emerald-500 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
-              >
-                हिन्दी
-              </button>
-              <button 
-                onClick={() => handleLanguageChange('mr')} 
-                className={`px-2.5 py-1 text-xs font-bold rounded-lg transition ${currentLang === 'mr' ? 'bg-emerald-500 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
-              >
-                मराठी
-              </button>
+
+              {langMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-slate-900/95 backdrop-blur-xl border border-slate-800 rounded-2xl shadow-2xl p-1.5 z-50 grid grid-cols-1 gap-1 max-h-72 overflow-y-auto custom-scrollbar">
+                  {SUPPORTED_LANGUAGES.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => {
+                        handleLanguageChange(lang.code);
+                        setLangMenuOpen(false);
+                      }}
+                      className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition text-left cursor-pointer ${
+                        currentLang === lang.code
+                          ? 'bg-emerald-500 text-slate-950 font-black shadow-md'
+                          : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                      }`}
+                    >
+                      <span>{lang.name}</span>
+                      <span className="text-[10px] opacity-70 font-mono">({lang.code.toUpperCase()})</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Dark / Light Theme Toggle */}
@@ -1212,6 +1273,7 @@ export default function WeatherGPT() {
           <button onClick={() => setActiveTab('alerts')} className={`px-4 py-2 text-xs font-bold rounded-lg ${activeTab === 'alerts' ? 'bg-slate-800 text-emerald-400' : 'text-slate-400'}`}>{text.nav_alerts}</button>
           <button onClick={() => setActiveTab('disaster')} className={`px-4 py-2 text-xs font-bold rounded-lg ${activeTab === 'disaster' ? 'bg-slate-800 text-emerald-400' : 'text-slate-400'}`}>{text.nav_disaster}</button>
           <button onClick={() => setActiveTab('settings')} className={`px-4 py-2 text-xs font-bold rounded-lg ${activeTab === 'settings' ? 'bg-slate-800 text-emerald-400' : 'text-slate-400'}`}>{text.nav_settings}</button>
+          <Link href="/photo-analysis" className="px-4 py-2 text-xs font-bold rounded-lg text-amber-400 bg-amber-500/10 border border-amber-500/30 shrink-0">📷 Photo AI</Link>
         </div>
 
         {/* TAB WORKSPACE */}
@@ -1353,16 +1415,16 @@ export default function WeatherGPT() {
                       </div>
                       <div>
                         <span className="text-5xl md:text-6xl font-black text-white leading-none tracking-tighter">
-                          {weather.current.temp}°C
+                          {formatTemperature(weather.current.temp, tempUnit)}
                         </span>
                         <h3 className="text-lg font-bold text-slate-300 mt-1">{translateCondition(weather.current.condition, currentLang)}</h3>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-x-8 gap-y-3 w-full md:w-auto text-sm border-t md:border-t-0 border-slate-800/80 pt-4 md:pt-0">
-                      <div className="text-slate-400">{text.feels_like}: <span className="font-semibold text-slate-200">{weather.current.feels_like}°C</span></div>
+                      <div className="text-slate-400">{text.feels_like}: <span className="font-semibold text-slate-200">{formatTemperature(weather.current.feels_like, tempUnit)}</span></div>
                       <div className="text-slate-400">{text.humidity}: <span className="font-semibold text-slate-200">{weather.current.humidity}%</span></div>
-                      <div className="text-slate-400">{text.wind}: <span className="font-semibold text-slate-200">{weather.current.wind_speed} km/h {weather.current.wind_direction}</span></div>
+                      <div className="text-slate-400">{text.wind}: <span className="font-semibold text-slate-200">{formatWindSpeed(weather.current.wind_speed, windUnit)} {weather.current.wind_direction}</span></div>
                       <div className="text-slate-400">{text.precipitation}: <span className="font-semibold text-slate-200">{weather.current.rain_probability}%</span></div>
                     </div>
                   </div>
@@ -1375,7 +1437,7 @@ export default function WeatherGPT() {
                     </div>
                     <div className="bg-slate-900/60 rounded-xl p-3 border border-slate-800/40">
                       <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">{text.visibility}</p>
-                      <p className="text-sm font-extrabold text-slate-200 mt-1">{weather.current.visibility} km</p>
+                      <p className="text-sm font-extrabold text-slate-200 mt-1">{formatDistance(weather.current.visibility ?? 10, distanceUnit)}</p>
                     </div>
                     <div className="bg-slate-900/60 rounded-xl p-3 border border-slate-800/40">
                       <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">{text.uv_index}</p>
@@ -1819,6 +1881,37 @@ export default function WeatherGPT() {
 
               {/* Right Column: AI Risk Engine & Official Alerts */}
               <div className="space-y-8">
+
+                {/* 📷 Photo Weather Intelligence Prominent Feature Card */}
+                <div className="bg-gradient-to-br from-emerald-950/40 via-slate-900/80 to-teal-950/30 border border-emerald-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-emerald-500/50 transition">
+                  <div className="absolute -right-6 -top-6 h-28 w-28 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition" />
+                  
+                  <div className="flex items-center space-x-2.5 text-emerald-400">
+                    <span className="text-xl">📷</span>
+                    <h3 className="text-sm font-black uppercase tracking-wider text-white">Photo Weather Intelligence</h3>
+                  </div>
+
+                  <p className="text-xs text-slate-300 mt-2.5 leading-relaxed">
+                    Upload a photo and let WeatherGPT analyze visible weather conditions.
+                  </p>
+
+                  <div className="mt-4">
+                    <Link
+                      href="/photo-analysis"
+                      className="flex items-center justify-center space-x-2 w-full px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-black shadow-lg shadow-emerald-500/20 transition transform active:scale-95 cursor-pointer"
+                    >
+                      <Camera className="h-4 w-4" />
+                      <span>Analyze a Photo</span>
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </Link>
+                  </div>
+
+                  <div className="mt-3.5 pt-3 border-t border-slate-800/60 flex items-center justify-between text-[10px] text-slate-400">
+                    <span>• Multimodal Vision AI</span>
+                    <span>• Live API Correlation</span>
+                    <span>• Risk Engine</span>
+                  </div>
+                </div>
                 
                 {/* Weather Risk Engine Card */}
                 {risk && (
@@ -2323,6 +2416,91 @@ export default function WeatherGPT() {
                 </div>
               </div>
 
+              {/* Language Selection */}
+              <div className="pt-6 border-t border-slate-800/60 space-y-3">
+                <label className="text-[10px] uppercase font-extrabold tracking-wider text-slate-400 block">
+                  🌐 Application Language
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                  {SUPPORTED_LANGUAGES.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => handleLanguageChange(lang.code)}
+                      className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-bold transition text-center cursor-pointer ${
+                        currentLang === lang.code
+                          ? 'bg-emerald-500/15 border-emerald-500 text-emerald-300 shadow-md font-black'
+                          : 'bg-slate-900/50 border-slate-800 text-slate-300 hover:border-slate-700'
+                      }`}
+                    >
+                      <span className="text-sm">{lang.name}</span>
+                      <span className="text-[10px] text-slate-400 opacity-75">{lang.englishName}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Units Preferences */}
+              <div className="pt-6 border-t border-slate-800/60 space-y-4">
+                <label className="text-[10px] uppercase font-extrabold tracking-wider text-slate-400 block">
+                  ⚙️ Measurement Units
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1.5">
+                    <span className="text-[11px] font-bold text-slate-400">Temperature</span>
+                    <div className="flex gap-1.5">
+                      <button
+                        onClick={() => setTempUnit('celsius')}
+                        className={`flex-1 py-1 text-xs font-bold rounded-lg transition ${tempUnit === 'celsius' ? 'bg-emerald-500 text-slate-950 font-black' : 'bg-slate-800 text-slate-300'}`}
+                      >
+                        °C
+                      </button>
+                      <button
+                        onClick={() => setTempUnit('fahrenheit')}
+                        className={`flex-1 py-1 text-xs font-bold rounded-lg transition ${tempUnit === 'fahrenheit' ? 'bg-emerald-500 text-slate-950 font-black' : 'bg-slate-800 text-slate-300'}`}
+                      >
+                        °F
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1.5">
+                    <span className="text-[11px] font-bold text-slate-400">Wind Velocity</span>
+                    <div className="flex gap-1.5">
+                      <button
+                        onClick={() => setWindUnit('kmh')}
+                        className={`flex-1 py-1 text-xs font-bold rounded-lg transition ${windUnit === 'kmh' ? 'bg-emerald-500 text-slate-950 font-black' : 'bg-slate-800 text-slate-300'}`}
+                      >
+                        km/h
+                      </button>
+                      <button
+                        onClick={() => setWindUnit('mph')}
+                        className={`flex-1 py-1 text-xs font-bold rounded-lg transition ${windUnit === 'mph' ? 'bg-emerald-500 text-slate-950 font-black' : 'bg-slate-800 text-slate-300'}`}
+                      >
+                        mph
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1.5">
+                    <span className="text-[11px] font-bold text-slate-400">Distance</span>
+                    <div className="flex gap-1.5">
+                      <button
+                        onClick={() => setDistanceUnit('km')}
+                        className={`flex-1 py-1 text-xs font-bold rounded-lg transition ${distanceUnit === 'km' ? 'bg-emerald-500 text-slate-950 font-black' : 'bg-slate-800 text-slate-300'}`}
+                      >
+                        km
+                      </button>
+                      <button
+                        onClick={() => setDistanceUnit('miles')}
+                        className={`flex-1 py-1 text-xs font-bold rounded-lg transition ${distanceUnit === 'miles' ? 'bg-emerald-500 text-slate-950 font-black' : 'bg-slate-800 text-slate-300'}`}
+                      >
+                        miles
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Simulated offline toggle */}
               <div className="pt-6 border-t border-slate-800/60 space-y-3">
                 <label className="text-[10px] uppercase font-extrabold tracking-wider text-slate-400 block">Offline Resilience Simulator</label>
@@ -2579,6 +2757,7 @@ export default function WeatherGPT() {
         currentUser={currentUser}
         onLogin={handleUserLogin}
         onLogout={handleUserLogout}
+        lang={currentLang}
       />
     </div>
   );

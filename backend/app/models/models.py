@@ -156,3 +156,82 @@ class AlertHistory(Base):
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
     metadata_json = Column(Text, nullable=True)
 
+
+# ── User Preferences ─────────────────────────────────────────────────────────
+class UserPreference(Base):
+    """Stores user settings: units, notifications, risk sensitivity, default city."""
+    __tablename__ = "user_preferences"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
+    temp_unit = Column(String(10), default="celsius")       # 'celsius', 'fahrenheit'
+    wind_unit = Column(String(10), default="kmh")          # 'kmh', 'mph', 'ms'
+    notifications_enabled = Column(Boolean, default=True)
+    preferred_location = Column(String(100), default="Pune")
+    language = Column(String(10), default="en")             # 'en', 'hi', 'mr'
+    risk_sensitivity = Column(String(20), default="standard") # 'standard', 'high', 'low'
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+# ── Saved Locations ──────────────────────────────────────────────────────────
+class SavedLocation(Base):
+    """User bookmarked locations."""
+    __tablename__ = "saved_locations"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    name = Column(String(100), nullable=False)
+    city = Column(String(100), nullable=False)
+    lat = Column(Float, nullable=True)
+    lon = Column(Float, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+# ── RAG Knowledge Document ───────────────────────────────────────────────────
+class KnowledgeDocument(Base):
+    """Stores weather guidelines, NDMA advisories, and meteorological knowledge chunks for RAG."""
+    __tablename__ = "knowledge_documents"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(200), nullable=False, index=True)
+    category = Column(String(50), nullable=False, index=True) # 'cyclone', 'flood', 'heatwave', 'lightning', 'meteorology'
+    source = Column(String(100), nullable=False)            # 'NDMA', 'IMD', 'WMO', 'WeatherGPT Guidelines'
+    content = Column(Text, nullable=False)
+    keywords = Column(String(300), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+# ── Route History ────────────────────────────────────────────────────────────
+class RouteHistory(Base):
+    """Stores analyzed routes for user history and trip replay."""
+    __tablename__ = "route_history"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True)
+    from_location = Column(String(100), nullable=False)
+    to_location = Column(String(100), nullable=False)
+    departure_time = Column(String(50), nullable=True)
+    overall_risk_level = Column(String(20), nullable=False) # 'LOW', 'MODERATE', 'HIGH', 'SEVERE'
+    risk_score = Column(Integer, default=0)
+    summary = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+
+
+# ── Photo Weather Analysis ───────────────────────────────────────────────────
+class PhotoWeatherAnalysis(Base):
+    """Stores multimodal photo weather analysis records."""
+    __tablename__ = "photo_weather_analyses"
+
+    id = Column(String(50), primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True)
+    location_name = Column(String(100), nullable=True)
+    image_metadata_json = Column(Text, nullable=True)     # filename, size, format, dimensions
+    photo_observation_json = Column(Text, nullable=False) # structured visual observation
+    weather_consistency_json = Column(Text, nullable=True) # correlation vs live data
+    risk_assessment_json = Column(Text, nullable=False)   # photo-enhanced risk score & factors
+    recommendations_json = Column(Text, nullable=False)   # actionable guidance
+    confidence = Column(Integer, default=85)
+    mode = Column(String(20), default="live")             # 'live', 'demo', 'offline'
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
