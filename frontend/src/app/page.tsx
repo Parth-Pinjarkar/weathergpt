@@ -1041,996 +1041,906 @@ export default function WeatherGPT() {
   };
 
   return (
-    <div className={`flex h-screen w-screen overflow-hidden ${theme === 'light' ? 'light-mode' : ''} bg-slate-950 text-slate-100 font-sans relative`}>
-        {/* SIDEBAR NAVIGATION - Premium Dark Glassmorphism */}
-        <aside className="hidden md:flex flex-col w-64 bg-slate-900/40 backdrop-blur-lg border-r border-slate-800/80 p-6 space-y-8 select-none z-10">
-        <div className="flex items-center space-x-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/20 text-white font-bold text-lg">
-            ⛈️
+    <div className={`flex h-screen w-screen overflow-hidden ${theme === 'light' ? 'light-mode' : 'dark'} bg-background text-on-surface font-body relative`}>
+      {/* 1. LEFT NAVIGATION RAIL (w-72) */}
+      <aside className="hidden md:flex flex-col w-72 bg-surface-container-lowest border-r border-surface-container-high shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 justify-between overflow-y-auto select-none">
+        <div className="p-space-md">
+          {/* WeatherGPT Branding Header */}
+          <div className="flex items-center gap-space-sm pb-space-md border-b border-surface-container-high">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white text-lg shadow-sm">
+              ⛈️
+            </div>
+            <div className="flex flex-col">
+              <span className="font-headline-sm text-headline-sm text-primary tracking-tight font-bold">WeatherGPT</span>
+              <span className="font-label-mono-sm text-label-mono-sm text-outline uppercase font-semibold">IMD Copilot • MoES</span>
+            </div>
           </div>
-          <div>
-            <h1 className="font-extrabold text-xl tracking-tight text-slate-100">
-              {text.app_title}
-            </h1>
-            <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-500/80">IMD Copilot</span>
+
+          {/* Intelligence Core Navigation */}
+          <div className="pt-space-md">
+            <span className="font-label-mono-bold text-label-mono-bold text-on-surface-variant uppercase tracking-wider block mb-space-xs">
+              Intelligence Core
+            </span>
+            <nav className="flex flex-col gap-1">
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                className={`flex items-center gap-space-sm px-space-sm py-2 rounded-lg transition-colors cursor-pointer text-left ${
+                  activeTab === 'dashboard'
+                    ? 'bg-primary text-on-primary font-bold shadow-sm'
+                    : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[20px]">sensors</span>
+                <span className="font-body-md text-body-md">Live Telemetry</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('map')}
+                className={`flex items-center gap-space-sm px-space-sm py-2 rounded-lg transition-colors cursor-pointer text-left ${
+                  activeTab === 'map'
+                    ? 'bg-primary text-on-primary font-bold shadow-sm'
+                    : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[20px]">radar</span>
+                <span className="font-body-md text-body-md">Radar &amp; Maps</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('route')}
+                className={`flex items-center gap-space-sm px-space-sm py-2 rounded-lg transition-colors cursor-pointer text-left ${
+                  activeTab === 'route'
+                    ? 'bg-primary text-on-primary font-bold shadow-sm'
+                    : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[20px]">satellite_alt</span>
+                <span className="font-body-md text-body-md">Route Intel</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('alerts')}
+                className={`flex items-center gap-space-sm px-space-sm py-2 rounded-lg transition-colors cursor-pointer text-left ${
+                  activeTab === 'alerts'
+                    ? 'bg-primary text-on-primary font-bold shadow-sm'
+                    : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[20px]">warning</span>
+                <span className="font-body-md text-body-md">Severe Alerts</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('disaster')}
+                className={`flex items-center gap-space-sm px-space-sm py-2 rounded-lg transition-colors cursor-pointer text-left ${
+                  activeTab === 'disaster'
+                    ? 'bg-primary text-on-primary font-bold shadow-sm'
+                    : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[20px]">shield</span>
+                <span className="font-body-md text-body-md">Command Center</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('settings')}
+                className={`flex items-center gap-space-sm px-space-sm py-2 rounded-lg transition-colors cursor-pointer text-left ${
+                  activeTab === 'settings'
+                    ? 'bg-primary text-on-primary font-bold shadow-sm'
+                    : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[20px]">tune</span>
+                <span className="font-body-md text-body-md">System Settings</span>
+              </button>
+            </nav>
+          </div>
+
+          {/* Operational Modes Rail */}
+          <div className="pt-space-md">
+            <span className="font-label-mono-bold text-label-mono-bold text-on-surface-variant uppercase tracking-wider block mb-space-xs">
+              Operational Modes
+            </span>
+            <div className="flex flex-col gap-space-xs">
+              <button
+                onClick={() => setCurrentMode('farmer')}
+                className={`w-full flex items-center justify-between px-space-sm py-2 rounded-lg transition-colors cursor-pointer text-left ${
+                  currentMode === 'farmer' ? 'bg-surface-container-high text-primary font-bold' : 'bg-surface-container-low text-on-surface hover:bg-surface-container'
+                }`}
+              >
+                <div className="flex items-center gap-space-xs">
+                  <span className="material-symbols-outlined text-primary text-[18px]">agriculture</span>
+                  <span className="font-body-sm text-body-sm">Kisan / Agri</span>
+                </div>
+                <span className="w-2 h-2 rounded-full bg-radar-emerald animate-pulse"></span>
+              </button>
+
+              <button
+                onClick={() => setCurrentMode('aviation')}
+                className={`w-full flex items-center justify-between px-space-sm py-2 rounded-lg transition-colors cursor-pointer text-left ${
+                  currentMode === 'aviation' ? 'bg-surface-container-high text-secondary font-bold' : 'bg-surface-container-low text-on-surface hover:bg-surface-container'
+                }`}
+              >
+                <div className="flex items-center gap-space-xs">
+                  <span className="material-symbols-outlined text-secondary text-[18px]">flight</span>
+                  <span className="font-body-sm text-body-sm">Aviation Synoptic</span>
+                </div>
+                <span className="font-label-mono-sm text-label-mono-sm text-outline">READY</span>
+              </button>
+
+              <button
+                onClick={() => setCurrentMode('smartcity')}
+                className={`w-full flex items-center justify-between px-space-sm py-2 rounded-lg transition-colors cursor-pointer text-left ${
+                  currentMode === 'smartcity' ? 'bg-surface-container-high text-atmospheric-cyan font-bold' : 'bg-surface-container-low text-on-surface hover:bg-surface-container'
+                }`}
+              >
+                <div className="flex items-center gap-space-xs">
+                  <span className="material-symbols-outlined text-atmospheric-cyan text-[18px]">location_city</span>
+                  <span className="font-body-sm text-body-sm">Smart City Matrix</span>
+                </div>
+                <span className="font-label-mono-sm text-label-mono-sm text-outline">STANDBY</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Advanced Analytics Tools */}
+          <div className="pt-space-md">
+            <span className="font-label-mono-bold text-label-mono-bold text-on-surface-variant uppercase tracking-wider block mb-space-xs">
+              Advanced Tools
+            </span>
+            <div className="flex flex-col gap-1">
+              <button
+                onClick={() => setSimModalOpen(true)}
+                className="flex w-full items-center gap-2 px-space-sm py-1.5 rounded-lg text-xs font-semibold text-rose-500 hover:bg-rose-500/10 transition cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[16px]">cyclone</span>
+                <span>Disaster Simulator</span>
+              </button>
+              <button
+                onClick={() => setEmergencyModalOpen(true)}
+                className="flex w-full items-center gap-2 px-space-sm py-1.5 rounded-lg text-xs font-semibold text-red-500 hover:bg-red-500/10 transition cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[16px]">phone_in_talk</span>
+                <span>Emergency Center</span>
+              </button>
+              <button
+                onClick={() => setClimateModalOpen(true)}
+                className="flex w-full items-center gap-2 px-space-sm py-1.5 rounded-lg text-xs font-semibold text-atmospheric-cyan hover:bg-cyan-500/10 transition cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[16px]">trending_up</span>
+                <span>Climate Insights</span>
+              </button>
+              <button
+                onClick={() => setReportModalOpen(true)}
+                className="flex w-full items-center gap-2 px-space-sm py-1.5 rounded-lg text-xs font-semibold text-primary hover:bg-primary/10 transition cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[16px]">description</span>
+                <span>Export Report</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        <nav className="flex-1 space-y-1">
-          <button 
-            onClick={() => setActiveTab('dashboard')}
-            className={`flex w-full items-center space-x-3 px-4 py-3 rounded-xl transition duration-150 text-sm font-semibold
-              ${activeTab === 'dashboard' ? 'bg-gradient-to-r from-emerald-500/10 to-teal-500/5 text-emerald-400 border-l-4 border-emerald-500 shadow-md' : 'text-slate-400 hover:bg-slate-800/40 hover:text-slate-100'}
-            `}
-          >
-            <Activity className="h-5 w-5" />
-            <span>{text.nav_dashboard}</span>
-          </button>
-
-          <button 
-            onClick={() => setActiveTab('map')}
-            className={`flex w-full items-center space-x-3 px-4 py-3 rounded-xl transition duration-150 text-sm font-semibold
-              ${activeTab === 'map' ? 'bg-gradient-to-r from-emerald-500/10 to-teal-500/5 text-emerald-400 border-l-4 border-emerald-500 shadow-md' : 'text-slate-400 hover:bg-slate-800/40 hover:text-slate-100'}
-            `}
-          >
-            <MapIcon className="h-5 w-5" />
-            <span>{text.nav_map}</span>
-          </button>
-
-          <button 
-            onClick={() => setActiveTab('route')}
-            className={`flex w-full items-center space-x-3 px-4 py-3 rounded-xl transition duration-150 text-sm font-semibold
-              ${activeTab === 'route' ? 'bg-gradient-to-r from-emerald-500/10 to-teal-500/5 text-emerald-400 border-l-4 border-emerald-500 shadow-md' : 'text-slate-400 hover:bg-slate-800/40 hover:text-slate-100'}
-            `}
-          >
-            <Navigation className="h-5 w-5" />
-            <span>{text.nav_route}</span>
-          </button>
-
-          <button 
-            onClick={() => setActiveTab('alerts')}
-            className={`flex w-full items-center space-x-3 px-4 py-3 rounded-xl transition duration-150 text-sm font-semibold
-              ${activeTab === 'alerts' ? 'bg-gradient-to-r from-emerald-500/10 to-teal-500/5 text-emerald-400 border-l-4 border-emerald-500 shadow-md' : 'text-slate-400 hover:bg-slate-800/40 hover:text-slate-100'}
-            `}
-          >
-            <AlertTriangle className="h-5 w-5" />
-            <span>{text.nav_alerts}</span>
-          </button>
-
-          <button 
-            onClick={() => setActiveTab('disaster')}
-            className={`flex w-full items-center space-x-3 px-4 py-3 rounded-xl transition duration-150 text-sm font-semibold
-              ${activeTab === 'disaster' ? 'bg-gradient-to-r from-emerald-500/10 to-teal-500/5 text-emerald-400 border-l-4 border-emerald-500 shadow-md' : 'text-slate-400 hover:bg-slate-800/40 hover:text-slate-100'}
-            `}
-          >
-            <Shield className="h-5 w-5" />
-            <span>{text.nav_disaster}</span>
-          </button>
-
-          <button 
-            onClick={() => setActiveTab('settings')}
-            className={`flex w-full items-center space-x-3 px-4 py-3 rounded-xl transition duration-150 text-sm font-semibold
-              ${activeTab === 'settings' ? 'bg-gradient-to-r from-emerald-500/10 to-teal-500/5 text-emerald-400 border-l-4 border-emerald-500 shadow-md' : 'text-slate-400 hover:bg-slate-800/40 hover:text-slate-100'}
-            `}
-          >
-            <SettingsIcon className="h-5 w-5" />
-            <span>{text.nav_settings}</span>
-          </button>
-
-          <div className="pt-4 space-y-1.5 border-t border-slate-800/60">
-            <span className="px-4 text-[10px] uppercase font-bold tracking-wider text-slate-500">{text.advanced_tools}</span>
-            <button
-              onClick={() => setSimModalOpen(true)}
-              className="flex w-full items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-semibold text-rose-400 hover:bg-rose-500/10 transition"
-            >
-              <Sliders className="h-4 w-4 text-rose-400" />
-              <span>{text.disaster_sim}</span>
-            </button>
-
-            <button
-              onClick={() => setEmergencyModalOpen(true)}
-              className="flex w-full items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-semibold text-red-400 hover:bg-red-500/10 transition"
-            >
-              <PhoneCall className="h-4 w-4 text-red-400" />
-              <span>{text.emergency_center}</span>
-            </button>
-
-            <button
-              onClick={() => setClimateModalOpen(true)}
-              className="flex w-full items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-semibold text-cyan-400 hover:bg-cyan-500/10 transition"
-            >
-              <TrendingUp className="h-4 w-4 text-cyan-400" />
-              <span>{text.climate_insights}</span>
-            </button>
-
-            <button
-              onClick={() => setReportModalOpen(true)}
-              className="flex w-full items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-semibold text-emerald-400 hover:bg-emerald-500/10 transition"
-            >
-              <FileText className="h-4 w-4 text-emerald-400" />
-              <span>{text.export_report}</span>
-            </button>
-
-            <Link
-              href="/photo-analysis"
-              className="flex w-full items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-bold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition shadow-sm"
-            >
-              <Camera className="h-4 w-4 text-amber-400" />
-              <span>📷 Photo Weather AI</span>
-            </Link>
+        {/* Photo Weather AI Quick Card */}
+        <div className="p-space-md bg-surface-container-low rounded-t-xl mx-space-sm mb-space-sm border border-surface-container-high">
+          <div className="flex items-center gap-space-xs mb-space-xs">
+            <span className="material-symbols-outlined text-primary text-[20px]">photo_camera</span>
+            <span className="font-headline-sm text-headline-sm text-on-surface font-semibold">Photo Weather AI</span>
           </div>
-        </nav>
-
-        {/* User Info / Attribution */}
-        <div className="pt-6 border-t border-slate-800/60 text-[11px] text-slate-500">
-          <p>© MoES - Govt of India</p>
-          <p className="mt-1">Department of Meteorology</p>
+          <p className="font-body-sm text-body-sm text-on-surface-variant mb-space-sm leading-relaxed">
+            Upload sky snapshots for automated cloud vector &amp; barometric estimation.
+          </p>
+          <Link
+            href="/photo-analysis"
+            className="w-full flex items-center justify-center gap-space-xs py-2 px-space-sm rounded-lg bg-primary text-on-primary font-body-sm text-body-sm hover:bg-primary-container transition-colors shadow-sm cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[18px]">add_a_photo</span>
+            <span>Analyze Cloudscape</span>
+          </Link>
         </div>
       </aside>
 
-      {/* MAIN CONTAINER */}
-      <main className="flex-1 flex flex-col h-full overflow-hidden bg-slate-950 relative">
-        
-        {/* HEADER BAR */}
-        <header className="flex h-16 items-center justify-between px-6 border-b border-slate-900/60 bg-slate-900/20 backdrop-blur-md z-10 select-none">
-          <div className="flex-1 flex items-center space-x-4 max-w-2xl mr-4">
-            {/* Mobile Sidebar Hamburger Toggle */}
-            <div className="md:hidden flex items-center space-x-2 shrink-0">
-              <span className="text-xl">⛈️</span>
-              <span className="font-extrabold text-slate-100 hidden sm:inline">{text.app_title}</span>
+      {/* 2. MAIN CONTAINER & TOP HEADER (md:pl-72) */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden md:pl-72 relative">
+        {/* Top Floating Glass Header */}
+        <header className="fixed top-0 left-0 md:left-72 right-0 h-16 bg-surface-glass backdrop-blur-xl border-b border-surface-container-high shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-md md:px-space-lg">
+          {/* Universal Observatory / Location Search Bar */}
+          <div className="flex items-center gap-space-sm flex-1 max-w-xl mr-2">
+            <div className="relative flex-1 flex items-center bg-surface-container-low rounded-lg px-space-sm py-1.5 border border-surface-container-high focus-within:border-primary transition-all">
+              <span className="material-symbols-outlined text-outline text-[20px] mr-space-xs">search</span>
+              <input
+                type="text"
+                value={searchLocation}
+                onChange={(e) => setSearchLocation(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    fetchWeatherData(searchLocation);
+                  }
+                }}
+                placeholder="Search Observatory, AWS Station, City or Coordinates..."
+                className="bg-transparent border-0 outline-none w-full font-body-sm text-body-sm text-on-surface placeholder:text-outline"
+              />
+              <button
+                onClick={handleUseCurrentLocation}
+                disabled={isRefreshing}
+                title="Acquire Current GPS Fix"
+                className="flex items-center gap-space-xs px-2 py-1 rounded bg-surface-container-highest text-on-surface hover:bg-primary hover:text-on-primary transition-colors cursor-pointer disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined text-[16px]">my_location</span>
+                <span className="font-label-mono-sm text-label-mono-sm font-bold">GPS</span>
+              </button>
             </div>
-            
-            {/* Location Autocomplete Search Bar */}
-            <LocationSearchBar
-              currentLocation={weather?.location || searchLocation}
-              placeholder={text.placeholder_search}
-              onSelectLocation={(locItem: LocationItem) => {
-                setSearchLocation(locItem.name);
-                if (locItem.lat && locItem.lon) {
-                  setMapCenter([locItem.lat, locItem.lon]);
-                }
-                fetchWeatherData(locItem.name);
-              }}
-              onUseGps={handleUseCurrentLocation}
-              isGpsLoading={isRefreshing}
-            />
           </div>
 
-          {/* RIGHT CONTROLS: Language, Mode, Offline indicators */}
-          <div className="flex items-center space-x-3">
-            {/* Active Mode Indicator Badge */}
-            <span className="hidden sm:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-emerald-400 border border-slate-700/50">
-              <User className="h-3.5 w-3.5" />
-              <span>{currentMode === 'general' ? text.mode_general : currentMode === 'farmer' ? text.mode_farmer : currentMode === 'disaster' ? text.mode_disaster : currentMode === 'traveller' ? text.mode_traveller : text.mode_school}</span>
-            </span>
-
-            {/* Offline/Online Status Indicator Toggle */}
-            <button 
-              onClick={() => setIsOffline(prev => !prev)}
-              title={isOffline ? "Click to switch to Online Mode" : "Click to switch to Offline / Cached Mode"}
-              className={`inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all cursor-pointer hover:scale-105 active:scale-95 shadow-sm
-                ${isOffline 
-                  ? 'bg-rose-950/80 border-rose-500/50 text-rose-300 hover:bg-rose-900/90' 
-                  : 'bg-emerald-950/60 border-emerald-500/30 text-emerald-300 hover:bg-emerald-900/60'
-                }
-              `}
-            >
-              {isOffline ? <WifiOff className="h-3.5 w-3.5 text-rose-400 animate-pulse" /> : <Wifi className="h-3.5 w-3.5 text-emerald-400" />}
-              <span>{isOffline ? `${text.status_offline}` : text.status_online}</span>
-            </button>
-
-            {/* 🌐 10-Language Dropdown Selector */}
-            <div className="relative">
-              <button 
-                onClick={() => setLangMenuOpen(prev => !prev)}
-                className="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-xl text-xs font-bold text-slate-200 transition shadow-md cursor-pointer"
-                title="Change Language"
-              >
-                <Globe className="h-3.5 w-3.5 text-emerald-400" />
-                <span>{LANGUAGE_MAP[currentLang]?.name || 'English'}</span>
-                <ChevronDown className="h-3 w-3 text-slate-400" />
-              </button>
-
-              {langMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-slate-900/95 backdrop-blur-xl border border-slate-800 rounded-2xl shadow-2xl p-1.5 z-50 grid grid-cols-1 gap-1 max-h-72 overflow-y-auto custom-scrollbar">
-                  {SUPPORTED_LANGUAGES.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => {
-                        handleLanguageChange(lang.code);
-                        setLangMenuOpen(false);
-                      }}
-                      className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition text-left cursor-pointer ${
-                        currentLang === lang.code
-                          ? 'bg-emerald-500 text-slate-950 font-black shadow-md'
-                          : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                      }`}
-                    >
-                      <span>{lang.name}</span>
-                      <span className="text-[10px] opacity-70 font-mono">({lang.code.toUpperCase()})</span>
-                    </button>
-                  ))}
-                </div>
-              )}
+          {/* Right Controls: WIS status, Language select, Theme toggle, User badge */}
+          <div className="flex items-center gap-2 md:gap-space-md">
+            {/* Realtime WIS 2.0 / MQTT Stream Status */}
+            <div className="hidden xl:flex items-center gap-space-xs px-space-sm py-1.5 rounded-full bg-surface-container-high border border-surface-container">
+              <span className="w-2 h-2 rounded-full bg-radar-emerald animate-ping"></span>
+              <span className="font-label-mono-sm text-label-mono-sm text-on-surface">
+                WIS 2.0 / MQTT: <span className="text-primary font-bold">ACTIVE {weather?.wis2_telemetry?.latency_ms ?? 12}ms</span>
+              </span>
+              <span className="text-outline font-label-mono-sm text-label-mono-sm">• Online</span>
             </div>
 
-            {/* Dark / Light Theme Toggle */}
+            {/* Offline/Online toggle */}
             <button
-              onClick={toggleTheme}
-              title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
-              className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-amber-400 hover:text-amber-300 transition shadow-md flex items-center justify-center cursor-pointer"
+              onClick={() => setIsOffline(prev => !prev)}
+              title={isOffline ? "Switch to Online Mode" : "Switch to Offline / Local Cache"}
+              className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border transition cursor-pointer ${
+                isOffline ? 'bg-rose-500/10 text-rose-500 border-rose-500/30' : 'bg-primary-fixed/30 text-primary border-primary/30'
+              }`}
             >
-              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4 text-indigo-400" />}
+              <span className={`w-1.5 h-1.5 rounded-full ${isOffline ? 'bg-rose-500' : 'bg-radar-emerald'}`}></span>
+              <span>{isOffline ? 'Offline' : 'Live'}</span>
             </button>
 
-            {/* User Profile / Auth Modal Trigger */}
+            {/* Multilingual Selector */}
+            <div className="flex items-center gap-space-xs px-2 py-1.5 rounded-lg bg-surface-container-low border border-surface-container-high">
+              <span className="material-symbols-outlined text-on-surface-variant text-[18px]">translate</span>
+              <select
+                value={currentLang}
+                onChange={(e) => handleLanguageChange(e.target.value as SupportedLanguage)}
+                className="bg-transparent border-0 outline-none font-body-sm text-body-sm text-on-surface cursor-pointer pr-1"
+              >
+                <option value="en">EN (English)</option>
+                <option value="hi">HI (हिंदी)</option>
+                <option value="mr">MR (मराठी)</option>
+                <option value="ta">TA (தமிழ்)</option>
+              </select>
+            </div>
+
+            {/* Light / Dark Mode Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer"
+              title="Toggle Interface Lighting Mode"
+            >
+              <span className="material-symbols-outlined text-[20px]">
+                {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+              </span>
+            </button>
+
+            {/* User Profile Pill */}
             <button
               onClick={() => setAuthModalOpen(true)}
-              className="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold shadow-md transition cursor-pointer"
+              className="flex items-center gap-space-xs pl-space-xs cursor-pointer hover:opacity-90 transition"
             >
-              <User className="h-3.5 w-3.5" />
-              <span className="max-w-[100px] truncate">{currentUser ? currentUser.name : 'Login / Guest'}</span>
-              {currentUser?.isGuest && <span className="px-1.5 py-0.5 text-[9px] bg-emerald-950/80 rounded text-emerald-300 border border-emerald-500/30">Guest</span>}
+              <div className="flex flex-col text-right hidden sm:flex">
+                <span className="font-body-sm text-body-sm text-on-surface font-semibold">
+                  {currentUser ? currentUser.name : 'Guest Explorer'}
+                </span>
+                <span className="font-label-mono-sm text-label-mono-sm text-outline">
+                  {currentUser?.isGuest ? 'IMD-CIVIL-PUBLIC' : (currentUser?.role?.toUpperCase() || 'IMD-VERIFIED')}
+                </span>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-sm">
+                <span className="material-symbols-outlined text-[18px]">person</span>
+              </div>
             </button>
           </div>
         </header>
 
-        {/* MOBILE NAVIGATION - Top select bar */}
-        <div className="md:hidden flex bg-slate-900 border-b border-slate-800 p-2 overflow-x-auto whitespace-nowrap select-none">
-          <button onClick={() => setActiveTab('dashboard')} className={`px-4 py-2 text-xs font-bold rounded-lg ${activeTab === 'dashboard' ? 'bg-slate-800 text-emerald-400' : 'text-slate-400'}`}>{text.nav_dashboard}</button>
-          <button onClick={() => setActiveTab('map')} className={`px-4 py-2 text-xs font-bold rounded-lg ${activeTab === 'map' ? 'bg-slate-800 text-emerald-400' : 'text-slate-400'}`}>{text.nav_map}</button>
-          <button onClick={() => setActiveTab('route')} className={`px-4 py-2 text-xs font-bold rounded-lg ${activeTab === 'route' ? 'bg-slate-800 text-emerald-400' : 'text-slate-400'}`}>{text.nav_route}</button>
-          <button onClick={() => setActiveTab('alerts')} className={`px-4 py-2 text-xs font-bold rounded-lg ${activeTab === 'alerts' ? 'bg-slate-800 text-emerald-400' : 'text-slate-400'}`}>{text.nav_alerts}</button>
-          <button onClick={() => setActiveTab('disaster')} className={`px-4 py-2 text-xs font-bold rounded-lg ${activeTab === 'disaster' ? 'bg-slate-800 text-emerald-400' : 'text-slate-400'}`}>{text.nav_disaster}</button>
-          <button onClick={() => setActiveTab('settings')} className={`px-4 py-2 text-xs font-bold rounded-lg ${activeTab === 'settings' ? 'bg-slate-800 text-emerald-400' : 'text-slate-400'}`}>{text.nav_settings}</button>
-          <Link href="/photo-analysis" className="px-4 py-2 text-xs font-bold rounded-lg text-amber-400 bg-amber-500/10 border border-amber-500/30 shrink-0">📷 Photo AI</Link>
+        {/* Mobile Navigation Strip */}
+        <div className="md:hidden flex bg-surface-container-lowest border-b border-surface-container-high p-2 overflow-x-auto whitespace-nowrap select-none mt-16">
+          <button onClick={() => setActiveTab('dashboard')} className={`px-3 py-1.5 text-xs font-bold rounded-lg ${activeTab === 'dashboard' ? 'bg-primary text-on-primary' : 'text-on-surface-variant'}`}>Live Telemetry</button>
+          <button onClick={() => setActiveTab('map')} className={`px-3 py-1.5 text-xs font-bold rounded-lg ${activeTab === 'map' ? 'bg-primary text-on-primary' : 'text-on-surface-variant'}`}>Radar &amp; Maps</button>
+          <button onClick={() => setActiveTab('route')} className={`px-3 py-1.5 text-xs font-bold rounded-lg ${activeTab === 'route' ? 'bg-primary text-on-primary' : 'text-on-surface-variant'}`}>Route Intel</button>
+          <button onClick={() => setActiveTab('alerts')} className={`px-3 py-1.5 text-xs font-bold rounded-lg ${activeTab === 'alerts' ? 'bg-primary text-on-primary' : 'text-on-surface-variant'}`}>Severe Alerts</button>
+          <button onClick={() => setActiveTab('disaster')} className={`px-3 py-1.5 text-xs font-bold rounded-lg ${activeTab === 'disaster' ? 'bg-primary text-on-primary' : 'text-on-surface-variant'}`}>Command Center</button>
+          <button onClick={() => setActiveTab('settings')} className={`px-3 py-1.5 text-xs font-bold rounded-lg ${activeTab === 'settings' ? 'bg-primary text-on-primary' : 'text-on-surface-variant'}`}>Settings</button>
+          <Link href="/photo-analysis" className="px-3 py-1.5 text-xs font-bold rounded-lg text-primary bg-primary-fixed/40">📷 Photo AI</Link>
         </div>
 
-        {/* TAB WORKSPACE */}
-        <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 select-text">
-
+        {/* Main Canvas Scroll Area */}
+        <div className="w-full flex-1 overflow-y-auto pt-16 bg-background">
           {/* TAB 1: WEATHER DASHBOARD */}
           {activeTab === 'dashboard' && (
             weather ? (
-            <div className="space-y-6">
-              
-              {/* Offline Mode Active Banner */}
-              {isOffline && (
-                <div className="p-3.5 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center justify-between text-rose-200 text-xs font-semibold shadow-md">
-                  <div className="flex items-center space-x-2.5">
-                    <WifiOff className="h-4 w-4 text-rose-400 flex-shrink-0 animate-pulse" />
-                    <span>
-                      <strong>Offline Mode Active:</strong> Operating smoothly on local cache and rule-based local AI. Zero internet required.
-                    </span>
+              <div className="p-space-md lg:p-space-lg flex flex-col gap-space-md">
+                {/* 1. Prominent Meteorological Hubs Ticker */}
+                <section className="w-full flex items-center gap-space-sm overflow-x-auto pb-1 scrollbar-none">
+                  <div className="flex items-center gap-space-xs shrink-0 px-space-sm py-1 rounded-full bg-surface-container-high text-on-surface">
+                    <span className="material-symbols-outlined text-primary text-[18px]">hub</span>
+                    <span className="font-label-mono-bold text-label-mono-bold uppercase tracking-wider text-on-surface-variant">Prominent Hubs:</span>
                   </div>
-                  <button
-                    onClick={() => setIsOffline(false)}
-                    className="ml-3 px-3 py-1 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 rounded-xl text-[11px] font-bold transition whitespace-nowrap cursor-pointer"
-                  >
-                    Go Online
-                  </button>
-                </div>
-              )}
-              
-              {/* Popular & Trending Locations Quick Switcher Ribbon */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar select-none">
-                <span className="text-[11px] font-bold text-slate-400 shrink-0 flex items-center gap-1 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
-                  <Sparkles className="h-3.5 w-3.5 text-amber-400" /> Prominent Hubs:
-                </span>
-                {[
-                  { name: "Pune", badge: "27°C • Rain", icon: "🌧️" },
-                  { name: "Mumbai", badge: "29°C • Coast", icon: "🌊" },
-                  { name: "Delhi", badge: "38°C • Warm", icon: "☀️" },
-                  { name: "Nashik", badge: "26°C • Agri", icon: "🍇" },
-                  { name: "Bengaluru", badge: "24°C • Cool", icon: "💻" },
-                  { name: "Jaipur", badge: "35°C • Clear", icon: "🏰" },
-                  { name: "Lonavala", badge: "21°C • Ghats", icon: "⛰️" },
-                  { name: "Shimla", badge: "18°C • Hills", icon: "🌲" },
-                  { name: "Kolkata", badge: "32°C • Humid", icon: "🏛️" },
-                  { name: "Goa", badge: "30°C • Beach", icon: "🏖️" },
-                  { name: "Varanasi", badge: "34°C • River", icon: "🕉️" }
-                ].map((hub) => {
-                  const isCurrent = (weather?.location || searchLocation).toLowerCase().includes(hub.name.toLowerCase());
-                  return (
-                    <button
-                      key={hub.name}
-                      onClick={() => {
-                        setSearchLocation(hub.name);
-                        fetchWeatherData(hub.name);
-                      }}
-                      className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 cursor-pointer ${
-                        isCurrent
-                          ? 'bg-emerald-500 text-slate-950 font-black shadow-lg shadow-emerald-500/20 scale-105 border border-emerald-400'
-                          : 'bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-slate-800 hover:border-slate-700'
-                      }`}
-                    >
-                      <span>{hub.icon}</span>
-                      <span>{hub.name}</span>
-                      <span className={`text-[10px] px-1.5 py-0.2 rounded-md ${
-                        isCurrent ? 'bg-slate-950/30 text-slate-900 font-extrabold' : 'bg-slate-800 text-emerald-400'
-                      }`}>
-                        {hub.badge}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-              
-              {/* Left & Middle Column (Main Weather Info) */}
-              <div className="xl:col-span-2 space-y-8">
-                
-                {/* Current Weather Card with NWP Model & WMO WIS 2.0 Integration */}
-                <div className="bg-slate-900/50 backdrop-blur-md border border-slate-800/80 rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
-                  <div className="absolute right-0 top-0 translate-x-1/4 -translate-y-1/4 h-64 w-64 rounded-full bg-emerald-500/10 blur-[80px]" />
-                  
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                      <h2 className="text-2xl font-extrabold text-white tracking-tight uppercase">{weather.location}</h2>
-                      <p className="text-xs text-slate-400 mt-1 flex items-center">
-                        <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 mr-2 animate-pulse" />
-                        {text.source}: {weather.current.source} ({weather.current.updated_at})
-                      </p>
-                    </div>
-
-                    {/* High Version Telemetry Bar: NWP Model & WMO WIS 2.0 Stream Status */}
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {/* NWP Model Dropdown Pill */}
-                      <div className="flex items-center gap-1.5 bg-slate-950/90 border border-cyan-500/40 rounded-xl px-2.5 py-1 text-[11px] shadow-sm">
-                        <Globe className="h-3.5 w-3.5 text-cyan-400" />
-                        <span className="text-slate-400 font-bold">NWP:</span>
-                        <select
-                          value={selectedNwpModel}
-                          onChange={(e) => {
-                            const m = e.target.value as 'best_match' | 'gfs' | 'ecmwf' | 'icon';
-                            setSelectedNwpModel(m);
-                            fetchWeatherData(searchLocation, m);
-                          }}
-                          className="bg-transparent text-cyan-300 font-black focus:outline-none cursor-pointer"
-                        >
-                          <option value="best_match" className="bg-slate-900 text-slate-200">Ensemble Consensus (GFS+ECMWF+WRF)</option>
-                          <option value="gfs" className="bg-slate-900 text-slate-200">NOAA GFS (0.25° Global)</option>
-                          <option value="ecmwf" className="bg-slate-900 text-slate-200">ECMWF IFS (0.1° High-Res)</option>
-                          <option value="icon" className="bg-slate-900 text-slate-200">DWD ICON / WRF (13km Meso)</option>
-                        </select>
-                      </div>
-
-                      {/* WMO WIS 2.0 Stream Status */}
-                      <div className="flex items-center gap-1.5 bg-emerald-950/60 border border-emerald-500/40 rounded-xl px-2.5 py-1 text-[11px] text-emerald-300 font-semibold shadow-sm">
-                        <Radio className="h-3.5 w-3.5 text-emerald-400 animate-pulse" />
-                        <span>WIS 2.0 / MQTT: ACTIVE ({weather.wis2_telemetry?.latency_ms ?? 12}ms)</span>
-                      </div>
-
-                      {/* Rural Voice Assistant Button */}
-                      <button
-                        onClick={() => {
-                          setChatOpen(true);
-                          setVoicePlayback(true);
-                        }}
-                        className="flex items-center gap-1.5 bg-gradient-to-r from-amber-500/20 to-orange-500/20 hover:from-amber-500/30 hover:to-orange-500/30 border border-amber-500/40 rounded-xl px-3 py-1 text-[11px] text-amber-300 font-black transition cursor-pointer shadow-sm"
-                      >
-                        <Mic className="h-3.5 w-3.5 text-amber-400" />
-                        <span>{currentLang === 'hi' ? 'बोलकर पूछें' : (currentLang === 'mr' ? 'बोलून विचारा' : 'Voice Query')}</span>
-                      </button>
-
-                      {isRefreshing && <RefreshCw className="h-5 w-5 animate-spin text-emerald-400 ml-2" />}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col md:flex-row items-center md:items-end justify-between mt-8 gap-6">
-                    <div className="flex items-center space-x-6">
-                      <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-slate-800/60 border border-slate-700/40 shadow-inner">
-                        {getWeatherIcon(weather.current.icon)}
-                      </div>
-                      <div>
-                        <span className="text-5xl md:text-6xl font-black text-white leading-none tracking-tighter">
-                          {formatTemperature(weather.current.temp, tempUnit)}
-                        </span>
-                        <h3 className="text-lg font-bold text-slate-300 mt-1">{translateCondition(weather.current.condition, currentLang)}</h3>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-3 w-full md:w-auto text-sm border-t md:border-t-0 border-slate-800/80 pt-4 md:pt-0">
-                      <div className="text-slate-400">{text.feels_like}: <span className="font-semibold text-slate-200">{formatTemperature(weather.current.feels_like, tempUnit)}</span></div>
-                      <div className="text-slate-400">{text.humidity}: <span className="font-semibold text-slate-200">{weather.current.humidity}%</span></div>
-                      <div className="text-slate-400">{text.wind}: <span className="font-semibold text-slate-200">{formatWindSpeed(weather.current.wind_speed, windUnit)} {weather.current.wind_direction}</span></div>
-                      <div className="text-slate-400">{text.precipitation}: <span className="font-semibold text-slate-200">{weather.current.rain_probability}%</span></div>
-                    </div>
-                  </div>
-
-                  {/* Micro dashboard parameters block */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-6 border-t border-slate-800/80 text-center">
-                    <div className="bg-slate-900/60 rounded-xl p-3 border border-slate-800/40">
-                      <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">{text.atm_pressure}</p>
-                      <p className="text-sm font-extrabold text-slate-200 mt-1">{weather.current.pressure} hPa</p>
-                    </div>
-                    <div className="bg-slate-900/60 rounded-xl p-3 border border-slate-800/40">
-                      <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">{text.visibility}</p>
-                      <p className="text-sm font-extrabold text-slate-200 mt-1">{formatDistance(weather.current.visibility ?? 10, distanceUnit)}</p>
-                    </div>
-                    <div className="bg-slate-900/60 rounded-xl p-3 border border-slate-800/40">
-                      <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">{text.uv_index}</p>
-                      <p className="text-sm font-extrabold text-slate-200 mt-1">{weather.current.uv_index}</p>
-                    </div>
-                    <div className="bg-slate-900/60 rounded-xl p-3 border border-slate-800/40">
-                      <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">{text.air_quality}</p>
-                      <p className="text-xs font-extrabold text-emerald-400 mt-1 truncate">{weather.current.air_quality}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 5 HACKATHON USE-CASE PERSONA INTELLIGENCE SUITE */}
-                <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
-                    <div>
-                      <span className="text-[10px] uppercase font-extrabold tracking-wider text-emerald-400">
-                        Operational Weather Intelligence Mode
-                      </span>
-                      <h3 className="text-base font-bold text-white flex items-center gap-2 mt-0.5">
-                        {currentMode === 'farmer' && "🌾 Farmer / Kisan Crop Advisory"}
-                        {currentMode === 'aviation' && "✈️ Aviation & Marine Weather Briefing"}
-                        {currentMode === 'smartcity' && "🏙️ Smart City Weather Monitoring"}
-                        {currentMode === 'traveller' && text.mode_title_traveller}
-                        {currentMode === 'school' && text.mode_title_school}
-                        {currentMode === 'disaster' && text.mode_title_disaster}
-                        {currentMode === 'general' && text.mode_title_general}
-                      </h3>
-                    </div>
-                    
-                    {/* Interactive Mode Pills */}
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      {[
-                        { id: 'general', label: text.mode_pill_public, icon: User },
-                        { id: 'farmer', label: "🌾 Kisan / Agri", icon: GraduationCap },
-                        { id: 'aviation', label: "✈️ Aviation", icon: Plane },
-                        { id: 'smartcity', label: "🏙️ Smart City", icon: Building2 },
-                        { id: 'traveller', label: text.mode_pill_traveller, icon: Navigation },
-                        { id: 'disaster', label: text.mode_pill_disaster, icon: AlertTriangle }
-                      ].map((m) => (
+                  <div className="flex items-center gap-space-xs shrink-0">
+                    {[
+                      { name: "Pune", badge: "27°C • Rain", icon: "🌧️" },
+                      { name: "Mumbai", badge: "29°C • Coast", icon: "🌊" },
+                      { name: "Delhi", badge: "38°C • Warm", icon: "☀️" },
+                      { name: "Nashik", badge: "26°C • Agri", icon: "🍇" },
+                      { name: "Bengaluru", badge: "24°C • Cool", icon: "💻" },
+                      { name: "Jaipur", badge: "35°C • Clear", icon: "🏰" },
+                      { name: "Lonavala", badge: "21°C • Ghats", icon: "⛰️" },
+                      { name: "Shimla", badge: "18°C • Hills", icon: "🌲" },
+                      { name: "Kolkata", badge: "32°C • Humid", icon: "🏛️" },
+                      { name: "Goa", badge: "30°C • Beach", icon: "🏖️" },
+                      { name: "Varanasi", badge: "34°C • River", icon: "🕉️" }
+                    ].map((hub) => {
+                      const isCurrent = (weather?.location || searchLocation).toLowerCase().includes(hub.name.toLowerCase());
+                      return (
                         <button
-                          key={m.id}
-                          onClick={() => setCurrentMode(m.id as 'general' | 'traveller' | 'farmer' | 'disaster' | 'school' | 'aviation' | 'smartcity')}
-                          className={`px-3 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
-                            currentMode === m.id
-                              ? 'bg-emerald-500 text-slate-950 shadow-md font-extrabold'
-                              : 'bg-slate-800/80 text-slate-400 hover:bg-slate-800 hover:text-white'
+                          key={hub.name}
+                          onClick={() => {
+                            setSearchLocation(hub.name);
+                            fetchWeatherData(hub.name);
+                          }}
+                          className={`flex items-center gap-space-xs px-3 py-1.5 rounded-full transition-all text-left cursor-pointer ${
+                            isCurrent
+                              ? 'bg-primary text-on-primary shadow-sm'
+                              : 'bg-surface-container-lowest text-on-surface hover:bg-surface-container-high border border-surface-container-high'
                           }`}
                         >
-                          <span>{m.label}</span>
+                          <span className="text-sm">{hub.icon}</span>
+                          <span className="font-body-md text-body-md font-semibold">{hub.name}</span>
+                          <span className={`font-label-mono-sm text-label-mono-sm ${isCurrent ? 'opacity-90' : 'text-on-surface-variant'}`}>{hub.badge}</span>
+                          {isCurrent && <span className="w-2 h-2 rounded-full bg-primary-fixed ml-0.5 animate-pulse" />}
                         </button>
-                      ))}
-                    </div>
+                      );
+                    })}
                   </div>
+                </section>
 
-                  {/* Mode-Specific Information Content */}
-                  {currentMode === 'farmer' && (
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
-                      <div className="bg-emerald-950/20 border border-emerald-500/30 p-3 rounded-xl">
-                        <span className="font-bold text-emerald-400 block mb-1">🚜 Spraying Window</span>
-                        <p className="text-slate-200 font-bold">{weather.kisan_advisory?.spraying_window || "Favorable (Low Winds)"}</p>
-                      </div>
-                      <div className="bg-emerald-950/20 border border-emerald-500/30 p-3 rounded-xl">
-                        <span className="font-bold text-emerald-400 block mb-1">💧 Irrigation Advice</span>
-                        <p className="text-slate-200 font-bold">{weather.kisan_advisory?.irrigation_recommendation || "Proceed with Schedule"}</p>
-                      </div>
-                      <div className="bg-emerald-950/20 border border-emerald-500/30 p-3 rounded-xl">
-                        <span className="font-bold text-emerald-400 block mb-1">🐛 Pest & Fungal Risk</span>
-                        <p className="text-slate-200 font-bold">{weather.kisan_advisory?.pest_disease_risk || "Low Risk"}</p>
-                      </div>
-                      <div className="bg-emerald-950/20 border border-emerald-500/30 p-3 rounded-xl">
-                        <span className="font-bold text-emerald-400 block mb-1">🌾 Harvest Window</span>
-                        <p className="text-slate-200 font-bold">{weather.kisan_advisory?.harvest_safety || "Optimal Dry Spell"}</p>
-                      </div>
-                    </div>
-                  )}
+                {/* 2. Main Meteorological Grid: 12-Column System (8 Col Primary Telemetry + 4 Col AI Intelligence) */}
+                <div className="grid grid-cols-1 xl:grid-cols-12 gap-space-md items-start">
+                  {/* LEFT 8 COLUMNS: Primary NWP, Synoptic Telemetry, Sector Advisory & 7-Day Inspection */}
+                  <div className="xl:col-span-8 flex flex-col gap-space-md">
+                    {/* Primary Synoptic Card */}
+                    <div className="bg-surface-container-lowest rounded-xl p-space-md lg:p-space-lg shadow-sm border border-surface-container-high flex flex-col gap-space-md relative overflow-hidden">
+                      <div className="absolute -right-16 -top-16 w-64 h-64 bg-primary-fixed/20 rounded-full blur-3xl pointer-events-none" />
 
-                  {currentMode === 'aviation' && (
-                    <div className="space-y-3 text-xs">
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <div className="bg-cyan-950/20 border border-cyan-500/30 p-3 rounded-xl">
-                          <span className="font-bold text-cyan-400 block mb-1">🛫 Flight Category</span>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-500 text-slate-950">
-                            {weather.aviation_briefing?.flight_category || "VFR"}
+                      {/* Header & Controls Bar */}
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-space-sm">
+                        <div className="flex flex-col">
+                          <div className="flex items-center gap-space-xs">
+                            <span className="w-2.5 h-2.5 rounded-full bg-radar-emerald animate-pulse"></span>
+                            <span className="font-label-mono-sm text-label-mono-sm text-on-surface-variant">
+                              IMD / Open-Meteo (Live Telemetry)
+                            </span>
+                            <span className="font-label-mono-sm text-label-mono-sm text-outline">• Updated 3m ago</span>
+                          </div>
+                          <div className="flex items-baseline gap-space-xs mt-0.5">
+                            <h1 className="font-headline-lg text-headline-lg tracking-tight text-on-surface uppercase font-bold">
+                              {weather.location}
+                            </h1>
+                            <span className="font-label-mono-bold text-label-mono-bold text-secondary uppercase px-1.5 py-0.5 rounded bg-surface-container-high">
+                              IN (411005)
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* NWP Consensus, WIS Status & Voice Query */}
+                        <div className="flex flex-wrap items-center gap-space-xs">
+                          {/* NWP Model Dropdown */}
+                          <div className="flex items-center gap-1.5 px-space-sm py-1.5 rounded-lg bg-surface-container-low text-on-surface border border-surface-container-high">
+                            <span className="material-symbols-outlined text-secondary text-[18px]">public</span>
+                            <span className="font-label-mono-bold text-label-mono-bold text-secondary">NWP:</span>
+                            <select
+                              value={selectedNwpModel}
+                              onChange={(e) => {
+                                const m = e.target.value as 'best_match' | 'gfs' | 'ecmwf' | 'icon';
+                                setSelectedNwpModel(m);
+                                fetchWeatherData(searchLocation, m);
+                              }}
+                              className="bg-transparent border-0 outline-none font-body-sm text-body-sm text-on-surface cursor-pointer pr-1"
+                            >
+                              <option value="best_match">Ensemble Consensus (GFS+ECMWF+WRF)</option>
+                              <option value="gfs">NOAA GFS (0.25° Global)</option>
+                              <option value="ecmwf">ECMWF IFS (0.1° High-Res)</option>
+                              <option value="icon">DWD ICON / WRF (13km Meso)</option>
+                            </select>
+                          </div>
+
+                          {/* WIS 2.0 Realtime Status Badge */}
+                          <div className="flex items-center gap-1.5 px-space-sm py-1.5 rounded-lg bg-primary-container text-on-primary-container shadow-xs">
+                            <span className="material-symbols-outlined text-[16px] text-primary-fixed animate-pulse">cell_tower</span>
+                            <span className="font-label-mono-sm text-label-mono-sm font-semibold">WIS 2.0 / MQTT: ACTIVE ({weather?.wis2_telemetry?.latency_ms ?? 12}ms)</span>
+                          </div>
+
+                          {/* Rural Voice Assistant Query */}
+                          <button
+                            onClick={() => {
+                              setChatOpen(true);
+                              setVoicePlayback(true);
+                            }}
+                            className="flex items-center gap-1 px-space-sm py-1.5 rounded-lg bg-tertiary-fixed text-on-tertiary-fixed hover:bg-tertiary-fixed-dim transition-colors cursor-pointer"
+                            type="button"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">mic</span>
+                            <span className="font-body-sm text-body-sm font-semibold">
+                              {currentLang === 'hi' ? 'बोलकर पूछें' : (currentLang === 'mr' ? 'बोलून विचारा' : 'Voice Query')}
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Hero Reading & Micro Vector Breakdown */}
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-space-md items-center pt-space-xs">
+                        <div className="md:col-span-6 flex items-center gap-space-md">
+                          <div className="w-20 h-20 rounded-2xl bg-surface-container flex items-center justify-center text-primary shrink-0 shadow-inner">
+                            <span className="material-symbols-outlined text-[48px]">
+                              {weather.current.condition.toLowerCase().includes('rain') ? 'rainy' : weather.current.condition.toLowerCase().includes('sun') ? 'sunny' : 'cloud'}
+                            </span>
+                          </div>
+                          <div className="flex flex-col">
+                            <div className="flex items-baseline gap-space-xs">
+                              <span className="font-display-hero text-display-hero text-on-surface tracking-tight">
+                                {formatTemperature(weather.current.temp, tempUnit).replace('°C', '').replace('°F', '')}
+                              </span>
+                              <span className="font-headline-lg text-headline-lg text-on-surface-variant font-light">
+                                {tempUnit === 'celsius' ? '°C' : '°F'}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-space-xs">
+                              <span className="font-headline-sm text-headline-sm text-on-surface font-semibold">
+                                {translateCondition(weather.current.condition, currentLang)}
+                              </span>
+                              <span className="font-label-mono-sm text-label-mono-sm text-outline">(35% Coverage)</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Right: Micro Vector Readouts */}
+                        <div className="md:col-span-6 grid grid-cols-2 gap-x-space-md gap-y-space-xs p-space-sm bg-surface-container-low rounded-xl border border-surface-container-high">
+                          <div className="flex items-center justify-between">
+                            <span className="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[16px] text-tertiary">thermostat</span> Feels Like:
+                            </span>
+                            <span className="font-label-mono-bold text-label-mono-bold text-on-surface">
+                              {formatTemperature(weather.current.feels_like, tempUnit)}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[16px] text-secondary">water_drop</span> Humidity:
+                            </span>
+                            <span className="font-label-mono-bold text-label-mono-bold text-on-surface">
+                              {weather.current.humidity}%
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[16px] text-atmospheric-cyan">air</span> Wind Vector:
+                            </span>
+                            <span className="font-label-mono-bold text-label-mono-bold text-on-surface">
+                              {formatWindSpeed(weather.current.wind_speed, windUnit)} {weather.current.wind_direction}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[16px] text-primary">rainy</span> Rain Prob:
+                            </span>
+                            <span className="font-label-mono-bold text-label-mono-bold text-primary font-bold">
+                              {weather.current.rain_probability}%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Synoptic Measurement Tiles (Uniform 4-Column Array) */}
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-space-sm pt-space-xs">
+                        <div className="p-space-sm bg-surface-container-low rounded-lg flex flex-col gap-0.5 border border-surface-container-high">
+                          <span className="font-label-mono-sm text-label-mono-sm text-on-surface-variant uppercase tracking-wider">Barometer</span>
+                          <span className="font-headline-sm text-headline-sm text-on-surface">{weather.current.pressure ?? 1009} <span className="font-label-mono-sm text-label-mono-sm text-outline font-normal">hPa</span></span>
+                          <span className="font-body-sm text-body-sm text-radar-emerald flex items-center gap-0.5">
+                            <span className="material-symbols-outlined text-[14px]">trending_flat</span> Steady
                           </span>
                         </div>
-                        <div className="bg-cyan-950/20 border border-cyan-500/30 p-3 rounded-xl">
-                          <span className="font-bold text-cyan-400 block mb-1">☁️ Cloud Ceiling</span>
-                          <p className="text-slate-200 font-bold">{weather.aviation_briefing?.ceiling_ft ?? 5000} ft AGL</p>
+                        <div className="p-space-sm bg-surface-container-low rounded-lg flex flex-col gap-0.5 border border-surface-container-high">
+                          <span className="font-label-mono-sm text-label-mono-sm text-on-surface-variant uppercase tracking-wider">Visibility</span>
+                          <span className="font-headline-sm text-headline-sm text-on-surface">{formatDistance(weather.current.visibility ?? 10, distanceUnit)}</span>
+                          <span className="font-body-sm text-body-sm text-primary flex items-center gap-0.5">
+                            <span className="material-symbols-outlined text-[14px]">visibility</span> Clear Horizon
+                          </span>
                         </div>
-                        <div className="bg-cyan-950/20 border border-cyan-500/30 p-3 rounded-xl">
-                          <span className="font-bold text-cyan-400 block mb-1">👁️ Visibility</span>
-                          <p className="text-slate-200 font-bold">{weather.aviation_briefing?.visibility_km ?? 10} km</p>
+                        <div className="p-space-sm bg-surface-container-low rounded-lg flex flex-col gap-0.5 border border-surface-container-high">
+                          <span className="font-label-mono-sm text-label-mono-sm text-on-surface-variant uppercase tracking-wider">Solar UV Index</span>
+                          <span className="font-headline-sm text-headline-sm text-tertiary">{weather.current.uv_index ?? 5} <span className="font-label-mono-sm text-label-mono-sm text-outline font-normal">/ 10</span></span>
+                          <span className="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-0.5">
+                            <span className="material-symbols-outlined text-[14px] text-tertiary">wb_sunny</span> Moderate
+                          </span>
                         </div>
-                        <div className="bg-cyan-950/20 border border-cyan-500/30 p-3 rounded-xl">
-                          <span className="font-bold text-cyan-400 block mb-1">💨 Crosswind Shear</span>
-                          <p className="text-slate-200 font-bold">{weather.aviation_briefing?.crosswind_risk || "LOW"}</p>
+                        <div className="p-space-sm bg-surface-container-low rounded-lg flex flex-col gap-0.5 border border-surface-container-high">
+                          <span className="font-label-mono-sm text-label-mono-sm text-on-surface-variant uppercase tracking-wider">Air Quality (CPCB)</span>
+                          <span className="font-headline-sm text-headline-sm text-radar-emerald">Good <span className="font-label-mono-sm text-label-mono-sm text-outline font-normal">(AQI 42)</span></span>
+                          <span className="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-0.5">
+                            <span className="material-symbols-outlined text-[14px] text-radar-emerald">eco</span> PM2.5: 18 µg/m³
+                          </span>
                         </div>
-                      </div>
-                      {weather.aviation_briefing?.metar_raw && (
-                        <div className="p-2.5 rounded-xl bg-slate-950/80 border border-cyan-500/30 font-mono text-[11px] text-cyan-300">
-                          <strong>METAR:</strong> {weather.aviation_briefing.metar_raw}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {currentMode === 'smartcity' && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                      <div className="bg-violet-950/20 border border-violet-500/30 p-3 rounded-xl">
-                        <span className="font-bold text-violet-400 block mb-1">🌡️ Urban Heat Island</span>
-                        <p className="text-slate-200 font-bold">{weather.smart_city_telemetry?.heat_island_index || "Comfortable"}</p>
-                      </div>
-                      <div className="bg-violet-950/20 border border-violet-500/30 p-3 rounded-xl">
-                        <span className="font-bold text-violet-400 block mb-1">🚰 Drainage Overload Risk</span>
-                        <p className="text-slate-200 font-bold">{weather.smart_city_telemetry?.drainage_overload_risk || "Nominal"}</p>
-                      </div>
-                      <div className="bg-violet-950/20 border border-violet-500/30 p-3 rounded-xl">
-                        <span className="font-bold text-violet-400 block mb-1">🍃 AQI Dispersion</span>
-                        <p className="text-slate-200 font-bold">{weather.smart_city_telemetry?.air_quality_dispersion || "Favorable"}</p>
                       </div>
                     </div>
-                  )}
 
-                  {currentMode === 'traveller' && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                      <div className="bg-amber-950/20 border border-amber-500/30 p-3 rounded-xl">
-                        <span className="font-bold text-amber-400 block mb-1">{text.traveller_vis_title}</span>
-                        <p className="text-slate-300">{text.traveller_vis_desc}</p>
-                      </div>
-                      <div className="bg-amber-950/20 border border-amber-500/30 p-3 rounded-xl">
-                        <span className="font-bold text-amber-400 block mb-1">{text.traveller_hydro_title}</span>
-                        <p className="text-slate-300">{text.traveller_hydro_desc}</p>
-                      </div>
-                      <div className="bg-amber-950/20 border border-amber-500/30 p-3 rounded-xl">
-                        <span className="font-bold text-amber-400 block mb-1">{text.traveller_hours_title}</span>
-                        <p className="text-slate-300">{text.traveller_hours_desc}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {currentMode === 'disaster' && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                      <div className="bg-rose-950/20 border border-rose-500/30 p-3 rounded-xl">
-                        <span className="font-bold text-rose-400 block mb-1">{text.disaster_river_title}</span>
-                        <p className="text-slate-300">{text.disaster_river_desc}</p>
-                      </div>
-                      <div className="bg-rose-950/20 border border-rose-500/30 p-3 rounded-xl">
-                        <span className="font-bold text-rose-400 block mb-1">{text.disaster_rescue_title}</span>
-                        <p className="text-slate-300">{text.disaster_rescue_desc}</p>
-                      </div>
-                      <div className="bg-rose-950/20 border border-rose-500/30 p-3 rounded-xl">
-                        <span className="font-bold text-rose-400 block mb-1">{text.disaster_public_title}</span>
-                        <p className="text-slate-300">{text.disaster_public_desc}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {currentMode === 'general' && (
-                    <div className="bg-slate-950/50 p-3 rounded-xl text-xs text-slate-300 flex items-center justify-between">
-                      <span><strong>{text.general_rec_prefix}</strong> {translateCondition(weather.current.condition, currentLang)} ({weather.current.rain_probability}%).</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* 7-Day Forecast Grid & Google Weather Day-Wise Date Inspector */}
-                {(() => {
-                  const activeForecast = (weather?.forecast && weather.forecast.length > 0)
-                    ? weather.forecast
-                    : generateFallbackForecast(weather?.current?.temp ?? 27, weather?.current?.rain_probability ?? 40);
-                  const activeIdx = Math.min(selectedForecastIndex, activeForecast.length - 1);
-                  const selectedDay = activeForecast[activeIdx];
-
-                  return (
-                    <div className="bg-slate-900/30 border border-slate-800/80 rounded-2xl p-6 shadow-xl">
-                      {/* Section Header with Title & Google Weather Date Option Selector */}
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <Calendar className="h-5 w-5 text-emerald-400" />
-                            <h3 className="text-lg font-bold text-slate-100">{text.label_forecast}</h3>
-                          </div>
-                          <p className="text-xs text-slate-400 mt-0.5">Google Weather style day-wise forecast & date inspection</p>
+                    {/* Operational Weather Intelligence Mode Rail */}
+                    <div className="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border border-surface-container-high flex flex-col gap-space-sm">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs">
+                        <div className="flex items-center gap-space-xs">
+                          <span className="material-symbols-outlined text-primary text-[20px]">tune</span>
+                          <span className="font-label-mono-bold text-label-mono-bold uppercase tracking-wider text-on-surface">Operational Weather Intelligence Mode</span>
                         </div>
-
-                        {/* Date Option Dropdown Selector */}
-                        <div className="flex items-center gap-2 self-start sm:self-auto bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-1.5 shadow-sm">
-                          <Calendar className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-                          <span className="text-xs font-semibold text-slate-400 hidden md:inline">Select Date:</span>
-                          <select
-                            value={activeIdx}
-                            onChange={(e) => setSelectedForecastIndex(Number(e.target.value))}
-                            className="bg-transparent text-xs font-bold text-emerald-300 focus:outline-none cursor-pointer pr-1"
-                          >
-                            {activeForecast.map((fc: WeatherForecastItem, idx: number) => (
-                              <option key={idx} value={idx} className="bg-slate-900 text-slate-200">
-                                {translateDay(fc.day, currentLang)} • {fc.date || `Day ${idx + 1}`} ({fc.temp_max ?? fc.temp}°C)
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-
-                      {/* 7-Day Cards Carousel (Google Weather Cards with Max/Min Temp & Date) */}
-                      <div className="flex space-x-3.5 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-slate-800">
-                        {activeForecast.map((fc: WeatherForecastItem, idx: number) => {
-                          const isSelected = activeIdx === idx;
-                          const tMax = fc.temp_max ?? fc.temp;
-                          const tMin = fc.temp_min ?? (fc.temp - 5);
-
-                          return (
-                            <button 
-                              key={idx}
-                              onClick={() => setSelectedForecastIndex(idx)}
-                              className={`flex-none w-32 p-3.5 rounded-2xl border transition text-center select-none cursor-pointer shadow-sm relative overflow-hidden ${
-                                isSelected 
-                                  ? 'bg-gradient-to-b from-emerald-500/20 to-slate-900/90 border-emerald-500 text-emerald-300 shadow-lg ring-2 ring-emerald-500/40 font-bold' 
-                                  : 'bg-slate-900/60 border-slate-800/80 text-slate-300 hover:border-slate-700 hover:text-slate-100 hover:bg-slate-900/90'
+                        {/* Mode Switcher Buttons */}
+                        <div className="flex items-center p-0.5 rounded-lg bg-surface-container-high gap-0.5">
+                          {[
+                            { id: 'farmer', label: 'Kisan / Agri', emoji: '🌾' },
+                            { id: 'aviation', label: 'Aviation', emoji: '✈️' },
+                            { id: 'smartcity', label: 'Smart City', emoji: '🏙️' },
+                            { id: 'general', label: 'Public', emoji: '👥' }
+                          ].map((m) => (
+                            <button
+                              key={m.id}
+                              onClick={() => setCurrentMode(m.id as any)}
+                              className={`flex items-center gap-1 px-space-sm py-1 rounded-md font-body-sm text-body-sm transition-all cursor-pointer ${
+                                currentMode === m.id
+                                  ? 'bg-surface-container-lowest text-primary font-semibold shadow-xs'
+                                  : 'text-on-surface-variant hover:text-on-surface'
                               }`}
                             >
-                              {/* Active Date Indicator Dot */}
-                              {isSelected && (
-                                <div className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                              )}
-
-                              <p className="text-xs font-bold text-slate-100">{translateDay(fc.day, currentLang)}</p>
-                              {fc.date && (
-                                <span className="inline-block mt-0.5 text-[10px] font-semibold text-emerald-400/90 tracking-wide">
-                                  {fc.date}
-                                </span>
-                              )}
-                              
-                              <div className="flex justify-center my-2.5 scale-105">{getWeatherIcon(fc.icon)}</div>
-                              
-                              {/* Google Weather High / Low Temps */}
-                              <div className="flex items-baseline justify-center gap-1.5 my-1">
-                                <span className="text-base font-black text-white">{tMax}°</span>
-                                <span className="text-xs font-medium text-slate-400">/ {tMin}°</span>
-                              </div>
-
-                              {/* Rain Probability pill */}
-                              <div className="flex items-center justify-center gap-1 mt-2 text-[10px] text-cyan-300 font-semibold">
-                                <Droplets className="h-3 w-3" />
-                                <span>{fc.rain_probability}%</span>
-                              </div>
-
-                              <span className={`inline-block mt-2 px-2 py-0.5 rounded text-[8px] font-black text-white tracking-wider uppercase ${
-                                fc.risk_level === 'SEVERE' ? 'bg-red-500/90' : 
-                                fc.risk_level === 'HIGH' ? 'bg-orange-500/90' : 
-                                fc.risk_level === 'MODERATE' ? 'bg-amber-500/90' : 'bg-emerald-500/90'}
-                              `}>
-                                {translateRiskCategory(fc.risk_level, currentLang)}
-                              </span>
+                              <span>{m.emoji}</span> {m.label}
                             </button>
-                          );
-                        })}
-                      </div>
-
-                      {/* Selected Day Deep Dive: Google Weather Hour-by-Hour Timeline & Astronomical Metrics */}
-                      {selectedDay && (
-                        <div className="mt-5 p-5 rounded-2xl bg-slate-900/70 border border-slate-800/80 shadow-lg space-y-4">
-                          {/* Selected Day Summary Header */}
-                          <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                                  {translateDay(selectedDay.day, currentLang)} • {selectedDay.date || "Forecast Date"}
-                                </span>
-                                {selectedDay.date_iso && (
-                                  <span className="text-[10px] font-mono text-slate-500">{selectedDay.date_iso}</span>
-                                )}
-                              </div>
-                              <h4 className="text-lg font-black text-white mt-1.5 flex items-center gap-2">
-                                {translateCondition(selectedDay.condition, currentLang)}
-                                <span className="text-sm font-normal text-slate-400">
-                                  (High: <strong className="text-white">{selectedDay.temp_max ?? selectedDay.temp}°C</strong> | Low: <strong className="text-slate-300">{selectedDay.temp_min ?? (selectedDay.temp - 5)}°C</strong>)
-                                </span>
-                              </h4>
-                              <p className="text-xs text-slate-400 mt-1 max-w-xl leading-relaxed">
-                                <span className="font-bold text-slate-300">{text.ai_advice}</span> {translateRecommendation(selectedDay.recommendation, currentLang)}
-                              </p>
-                            </div>
-                            
-                            {/* Day Macro Parameters Grid */}
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs w-full md:w-auto shrink-0 bg-slate-950/60 p-3 rounded-xl border border-slate-800/60">
-                              <div>
-                                <span className="text-[10px] text-slate-500 uppercase block font-semibold">🌅 Sunrise</span>
-                                <span className="font-bold text-slate-200">{selectedDay.sunrise || "06:15 AM"}</span>
-                              </div>
-                              <div>
-                                <span className="text-[10px] text-slate-500 uppercase block font-semibold">🌇 Sunset</span>
-                                <span className="font-bold text-slate-200">{selectedDay.sunset || "06:45 PM"}</span>
-                              </div>
-                              <div>
-                                <span className="text-[10px] text-slate-500 uppercase block font-semibold">☀️ UV Index</span>
-                                <span className="font-bold text-amber-300">{selectedDay.uv_index ?? 6} / 10</span>
-                              </div>
-                              <div>
-                                <span className="text-[10px] text-slate-500 uppercase block font-semibold">💧 Humidity</span>
-                                <span className="font-bold text-cyan-300">{selectedDay.humidity}%</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Google Weather Hourly Strip for this Day */}
-                          {selectedDay.hourly && selectedDay.hourly.length > 0 && (
-                            <div className="pt-3 border-t border-slate-800/70">
-                              <div className="flex items-center justify-between mb-2.5">
-                                <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                                  <Clock className="h-3.5 w-3.5 text-cyan-400" /> Hourly Forecast ({translateDay(selectedDay.day, currentLang)}{selectedDay.date ? ` - ${selectedDay.date}` : ''})
-                                </span>
-                                <span className="text-[10px] text-slate-500">24-hr day-wise temperature & precipitation variance</span>
-                              </div>
-                              <div className="flex space-x-2.5 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-slate-800">
-                                {selectedDay.hourly.map((hr: HourlyForecastItem, hIdx: number) => (
-                                  <div 
-                                    key={hIdx} 
-                                    className="flex-none w-20 p-2.5 rounded-xl bg-slate-950/70 border border-slate-800/60 text-center flex flex-col items-center hover:border-slate-700 transition shadow-inner"
-                                  >
-                                    <span className="text-[10px] font-semibold text-slate-400">{hr.time}</span>
-                                    <div className="my-1.5 scale-90">{getWeatherIcon(hr.icon)}</div>
-                                    <span className="text-xs font-black text-white">{hr.temp}°C</span>
-                                    <span className="text-[9px] font-bold text-cyan-400 mt-1 flex items-center gap-0.5">
-                                      <Droplets className="h-2.5 w-2.5" />{hr.rain_probability}%
-                                    </span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
+                          ))}
                         </div>
-                      )}
-                    </div>
-                  );
-                })()}
-
-                {/* Upgraded Dynamic Analytics Graphs with Dual Mode (Precipitation & Temperature) */}
-                <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/80 rounded-2xl p-6 shadow-xl relative overflow-hidden">
-                  
-                  {/* Header with Title & Tab Switcher */}
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <TrendingUp className="h-5 w-5 text-cyan-400" />
-                        <h3 className="text-lg font-bold text-slate-100">{text.trend_title}</h3>
                       </div>
-                      <p className="text-xs text-slate-400 mt-0.5">{text.trend_subtitle}</p>
+
+                      {/* Contextual Advisory Banner */}
+                      <div className="p-space-sm rounded-lg bg-surface-container-low flex items-start gap-space-sm border border-surface-container-high">
+                        <div className="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center shrink-0 mt-0.5 text-on-primary-fixed">
+                          <span className="material-symbols-outlined text-[18px]">verified</span>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-body-md text-body-md font-semibold text-on-surface">
+                            {currentMode === 'farmer' && "Sector Advisory: Field Operations Optimal"}
+                            {currentMode === 'aviation' && "Sector Advisory: VFR Flight Conditions Normal"}
+                            {currentMode === 'smartcity' && "Sector Advisory: Urban Microclimate Nominal"}
+                            {currentMode === 'general' && "Sector Advisory: Outdoor Conditions Pleasant"}
+                          </span>
+                          <p className="font-body-sm text-body-sm text-on-surface-variant">
+                            {currentMode === 'farmer' && (weather.kisan_advisory?.spraying_window ? `${weather.kisan_advisory.spraying_window}. ${weather.kisan_advisory.irrigation_recommendation}` : "Pleasant outdoor conditions. Standard precautions for humidity & evening precipitation (35%). Favorable window for foliar spraying and irrigation scheduling until 18:00 IST.")}
+                            {currentMode === 'aviation' && `Ceiling: ${weather.aviation_briefing?.ceiling_ft ?? 5000}ft AGL. Visibility: ${weather.aviation_briefing?.visibility_km ?? 10}km. Crosswind shear: ${weather.aviation_briefing?.crosswind_risk || 'Low'}.`}
+                            {currentMode === 'smartcity' && `Urban Heat Island Index: ${weather.smart_city_telemetry?.heat_island_index || 'Comfortable'}. Drainage overload risk: ${weather.smart_city_telemetry?.drainage_overload_risk || 'Nominal'}. AQI dispersion: ${weather.smart_city_telemetry?.air_quality_dispersion || 'Favorable'}.`}
+                            {currentMode === 'general' && "Standard outdoor weather. Light umbrella recommended for evening travel."}
+                          </p>
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Tab Toggle: Rain % vs Temp °C */}
-                    <div className="flex bg-slate-950/80 p-1 border border-slate-800 rounded-xl text-xs font-bold">
-                      <button
-                        onClick={() => setChartMode('rain')}
-                        className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition cursor-pointer ${
-                          chartMode === 'rain'
-                            ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-md'
-                            : 'text-slate-400 hover:text-slate-200'
-                        }`}
-                      >
-                        <Droplets className="h-3.5 w-3.5" />
-                        {text.tab_precipitation}
-                      </button>
-                      <button
-                        onClick={() => setChartMode('temp')}
-                        className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition cursor-pointer ${
-                          chartMode === 'temp'
-                            ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-md'
-                            : 'text-slate-400 hover:text-slate-200'
-                        }`}
-                      >
-                        <Thermometer className="h-3.5 w-3.5" />
-                        {text.tab_temperature}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Chart Container with Fixed Parent Height */}
-                  <div className="h-56 w-full flex items-end justify-between gap-3 pt-6 pb-2 px-3 bg-slate-950/60 rounded-xl border border-slate-800/60 chart-container-track">
+                    {/* Day-Wise 7-Day Forecast & Detailed Synoptic Inspection */}
                     {(() => {
                       const activeForecast = (weather?.forecast && weather.forecast.length > 0)
                         ? weather.forecast
                         : generateFallbackForecast(weather?.current?.temp ?? 27, weather?.current?.rain_probability ?? 40);
-                      return activeForecast.map((fc: WeatherForecastItem, idx: number) => {
-                        const isRainMode = chartMode === 'rain';
-                        const displayVal = isRainMode ? `${fc.rain_probability}%` : `${fc.temp}°C`;
-                        
-                        // Calculate normalized height percentage for chart bars
-                        const barHeightPercent = isRainMode 
-                          ? Math.max(fc.rain_probability, 8) 
-                          : Math.min(Math.max(((fc.temp - 10) / 35) * 100, 15), 100);
+                      const activeIdx = Math.min(selectedForecastIndex, activeForecast.length - 1);
+                      const selectedDay = activeForecast[activeIdx];
 
-                        return (
-                          <div key={idx} className="flex-1 flex flex-col items-center justify-end h-full group relative cursor-pointer">
-                            
-                            {/* Tooltip on Hover */}
-                            <div className="absolute -top-16 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-30 bg-slate-900 border border-slate-700 text-slate-100 text-[11px] p-2 rounded-xl shadow-2xl whitespace-nowrap flex flex-col items-center">
-                              <span className="font-bold text-cyan-300">{translateDay(fc.day, currentLang)}</span>
-                              <span>{translateCondition(fc.condition, currentLang)} • {fc.temp}°C</span>
-                              <span className="text-[10px] text-slate-400">Rain: {fc.rain_probability}% | Wind: {fc.wind} km/h</span>
+                      return (
+                        <div className="bg-surface-container-lowest rounded-xl p-space-md lg:p-space-lg shadow-sm border border-surface-container-high flex flex-col gap-space-md">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs">
+                            <div>
+                              <span className="font-label-mono-bold text-label-mono-bold text-outline uppercase tracking-wider block">
+                                Synoptic Outlook
+                              </span>
+                              <h2 className="font-headline-md text-headline-md text-on-surface font-bold">
+                                Day-Wise Forecast &amp; Meteorological Inspection
+                              </h2>
                             </div>
-
-                            {/* Value Badge on top of bar */}
-                            <span className={`text-[11px] font-black mb-2 transition-transform duration-300 group-hover:-translate-y-1 ${
-                              isRainMode ? 'text-cyan-300' : 'text-amber-300'
-                            }`}>
-                              {displayVal}
-                            </span>
-
-                            {/* Bar Container Track with Explicit Height */}
-                            <div className="w-full h-32 bg-slate-900/90 border border-slate-800 rounded-t-xl overflow-hidden flex items-end relative p-1 shadow-inner chart-bar-well">
-                              {/* Grid lines inside bar track */}
-                              <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:100%_16px] pointer-events-none" />
-                              
-                              {/* Filled Animated Bar */}
-                              <div 
-                                className={`w-full rounded-t-lg transition-all duration-700 ease-out shadow-lg ${
-                                  isRainMode 
-                                    ? 'bg-gradient-to-t from-cyan-600 via-teal-500 to-emerald-400 group-hover:from-cyan-400 group-hover:to-emerald-300 bar-glow-cyan' 
-                                    : 'bg-gradient-to-t from-orange-600 via-amber-500 to-yellow-400 group-hover:from-orange-400 group-hover:to-yellow-300 bar-glow'
-                                }`}
-                                style={{ height: `${barHeightPercent}%` }}
-                              />
+                            <div className="flex items-center gap-space-xs">
+                              <span className="font-label-mono-sm text-label-mono-sm text-on-surface-variant">Select Date:</span>
+                              <span className="px-2 py-1 rounded bg-surface-container-high font-label-mono-sm text-label-mono-sm text-primary font-bold">
+                                {translateDay(selectedDay.day, currentLang)} ({selectedDay.temp_max ?? selectedDay.temp}°C)
+                              </span>
                             </div>
-
-                          {/* Day & Icon */}
-                          <div className="mt-3 flex flex-col items-center">
-                            <span className="text-[11px] font-bold text-slate-300 group-hover:text-cyan-400 transition">
-                              {translateDay(fc.day, currentLang).substring(0, 4)}
-                            </span>
-                            <span className="text-[9px] text-slate-500 font-medium truncate max-w-[60px] text-center">{translateCondition(fc.condition, currentLang)}</span>
                           </div>
 
+                          {/* 7-Day Horizontal Card Matrix */}
+                          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-space-xs">
+                            {activeForecast.map((fc: WeatherForecastItem, idx: number) => {
+                              const isSelected = activeIdx === idx;
+                              const tMax = fc.temp_max ?? fc.temp;
+                              const tMin = fc.temp_min ?? (fc.temp - 5);
+
+                              return (
+                                <button
+                                  key={idx}
+                                  onClick={() => setSelectedForecastIndex(idx)}
+                                  className={`p-space-sm rounded-xl flex flex-col items-center text-center gap-1 transition-all cursor-pointer ${
+                                    isSelected
+                                      ? 'bg-primary text-on-primary shadow-sm ring-2 ring-primary-container'
+                                      : 'bg-surface-container-low text-on-surface hover:bg-surface-container-high border border-surface-container-high'
+                                  }`}
+                                >
+                                  <span className={`font-label-mono-bold text-label-mono-bold uppercase ${isSelected ? 'opacity-90' : 'text-on-surface-variant'}`}>
+                                    {translateDay(fc.day, currentLang)}
+                                  </span>
+                                  <span className="text-xl my-0.5">
+                                    {fc.icon.includes('lightning') ? '⛈️' : fc.rain_probability > 50 ? '🌧️' : fc.rain_probability > 25 ? '🌦️' : '⛅'}
+                                  </span>
+                                  <span className="font-headline-sm text-headline-sm leading-tight font-bold">
+                                    {tMax}°/{tMin}°
+                                  </span>
+                                  <span className={`font-label-mono-sm text-label-mono-sm flex items-center gap-0.5 ${isSelected ? 'opacity-90' : 'text-secondary'}`}>
+                                    <span className="material-symbols-outlined text-[14px]">water_drop</span> {fc.rain_probability}%
+                                  </span>
+                                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider mt-1 ${
+                                    isSelected
+                                      ? 'bg-primary-container text-on-primary-container'
+                                      : fc.risk_level === 'SEVERE' || fc.risk_level === 'HIGH'
+                                      ? 'bg-error-container text-on-error-container'
+                                      : fc.risk_level === 'MODERATE'
+                                      ? 'bg-tertiary-fixed text-on-tertiary-fixed'
+                                      : 'bg-surface-container-high text-on-surface-variant'
+                                  }`}>
+                                    {translateRiskCategory(fc.risk_level, currentLang)}
+                                  </span>
+                                </button>
+                              );
+                            })}
                           </div>
-                        );
-                      });
+
+                          {/* Day Detailed Inspection Box */}
+                          {selectedDay && (
+                            <div className="p-space-md rounded-xl bg-surface-container-low border border-surface-container-high flex flex-col gap-space-md">
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs">
+                                <div className="flex flex-col">
+                                  <span className="font-label-mono-bold text-label-mono-bold text-primary uppercase">
+                                    {translateDay(selectedDay.day, currentLang)} • Forecast Inspection
+                                  </span>
+                                  <span className="font-headline-sm text-headline-sm text-on-surface font-bold">
+                                    {translateCondition(selectedDay.condition, currentLang)} (High: {selectedDay.temp_max ?? selectedDay.temp}°C | Low: {selectedDay.temp_min ?? (selectedDay.temp - 5)}°C)
+                                  </span>
+                                  <span className="font-body-sm text-body-sm text-on-surface-variant">
+                                    {translateRecommendation(selectedDay.recommendation, currentLang)}
+                                  </span>
+                                </div>
+
+                                {/* Solar Ephemeris */}
+                                <div className="flex items-center gap-space-md">
+                                  <div className="flex items-center gap-space-xs">
+                                    <span className="material-symbols-outlined text-tertiary text-[22px]">wb_twilight</span>
+                                    <div className="flex flex-col">
+                                      <span className="font-label-mono-sm text-label-mono-sm text-outline uppercase">Sunrise</span>
+                                      <span className="font-label-mono-bold text-label-mono-bold text-on-surface">{selectedDay.sunrise || "06:15 AM"}</span>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-space-xs">
+                                    <span className="material-symbols-outlined text-tertiary-fixed-dim text-[22px]">bedtime</span>
+                                    <div className="flex flex-col">
+                                      <span className="font-label-mono-sm text-label-mono-sm text-outline uppercase">Sunset</span>
+                                      <span className="font-label-mono-bold text-label-mono-bold text-on-surface">{selectedDay.sunset || "06:45 PM"}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Diurnal Precipitation & Thermal Vector SVG Sparkline */}
+                              <div className="flex flex-col gap-space-xs">
+                                <div className="flex items-center justify-between">
+                                  <span className="font-label-mono-bold text-label-mono-bold text-on-surface uppercase">Diurnal Precipitation &amp; Thermal Vector</span>
+                                  <span className="font-label-mono-sm text-label-mono-sm text-outline">Hourly Interpolation (00:00 - 23:00 IST)</span>
+                                </div>
+                                <div className="w-full h-28 bg-surface-container-lowest rounded-lg p-2 flex flex-col justify-end relative overflow-hidden border border-surface-container-high">
+                                  <svg className="w-full h-20 overflow-visible" fill="none" preserveAspectRatio="none" viewBox="0 0 700 80">
+                                    <defs>
+                                      <linearGradient id="rainGrad" x1="0" x2="0" y1="0" y2="1">
+                                        <stop offset="0%" stopColor="#006948" stopOpacity="0.35" />
+                                        <stop offset="100%" stopColor="#006948" stopOpacity="0.0" />
+                                      </linearGradient>
+                                    </defs>
+                                    <path d="M0,70 Q70,68 140,55 T280,48 T420,25 T560,35 T700,60 L700,80 L0,80 Z" fill="url(#rainGrad)" />
+                                    <path d="M0,70 Q70,68 140,55 T280,48 T420,25 T560,35 T700,60" stroke="#006948" strokeLinecap="round" strokeWidth="2.5" />
+                                    <circle cx="420" cy="25" r="4" fill="#006948" className="animate-ping" />
+                                    <circle cx="420" cy="25" r="3" fill="#ffffff" stroke="#006948" strokeWidth="2" />
+                                  </svg>
+                                  <div className="flex justify-between items-center px-1 pt-1 font-label-mono-sm text-label-mono-sm text-outline">
+                                    <span>06:00 (10%)</span>
+                                    <span>09:00 (15%)</span>
+                                    <span>12:00 (25%)</span>
+                                    <span className="font-bold text-primary">15:00 (35% Peak)</span>
+                                    <span>18:00 (30%)</span>
+                                    <span>21:00 (15%)</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
                     })()}
                   </div>
-                </div>
 
-              </div>
+                  {/* RIGHT 4 COLUMNS: AI Photo Weather Intelligence & Risk Engine */}
+                  <div className="xl:col-span-4 flex flex-col gap-space-md">
+                    {/* Multimodal Photo Weather Intelligence Card */}
+                    <div className="rounded-xl p-space-md shadow-sm bg-gradient-to-br from-surface-container to-surface-container-highest border border-surface-container-high flex flex-col gap-space-sm relative overflow-hidden">
+                      <div className="flex items-center gap-space-xs">
+                        <span className="text-2xl">📷</span>
+                        <div className="flex flex-col">
+                          <span className="font-headline-sm text-headline-sm text-on-surface font-bold">Photo Weather Intelligence</span>
+                          <span className="font-label-mono-sm text-label-mono-sm text-primary font-bold">MULTIMODAL COPILOT</span>
+                        </div>
+                      </div>
+                      <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                        Upload or snap a sky view. WeatherGPT&apos;s vision model segments cloud genus, optical barometry, and fog dissipation in real time.
+                      </p>
 
-              {/* Right Column: AI Risk Engine & Official Alerts */}
-              <div className="space-y-8">
+                      {/* Interactive Photo Dropzone */}
+                      <Link
+                        href="/photo-analysis"
+                        className="relative w-full h-36 rounded-lg overflow-hidden flex flex-col items-center justify-center text-center p-space-sm bg-surface-container-lowest/80 backdrop-blur-sm group cursor-pointer hover:bg-surface-container-lowest transition-all border border-surface-container-high"
+                      >
+                        <div className="relative z-10 flex flex-col items-center gap-1">
+                          <div className="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shadow-sm">
+                            <span className="material-symbols-outlined text-[20px]">add_a_photo</span>
+                          </div>
+                          <span className="font-body-sm text-body-sm font-semibold text-on-surface">Drop cloudscape photo here</span>
+                          <span className="font-label-mono-sm text-label-mono-sm text-outline">Supports JPG, PNG, HEIC (Max 25MB)</span>
+                        </div>
+                      </Link>
 
-                {/* 📷 Photo Weather Intelligence Prominent Feature Card */}
-                <div className="bg-gradient-to-br from-emerald-950/40 via-slate-900/80 to-teal-950/30 border border-emerald-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-emerald-500/50 transition">
-                  <div className="absolute -right-6 -top-6 h-28 w-28 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition" />
-                  
-                  <div className="flex items-center space-x-2.5 text-emerald-400">
-                    <span className="text-xl">📷</span>
-                    <h3 className="text-sm font-black uppercase tracking-wider text-white">Photo Weather Intelligence</h3>
-                  </div>
-
-                  <p className="text-xs text-slate-300 mt-2.5 leading-relaxed">
-                    Upload a photo and let WeatherGPT analyze visible weather conditions.
-                  </p>
-
-                  <div className="mt-4">
-                    <Link
-                      href="/photo-analysis"
-                      className="flex items-center justify-center space-x-2 w-full px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-black shadow-lg shadow-emerald-500/20 transition transform active:scale-95 cursor-pointer"
-                    >
-                      <Camera className="h-4 w-4" />
-                      <span>Analyze a Photo</span>
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    </Link>
-                  </div>
-
-                  <div className="mt-3.5 pt-3 border-t border-slate-800/60 flex items-center justify-between text-[10px] text-slate-400">
-                    <span>• Multimodal Vision AI</span>
-                    <span>• Live API Correlation</span>
-                    <span>• Risk Engine</span>
-                  </div>
-                </div>
-                
-                {/* Weather Risk Engine Card */}
-                {risk && (
-                  <div className="bg-slate-900/50 backdrop-blur-md border border-slate-800/80 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
-                    <div>
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-md font-bold text-slate-200">{text.label_risk}</h3>
-                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-black text-white uppercase
-                          ${risk.category === 'SEVERE' ? 'bg-red-500 animate-pulse' : 
-                            risk.category === 'HIGH' ? 'bg-orange-500' : 
-                            risk.category === 'MODERATE' ? 'bg-amber-500' : 'bg-emerald-500'}
-                        `}>
-                          {translateRiskCategory(risk.category, currentLang)}
+                      {/* Feature Tags */}
+                      <div className="flex flex-wrap items-center gap-1.5 text-on-surface-variant">
+                        <span className="px-2 py-0.5 rounded bg-surface-container-low font-label-mono-sm text-label-mono-sm flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-radar-emerald"></span> Multimodal Vision AI
+                        </span>
+                        <span className="px-2 py-0.5 rounded bg-surface-container-low font-label-mono-sm text-label-mono-sm flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-atmospheric-cyan"></span> Live API Correlation
+                        </span>
+                        <span className="px-2 py-0.5 rounded bg-surface-container-low font-label-mono-sm text-label-mono-sm flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-tertiary"></span> Risk Engine
                         </span>
                       </div>
 
-                      {/* Large circular risk layout */}
-                      <div className="flex flex-col items-center justify-center my-6">
-                        <div className={`relative flex h-28 w-28 items-center justify-center rounded-full border-4 shadow-inner
-                          ${risk.category === 'SEVERE' ? 'border-red-500' : 
-                            risk.category === 'HIGH' ? 'border-orange-500' : 
-                            risk.category === 'MODERATE' ? 'border-amber-500' : 'border-emerald-500'}
-                        `}>
-                          <span className="text-3xl font-black text-white">{risk.score}</span>
-                          <span className="text-[9px] text-slate-400 absolute bottom-3">/ 100</span>
+                      {/* Primary CTA Button */}
+                      <Link
+                        href="/photo-analysis"
+                        className="w-full flex items-center justify-center gap-space-xs py-2.5 px-space-md rounded-lg bg-primary text-on-primary font-body-md text-body-md font-semibold hover:bg-primary-container transition-all shadow-sm"
+                      >
+                        <span className="material-symbols-outlined text-[20px]">photo_camera</span>
+                        <span>Analyze a Photo</span>
+                        <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                      </Link>
+                    </div>
+
+                    {/* AI Meteorological Risk Score Radial Gauge Card */}
+                    {risk && (
+                      <div className="bg-surface-container-lowest rounded-xl p-space-md lg:p-space-lg shadow-sm border border-surface-container-high flex flex-col gap-space-md">
+                        <div className="flex items-center justify-between">
+                          <div className="flex flex-col">
+                            <span className="font-label-mono-bold text-label-mono-bold text-outline uppercase tracking-wider">
+                              Operational Safety Index
+                            </span>
+                            <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold">
+                              AI Meteorological Risk Score
+                            </h3>
+                          </div>
+                          <span className={`px-2.5 py-1 rounded-full font-label-mono-bold text-label-mono-bold uppercase tracking-wider ${
+                            risk.score > 75 ? 'bg-error-container text-on-error-container' :
+                            risk.score > 40 ? 'bg-tertiary-fixed text-on-tertiary-fixed' :
+                            'bg-primary-fixed text-on-primary-fixed'
+                          }`}>
+                            {translateRiskCategory(risk.category, currentLang)}
+                          </span>
+                        </div>
+
+                        {/* Circular Radial Risk Dial */}
+                        <div className="flex flex-col items-center justify-center py-space-xs">
+                          <div className="relative w-44 h-44 flex items-center justify-center">
+                            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 160 160">
+                              <circle cx="80" cy="80" r="66" fill="transparent" stroke="#eaedff" strokeWidth="12" />
+                              <circle
+                                cx="80"
+                                cy="80"
+                                r="66"
+                                fill="transparent"
+                                stroke={risk.score > 75 ? '#EF4444' : risk.score > 40 ? '#006948' : '#10B981'}
+                                strokeWidth="12"
+                                strokeDasharray="414.69"
+                                strokeDashoffset={414.69 * (1 - (risk.score / 100))}
+                                strokeLinecap="round"
+                                className="transition-all duration-1000"
+                              />
+                            </svg>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                              <span className="font-display-hero text-display-hero text-on-surface leading-none font-bold">
+                                {risk.score}
+                              </span>
+                              <span className="font-label-mono-bold text-label-mono-bold text-outline uppercase tracking-widest mt-1">
+                                / 100
+                              </span>
+                              <span className="font-label-mono-sm text-label-mono-sm text-primary font-semibold mt-0.5">
+                                {risk.category} INDEX
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Risk Breakdown Sub-Metrics */}
+                        <div className="flex flex-col gap-space-xs">
+                          <div className="flex items-center justify-between p-space-xs rounded bg-surface-container-low border border-surface-container-high">
+                            <span className="font-body-sm text-body-sm text-on-surface flex items-center gap-1.5">
+                              <span className="material-symbols-outlined text-[16px] text-primary">rainy</span> Precipitation Rate
+                            </span>
+                            <span className="font-label-mono-bold text-label-mono-bold text-on-surface">
+                              +{Math.round((risk.score * 0.45))} ({weather.current.rain_probability}%)
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between p-space-xs rounded bg-surface-container-low border border-surface-container-high">
+                            <span className="font-body-sm text-body-sm text-on-surface flex items-center gap-1.5">
+                              <span className="material-symbols-outlined text-[16px] text-tertiary">air</span> Wind Gusts &amp; Shear
+                            </span>
+                            <span className="font-label-mono-bold text-label-mono-bold text-on-surface">
+                              +{Math.round((risk.score * 0.3))} ({weather.current.wind_speed} km/h)
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between p-space-xs rounded bg-surface-container-low border border-surface-container-high">
+                            <span className="font-body-sm text-body-sm text-on-surface flex items-center gap-1.5">
+                              <span className="material-symbols-outlined text-[16px] text-secondary">water_drop</span> Atmospheric Humidity
+                            </span>
+                            <span className="font-label-mono-bold text-label-mono-bold text-on-surface">
+                              +{Math.round((risk.score * 0.25))} ({weather.current.humidity}%)
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Legal & Compliance Notice */}
+                        <div className="pt-space-xs">
+                          <p className="font-label-mono-sm text-label-mono-sm text-outline italic leading-relaxed">
+                            * This score is an AI-assisted meteorological risk model. For legal alerts, navigation orders, and civic advisories, refer exclusively to IMD / MoES official bulletins.
+                          </p>
                         </div>
                       </div>
+                    )}
 
-                      {/* Risk breakdown parameters */}
-                      <div className="space-y-2 mt-4">
-                        <h4 className="text-xs uppercase font-extrabold tracking-wider text-slate-400">{text.label_why}</h4>
-                        <div className="space-y-1 text-xs">
-                          {risk.breakdown.length > 0 ? (
-                            risk.breakdown.map((item: RiskFactor, idx: number) => (
-                              <div key={idx} className="flex justify-between items-center py-1.5 border-b border-slate-800/40">
-                                <span className="text-slate-300">{translateRiskFactor(item.factor, currentLang)}</span>
-                                <span className="font-extrabold text-emerald-400">+{item.weight}</span>
-                              </div>
-                            ))
-                          ) : (
-                            <p className="text-slate-500 italic py-2">{text.no_risk_indicators}</p>
-                          )}
+                    {/* Quick AI Meteorological Copilot Chat Launcher */}
+                    <div className="bg-surface-container-low rounded-xl p-space-md border border-surface-container-high flex items-center justify-between gap-space-sm">
+                      <div className="flex items-center gap-space-sm">
+                        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary">
+                          <span className="material-symbols-outlined text-[22px]">smart_toy</span>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-body-md text-body-md font-semibold text-on-surface">Ask WeatherGPT</span>
+                          <span className="font-label-mono-sm text-label-mono-sm text-on-surface-variant">Synoptic reasoning ready</span>
                         </div>
                       </div>
-                    </div>
-
-                    <div className="mt-6 pt-4 border-t border-slate-800 text-[10px] text-slate-500 italic">
-                      {risk.disclaimer}
+                      <button
+                        onClick={() => setChatOpen(true)}
+                        className="px-space-sm py-1.5 rounded-lg bg-primary-container text-on-primary-container font-body-sm text-body-sm font-semibold hover:bg-primary transition-colors flex items-center gap-1 cursor-pointer"
+                        type="button"
+                      >
+                        <span>Query</span>
+                        <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                      </button>
                     </div>
                   </div>
-                )}
-
-                {/* Smart Disaster Alert Card */}
-                {weather.alerts && weather.alerts.length > 0 ? (
-                  weather.alerts.map((al: WeatherAlert, idx: number) => (
-                    <div key={idx} className="bg-rose-950/20 border-2 border-rose-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden">
-                      <div className="absolute right-0 top-0 h-16 w-16 bg-rose-500/10 rounded-full blur-2xl" />
-                      
-                      <div className="flex items-center space-x-2 text-rose-500">
-                        <AlertTriangle className="h-5 w-5 animate-bounce" />
-                        <h3 className="text-sm font-extrabold uppercase tracking-wider">🔴 ACTIVE WARNING</h3>
-                      </div>
-
-                      <h4 className="text-base font-black text-white mt-3">{al.title}</h4>
-                      <p className="text-xs text-slate-400 mt-1 font-semibold">Location: {weather.location}</p>
-                      <p className="text-xs text-slate-400 mt-1 font-semibold">Period: {al.expected_period}</p>
-
-                      <div className="mt-4 text-xs text-slate-300">
-                        <p className="font-bold text-slate-200">Potential Impacts:</p>
-                        <ul className="list-disc pl-4 space-y-1 mt-1">
-                          {al.impacts.map((imp: string, i: number) => (
-                            <li key={i}>{imp}</li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <div className="mt-4 pt-4 border-t border-rose-500/15 text-xs text-emerald-300 bg-emerald-950/25 p-3 rounded-lg border border-emerald-500/15">
-                        <p className="font-extrabold text-slate-100 flex items-center">
-                          <CheckCircle2 className="h-4 w-4 mr-1 text-emerald-400" />
-                          Recommended Emergency Actions:
-                        </p>
-                        <ul className="list-decimal pl-4 space-y-1 mt-1.5">
-                          {al.actions.map((act: string, i: number) => (
-                            <li key={i}>{act}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="bg-slate-900/30 border border-slate-800/80 rounded-2xl p-6 text-center shadow-xl">
-                    <CheckCircle2 className="h-8 w-8 mx-auto text-emerald-500" />
-                    <h4 className="font-bold text-slate-300 mt-3">{text.no_active_warnings}</h4>
-                    <p className="text-xs text-slate-500 mt-1">{text.clear_area_msg}</p>
-                  </div>
-                )}
-
+                </div>
               </div>
-
-            </div>
-          </div>
             ) : (
               <div className="flex flex-col items-center justify-center min-h-[450px] space-y-4 text-center">
-                <RefreshCw className="h-10 w-10 text-emerald-400 animate-spin" />
-                <p className="text-slate-300 font-bold text-base">Gathering Live Meteorology & Risk Intel for {searchLocation}...</p>
-                <p className="text-xs text-slate-500">Connecting to IMD / Open-Meteo feeds...</p>
+                <RefreshCw className="h-10 w-10 text-primary animate-spin" />
+                <p className="text-on-surface font-bold text-base">Gathering Live Meteorology &amp; Risk Intel for {searchLocation}...</p>
+                <p className="text-xs text-on-surface-variant">Connecting to IMD / Open-Meteo feeds...</p>
               </div>
             )
-        )}
+          )}
+
 
           {/* TAB 2: LIVE WEATHER MAP */}
           {activeTab === 'map' && (
@@ -2734,7 +2644,7 @@ export default function WeatherGPT() {
           <p className="max-w-4xl truncate">{text.disclaimer}</p>
         </footer>
 
-      </main>
+      </div>
 
       {/* MODALS */}
       <DisasterSimulationModal

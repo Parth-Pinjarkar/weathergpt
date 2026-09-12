@@ -1,30 +1,38 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Space_Grotesk, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegistrar from "./components/ServiceWorkerRegistrar";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
+  weight: ["500", "600", "700"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const plusJakartaSans = Plus_Jakarta_Sans({
+  variable: "--font-plus-jakarta-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const viewport: Viewport = {
-  themeColor: "#6366f1",
-  colorScheme: "dark",
+  themeColor: "#006948",
+  colorScheme: "dark light",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
 };
 
 export const metadata: Metadata = {
-  title: "WeatherGPT — AI Weather & Disaster Copilot",
-  description: "AI-powered multilingual weather intelligence and disaster preparedness platform for India. Get live weather, risk scores, route safety, and disaster alerts.",
-  keywords: ["weather", "AI", "India", "disaster", "forecast", "IMD", "rainfall", "WeatherGPT"],
+  title: "WeatherGPT — AI Weather & Disaster Copilot (MoES / IMD)",
+  description: "AI-powered multilingual weather intelligence and disaster preparedness platform for India. Live synoptic telemetry, NWP consensus, and risk predictions.",
+  keywords: ["weather", "AI", "India", "disaster", "forecast", "IMD", "MoES", "rainfall", "WeatherGPT"],
   authors: [{ name: "WeatherGPT Team" }],
   manifest: "/manifest.json",
   icons: {
@@ -45,11 +53,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full bg-slate-950 text-slate-100 flex flex-col">
+    <html
+      lang="en"
+      className={`${spaceGrotesk.variable} ${plusJakartaSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
+    >
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        />
+      </head>
+      <body className="min-h-full font-body text-on-surface bg-background antialiased flex flex-col">
         <ServiceWorkerRegistrar />
         {children}
       </body>
     </html>
   );
 }
+
