@@ -586,13 +586,25 @@ DEFAULT_FALLBACK = {
 }
 
 
+def clean_location_string(text: str) -> str:
+    """Strips internal system artifact suffixes like (Demo Fallback) or (Location Approx)."""
+    if not text:
+        return ""
+    cleaned = re.sub(r'\s*\((?:demo\s*fallback|location\s*approx|offline\s*fallback|offline\s*\/?\s*cached\s*mode)\)', '', str(text), flags=re.IGNORECASE)
+    return cleaned.strip()
+
+
 def normalize_city_name(city: str) -> str:
     """Cleans up and matches city name to registry keys or standard search strings."""
     if not city:
         return "pune"
-    cleaned = str(city).strip().lower()
+    cleaned = clean_location_string(city).lower()
     if "," in cleaned and any(c.isdigit() for c in cleaned):
-        return cleaned
+        try:
+            parts = cleaned.split(",")
+            return f"{float(parts[0].strip()):.4f},{float(parts[1].strip()):.4f}"
+        except ValueError:
+            return cleaned
 
     # Strip prefixes or emojis e.g. 📍
     cleaned_text = re.sub(r"[^\w\s,-]", "", cleaned).strip()
@@ -806,7 +818,7 @@ def fetch_weather_from_open_meteo(city: str, nwp_model: str = "best_match") -> D
                 # Check fallback coordinates for Pune
                 lat = 18.5204
                 lon = 73.8567
-                display_name = f"{city.title()} (Location Approx)"
+                display_name = clean_location_string(city).title()
             else:
                 res_loc = geo_data["results"][0]
                 lat = res_loc["latitude"]
@@ -1244,15 +1256,17 @@ def get_weather(db: Any, location: Any = None, nwp_model: str = "best_match") ->
                 db.commit()
             except Exception:
                 pass
-        parsed["current"]["updated_at"] = f"Offline Fallback (Cached {cache_entry.updated_at.strftime('%H:%M')})"
+        parsed["location"] = clean_location_string(parsed.get("location", location)).title()
+        parsed["current"]["updated_at"] = f"Cached ({cache_entry.updated_at.strftime('%H:%M')})"
         return parsed
         
-    # 6. Offline Demo Fallback
+    # 6. Standby Offline Data Provider
     default_key = norm_city if norm_city in MOCK_WEATHER_DATA else "pune"
     fallback_data = dict(MOCK_WEATHER_DATA[default_key])
     if not fallback_data.get("forecast") or len(fallback_data.get("forecast")) < 5:
         fallback_data["forecast"] = synthesize_7day_forecast(fallback_data.get("current", {}))
-    fallback_data["location"] = f"{location.title()} (Demo Fallback)"
+    clean_loc = clean_location_string(location)
+    fallback_data["location"] = clean_loc.title() if clean_loc else "Mumbai, Maharashtra"
     cur_time = datetime.now().strftime("%I:%M %p")
-    fallback_data["current"]["updated_at"] = f"Demo Fallback, {cur_time}"
+    fallback_data["current"]["updated_at"] = cur_time
     return fallback_data

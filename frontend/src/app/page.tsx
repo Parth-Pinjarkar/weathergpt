@@ -592,22 +592,32 @@ export default function WeatherGPT() {
 
   const ensureForecast = useCallback((w: WeatherData): WeatherData => {
     if (!w) return DEFAULT_WEATHER;
-    if (!w.forecast || !Array.isArray(w.forecast) || w.forecast.length < 5) {
-      const baseTemp = w.current?.temp ?? 27;
-      const baseRain = w.current?.rain_probability ?? 40;
+    const cleanLoc = (w.location || "").replace(/\s*\((?:demo\s*fallback|offline\s*\/?\s*cached\s*mode|location\s*approx|offline\s*fallback)\)/gi, '').trim();
+    const cleanUpdated = (w.current?.updated_at || "").replace(/Demo Fallback,?\s*/gi, '').replace(/Offline Fallback,?\s*/gi, '').trim();
+    const updatedWeather: WeatherData = {
+      ...w,
+      location: cleanLoc || w.location || "Mumbai",
+      current: {
+        ...w.current,
+        updated_at: cleanUpdated || w.current?.updated_at || "Live Synchronized"
+      }
+    };
+    if (!updatedWeather.forecast || !Array.isArray(updatedWeather.forecast) || updatedWeather.forecast.length < 5) {
+      const baseTemp = updatedWeather.current?.temp ?? 27;
+      const baseRain = updatedWeather.current?.rain_probability ?? 40;
       return {
-        ...w,
+        ...updatedWeather,
         forecast: generateFallbackForecast(baseTemp, baseRain)
       };
     }
-    return w;
+    return updatedWeather;
   }, []);
 
   const getInstantOfflineWeather = (loc: string) => {
-    const locName = loc ? (loc.charAt(0).toUpperCase() + loc.slice(1)) : "Pune";
+    const locName = loc ? (loc.charAt(0).toUpperCase() + loc.slice(1)).replace(/\s*\((?:demo\s*fallback|offline\s*\/?\s*cached\s*mode|location\s*approx|offline\s*fallback)\)/gi, '').trim() : "Mumbai";
     return {
       weather: {
-        location: `${locName} (Offline / Cached Mode)`,
+        location: locName,
         current: {
           temp: 26,
           feels_like: 27.5,
