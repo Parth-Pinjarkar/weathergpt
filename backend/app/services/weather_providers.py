@@ -89,7 +89,7 @@ class OpenMeteoProvider(BaseWeatherProvider):
                 target_lat = DEMO_COORDINATES[loc_clean]["lat"]
                 target_lon = DEMO_COORDINATES[loc_clean]["lon"]
             else:
-                target_lat, target_lon = 18.5204, 73.8567  # Default to Pune
+                target_lat, target_lon = 20.0059, 73.7797  # Default to Nashik
 
         data = fetch_live_open_meteo(target_lat, target_lon, location)
         if data:

@@ -115,6 +115,25 @@ def test_location():
     assert res.status_code == 200
     assert "resolved" in res.json()
 
+def test_default_location_nashik():
+    # 1. Test near me / default search resolves to Nashik
+    res = client.get("/api/location/search?q=near me")
+    assert res.status_code == 200
+    resolved = res.json()["resolved"]
+    assert resolved["name"] == "Nashik"
+    assert round(resolved["lat"], 4) == 20.0059
+    assert round(resolved["lon"], 4) == 73.7797
+
+    # 2. Test climate insights defaults to Nashik
+    climate_res = client.get("/api/climate/insights")
+    assert climate_res.status_code == 200
+    assert "Nashik" in climate_res.json()["location"]
+
+    # 3. Test current weather for Nashik
+    w_res = client.get("/api/weather/current?location=Nashik")
+    assert w_res.status_code == 200
+    assert "Nashik" in w_res.json()["weather"]["location"]
+
 def test_report():
     res = client.post("/api/report/generate", json={"location": "Pune", "report_type": "daily"})
     assert res.status_code == 200
@@ -289,6 +308,8 @@ if __name__ == "__main__":
         print("[OK] Climate Insights & Trends working")
         test_location()
         print("[OK] Natural Language Location Search working")
+        test_default_location_nashik()
+        print("[OK] Default Location Nashik (20.0059, 73.7797) verified")
         test_report()
         print("[OK] Weather Intelligence Report Generator working")
         test_analytics()

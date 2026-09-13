@@ -32,7 +32,7 @@ class PreferenceUpdateSchema(BaseModel):
     temp_unit: Optional[str] = "celsius"        # 'celsius', 'fahrenheit'
     wind_unit: Optional[str] = "kmh"           # 'kmh', 'mph', 'ms'
     notifications_enabled: Optional[bool] = True
-    preferred_location: Optional[str] = "Pune"
+    preferred_location: Optional[str] = "Nashik"
     language: Optional[str] = "en"              # 'en', 'hi', 'mr'
     risk_sensitivity: Optional[str] = "standard" # 'standard', 'high', 'low'
 
@@ -56,7 +56,7 @@ def get_user_preferences(
             "temp_unit": "celsius",
             "wind_unit": "kmh",
             "notifications_enabled": True,
-            "preferred_location": "Pune",
+            "preferred_location": "Nashik",
             "language": "en",
             "risk_sensitivity": "standard"
         }

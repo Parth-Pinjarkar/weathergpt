@@ -191,7 +191,7 @@ def extract_location(query: str, lang: str = "en", default_location: Optional[st
     if clean_default:
         return clean_default
 
-    return "pune"
+    return "nashik"
 
 
 

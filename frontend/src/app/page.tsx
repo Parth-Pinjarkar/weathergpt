@@ -19,6 +19,7 @@ import ReportGeneratorModal from './components/ReportGeneratorModal';
 import AuthModal, { UserProfile } from './components/AuthModal';
 import LocationSearchBar, { LocationItem } from './components/LocationSearchBar';
 import { getBackendUrl } from './utils/apiUrl';
+import { DEFAULT_LOCATION } from './constants/location';
 import { 
   LOCALIZATION, 
   SUPPORTED_LANGUAGES,
@@ -305,29 +306,29 @@ const WeatherMap = dynamic(() => import('./components/WeatherMap'), {
 const BACKEND_URL = getBackendUrl();
 
 const DEFAULT_WEATHER: WeatherData = {
-  location: "Pune, Maharashtra India",
+  location: `${DEFAULT_LOCATION.fullName} India`,
   current: {
-    temp: 27,
-    feels_like: 29.5,
-    condition: "Partly Cloudy",
-    humidity: 78,
+    temp: 26,
+    feels_like: 28.0,
+    condition: "Moderate Rain",
+    humidity: 82,
     wind_speed: 16,
-    rain_probability: 35,
+    rain_probability: 65,
     air_quality: "Good (AQI 42)",
-    sunrise: "06:15 AM",
-    sunset: "06:50 PM",
+    sunrise: "06:12 AM",
+    sunset: "06:55 PM",
     icon: "cloud-rain",
     source: "IMD / Open-Meteo",
     updated_at: "Live"
   },
   forecast: [
-    { day: "Today", temp: 27, condition: "Partly Cloudy", icon: "cloud-rain", rain_probability: 35, wind: 16, humidity: 78, risk_level: "LOW", recommendation: "Pleasant outdoor weather. Standard precautions." },
-    { day: "Fri", temp: 28, condition: "Moderate Rain", icon: "cloud-rain", rain_probability: 60, wind: 18, humidity: 82, risk_level: "MODERATE", recommendation: "Carry an umbrella. Drive carefully." },
-    { day: "Sat", temp: 26, condition: "Thunderstorm", icon: "cloud-lightning", rain_probability: 85, wind: 24, humidity: 88, risk_level: "HIGH", recommendation: "Stay indoors during peak lightning." },
-    { day: "Sun", temp: 25, condition: "Heavy Rain", icon: "cloud-lightning", rain_probability: 90, wind: 28, humidity: 92, risk_level: "SEVERE", recommendation: "Avoid low-lying waterlogged roads." },
-    { day: "Mon", temp: 27, condition: "Light Rain", icon: "cloud-rain", rain_probability: 45, wind: 14, humidity: 75, risk_level: "LOW", recommendation: "Safe for travel and general commute." },
-    { day: "Tue", temp: 29, condition: "Partly Cloudy", icon: "sun", rain_probability: 20, wind: 12, humidity: 65, risk_level: "LOW", recommendation: "Good harvesting window." },
-    { day: "Wed", temp: 30, condition: "Clear Sky", icon: "sun", rain_probability: 10, wind: 10, humidity: 58, risk_level: "LOW", recommendation: "Ideal outdoor conditions." }
+    { day: "Today", temp: 26, condition: "Moderate Rain", icon: "cloud-rain", rain_probability: 65, wind: 16, humidity: 82, risk_level: "MODERATE", recommendation: "Intermittent rainfall expected across Nashik. Good conditions for grape agriculture." },
+    { day: "Fri", temp: 25, condition: "Light Drizzle", icon: "cloud-drizzle", rain_probability: 45, wind: 14, humidity: 78, risk_level: "LOW", recommendation: "Mild drizzle forecast in the afternoon. Safe for commute." },
+    { day: "Sat", temp: 27, condition: "Partly Cloudy", icon: "sun", rain_probability: 20, wind: 12, humidity: 70, risk_level: "LOW", recommendation: "Clearing skies. Excellent weather for agricultural spraying and travel." },
+    { day: "Sun", temp: 28, condition: "Partly Cloudy", icon: "sun", rain_probability: 15, wind: 10, humidity: 68, risk_level: "LOW", recommendation: "Pleasant conditions across Godavari river basin." },
+    { day: "Mon", temp: 29, condition: "Sunny", icon: "sun", rain_probability: 10, wind: 11, humidity: 65, risk_level: "LOW", recommendation: "Warm sunny intervals. Ensure adequate hydration." },
+    { day: "Tue", temp: 27, condition: "Light Rain", icon: "cloud-rain", rain_probability: 50, wind: 15, humidity: 80, risk_level: "LOW", recommendation: "Passing rain showers forecast along Nashik valley." },
+    { day: "Wed", temp: 26, condition: "Moderate Rain", icon: "cloud-rain", rain_probability: 60, wind: 17, humidity: 84, risk_level: "MODERATE", recommendation: "Overcast weather with continuous light to moderate rain showers." }
   ]
 };
 
@@ -352,8 +353,8 @@ export default function WeatherGPT() {
   const [distanceUnit, setDistanceUnit] = useState<'km' | 'miles'>('km');
   const [currentMode, setCurrentMode] = useState<'general' | 'traveller' | 'farmer' | 'disaster' | 'school' | 'aviation' | 'smartcity'>('general');
   const [selectedNwpModel, setSelectedNwpModel] = useState<'best_match' | 'gfs' | 'ecmwf' | 'icon'>('best_match');
-  const [searchLocation, setSearchLocation] = useState<string>('Pune');
-  const [mapCenter, setMapCenter] = useState<[number, number]>([18.5204, 73.8567]);
+  const [searchLocation, setSearchLocation] = useState<string>(DEFAULT_LOCATION.city);
+  const [mapCenter, setMapCenter] = useState<[number, number]>(DEFAULT_LOCATION.coordinates);
   const [activeMapLayer, setActiveMapLayer] = useState<'temp' | 'rain' | 'wind' | 'risk'>('temp');
   const [isOffline, setIsOffline] = useState<boolean>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
@@ -362,7 +363,7 @@ export default function WeatherGPT() {
   const [weather, setWeather] = useState<WeatherData>(DEFAULT_WEATHER);
   const [risk, setRisk] = useState<RiskData>(DEFAULT_RISK);
   const [selectedForecastIndex, setSelectedForecastIndex] = useState<number>(0);
-  const [routeFrom, setRouteFrom] = useState<string>('Pune');
+  const [routeFrom, setRouteFrom] = useState<string>('Nashik');
   const [routeTo, setRouteTo] = useState<string>('Mumbai');
   const [routeAnalysis, setRouteAnalysis] = useState<RouteAnalysisData | null>(null);
   const [disasterDashboard, setDisasterDashboard] = useState<DisasterDashboardData | null>(null);
@@ -406,6 +407,13 @@ export default function WeatherGPT() {
     if (typeof window !== 'undefined') {
       const savedTheme = (localStorage.getItem('weathergpt_theme') as 'dark' | 'light') || 'light';
       setTheme(savedTheme);
+
+      const savedLocation = localStorage.getItem('weathergpt_location');
+      if (savedLocation && savedLocation.trim()) {
+        setSearchLocation(savedLocation.trim());
+      } else {
+        setSearchLocation(DEFAULT_LOCATION.city);
+      }
       
       const savedUser = localStorage.getItem('weathergpt_user');
       if (savedUser) {
@@ -596,14 +604,14 @@ export default function WeatherGPT() {
     const cleanUpdated = (w.current?.updated_at || "").replace(/Demo Fallback,?\s*/gi, '').replace(/Offline Fallback,?\s*/gi, '').trim();
     const updatedWeather: WeatherData = {
       ...w,
-      location: cleanLoc || w.location || "Mumbai",
+      location: cleanLoc || w.location || DEFAULT_LOCATION.fullName,
       current: {
         ...w.current,
         updated_at: cleanUpdated || w.current?.updated_at || "Live Synchronized"
       }
     };
     if (!updatedWeather.forecast || !Array.isArray(updatedWeather.forecast) || updatedWeather.forecast.length < 5) {
-      const baseTemp = updatedWeather.current?.temp ?? 27;
+      const baseTemp = updatedWeather.current?.temp ?? 26;
       const baseRain = updatedWeather.current?.rain_probability ?? 40;
       return {
         ...updatedWeather,
@@ -614,7 +622,7 @@ export default function WeatherGPT() {
   }, []);
 
   const getInstantOfflineWeather = (loc: string) => {
-    const locName = loc ? (loc.charAt(0).toUpperCase() + loc.slice(1)).replace(/\s*\((?:demo\s*fallback|offline\s*\/?\s*cached\s*mode|location\s*approx|offline\s*fallback)\)/gi, '').trim() : "Mumbai";
+    const locName = loc ? (loc.charAt(0).toUpperCase() + loc.slice(1)).replace(/\s*\((?:demo\s*fallback|offline\s*\/?\s*cached\s*mode|location\s*approx|offline\s*fallback)\)/gi, '').trim() : DEFAULT_LOCATION.fullName;
     return {
       weather: {
         location: locName,
@@ -689,6 +697,9 @@ export default function WeatherGPT() {
         }
         if (loc.includes(',') && safeWeather.location) {
           setSearchLocation(safeWeather.location);
+          localStorage.setItem('weathergpt_location', safeWeather.location);
+        } else if (loc && !loc.includes(',')) {
+          localStorage.setItem('weathergpt_location', loc);
         }
         
         // Cache guaranteed complete weather data to local storage
@@ -733,12 +744,19 @@ export default function WeatherGPT() {
         (err) => {
           console.error("Geolocation error:", err);
           setIsRefreshing(false);
-          alert("Unable to acquire GPS coordinates. Please check browser location permissions.");
+          // Fallback to default Nashik location on GPS failure / denial
+          setMapCenter(DEFAULT_LOCATION.coordinates);
+          setSearchLocation(DEFAULT_LOCATION.city);
+          fetchWeatherData(DEFAULT_LOCATION.city);
+          alert("Unable to acquire GPS coordinates. Defaulting to Nashik, Maharashtra.");
         },
         { timeout: 10000, enableHighAccuracy: true }
       );
     } else {
-      alert("Geolocation is not supported by your browser.");
+      setMapCenter(DEFAULT_LOCATION.coordinates);
+      setSearchLocation(DEFAULT_LOCATION.city);
+      fetchWeatherData(DEFAULT_LOCATION.city);
+      alert("Geolocation is not supported by your browser. Defaulting to Nashik, Maharashtra.");
     }
   };
 
@@ -825,7 +843,7 @@ export default function WeatherGPT() {
     setIsTyping(true);
     if (isOffline) {
       const qLower = textToSend.toLowerCase();
-      const locDisplay = weather?.location?.replace(/\s*\(.*?\)/, '') || searchLocation || 'Pune';
+      const locDisplay = weather?.location?.replace(/\s*\(.*?\)/, '') || searchLocation || DEFAULT_LOCATION.city;
       const temp = weather?.current?.temp ?? 26;
       const cond = weather?.current?.condition ?? 'Partly Cloudy';
       const rainProb = weather?.current?.rain_probability ?? 30;
@@ -900,7 +918,7 @@ export default function WeatherGPT() {
           session_id: chatSessionId,
           role: currentMode,
           lang: currentLang,
-          location: searchLocation || (weather ? weather.location : 'Pune')
+          location: searchLocation || (weather ? weather.location : DEFAULT_LOCATION.city)
         })
       });
 
@@ -929,7 +947,7 @@ export default function WeatherGPT() {
       console.error("Chat error:", e);
       // Contextual local rule-based response if backend is offline or warming up
       const qLower = textToSend.toLowerCase();
-      const locDisplay = weather?.location?.replace(/\s*\(.*?\)/, '') || searchLocation || 'Pune';
+      const locDisplay = weather?.location?.replace(/\s*\(.*?\)/, '') || searchLocation || DEFAULT_LOCATION.city;
       const temp = weather?.current?.temp ?? 26;
       const cond = weather?.current?.condition ?? 'Partly Cloudy';
       const rainProb = weather?.current?.rain_probability ?? 30;
@@ -2039,6 +2057,7 @@ export default function WeatherGPT() {
                       onChange={(e) => setRouteFrom(e.target.value)}
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500"
                     >
+                      <option value="Nashik">Nashik</option>
                       <option value="Pune">Pune</option>
                       <option value="Mumbai">Mumbai</option>
                     </select>
@@ -2056,6 +2075,7 @@ export default function WeatherGPT() {
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500"
                     >
                       <option value="Mumbai">Mumbai</option>
+                      <option value="Nashik">Nashik</option>
                       <option value="Pune">Pune</option>
                     </select>
                   </div>
@@ -2519,16 +2539,16 @@ export default function WeatherGPT() {
                 {currentLang === 'hi' ? (
                   <>
                     <button 
-                      onClick={() => setChatInput("क्या आज पुणे में बारिश होगी?")}
+                      onClick={() => setChatInput("क्या आज नाशिक में बारिश होगी?")}
                       className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-[10px] font-bold text-slate-300 border border-slate-800/80 cursor-pointer"
                     >
                       🌧️ क्या बारिश होगी?
                     </button>
                     <button 
-                      onClick={() => setChatInput("पुणे से मुंबई हाईवे सुरक्षित है क्या?")}
+                      onClick={() => setChatInput("नाशिक से मुंबई हाईवे सुरक्षित है क्या?")}
                       className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-[10px] font-bold text-slate-300 border border-slate-800/80 cursor-pointer"
                     >
-                      🚗 पुणे ➔ मुंबई यात्रा?
+                      🚗 नाशिक ➔ मुंबई यात्रा?
                     </button>
                     <button 
                       onClick={() => setChatInput("क्या आज फसलों की सिंचाई करनी चाहिए?")}
@@ -2540,16 +2560,16 @@ export default function WeatherGPT() {
                 ) : currentLang === 'mr' ? (
                   <>
                     <button 
-                      onClick={() => setChatInput("पुण्यात आज पाऊस पडेल का?")}
+                      onClick={() => setChatInput("नाशिकमध्ये आज पाऊस पडेल का?")}
                       className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-[10px] font-bold text-slate-300 border border-slate-800/80 cursor-pointer"
                     >
                       🌧️ पाऊस पडेल का?
                     </button>
                     <button 
-                      onClick={() => setChatInput("पुणे ते मुंबई हायवे प्रवास सुरक्षित आहे का?")}
+                      onClick={() => setChatInput("नाशिक ते मुंबई हायवे प्रवास सुरक्षित आहे का?")}
                       className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-[10px] font-bold text-slate-300 border border-slate-800/80 cursor-pointer"
                     >
-                      🚗 पुणे ➔ मुंबई प्रवास?
+                      🚗 नाशिक ➔ मुंबई प्रवास?
                     </button>
                     <button 
                       onClick={() => setChatInput("आज पिकांना पाणी द्यावे का?")}
@@ -2561,16 +2581,16 @@ export default function WeatherGPT() {
                 ) : (
                   <>
                     <button 
-                      onClick={() => setChatInput("Will it rain tomorrow in Pune?")}
+                      onClick={() => setChatInput("Will it rain tomorrow in Nashik?")}
                       className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-[10px] font-bold text-slate-300 border border-slate-800/80 cursor-pointer"
                     >
-                      🌧️ Pune Rain?
+                      🌧️ Nashik Rain?
                     </button>
                     <button 
-                      onClick={() => setChatInput("Is it safe to travel from Pune to Mumbai?")}
+                      onClick={() => setChatInput("Is it safe to travel from Nashik to Mumbai?")}
                       className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-[10px] font-bold text-slate-300 border border-slate-800/80 cursor-pointer"
                     >
-                      🚗 Pune ➔ Mumbai?
+                      🚗 Nashik ➔ Mumbai?
                     </button>
                     <button 
                       onClick={() => setChatInput("Should I irrigate my crops today?")}
@@ -2656,19 +2676,19 @@ export default function WeatherGPT() {
       <EmergencyCenterModal
         isOpen={emergencyModalOpen}
         onClose={() => setEmergencyModalOpen(false)}
-        location={weather?.location || searchLocation || 'Pune'}
+        location={weather?.location || searchLocation || DEFAULT_LOCATION.city}
         lang={currentLang}
       />
       <ClimateInsightsModal
         isOpen={climateModalOpen}
         onClose={() => setClimateModalOpen(false)}
-        location={weather?.location || searchLocation || 'Pune'}
+        location={weather?.location || searchLocation || DEFAULT_LOCATION.city}
         lang={currentLang}
       />
       <ReportGeneratorModal
         isOpen={reportModalOpen}
         onClose={() => setReportModalOpen(false)}
-        location={weather?.location || searchLocation || 'Pune'}
+        location={weather?.location || searchLocation || DEFAULT_LOCATION.city}
         lang={currentLang}
         weatherData={weather}
       />

@@ -9,7 +9,7 @@ from app.services.risk_service import calculate_weather_risk
 router = APIRouter(prefix="/report", tags=["report"])
 
 class ReportRequest(BaseModel):
-    location: str = "Pune"
+    location: str = "Nashik"
     report_type: str = "daily" # daily, travel, farmer, disaster
     format: str = "json" # json, summary_text
 

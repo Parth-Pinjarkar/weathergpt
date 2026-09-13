@@ -167,7 +167,7 @@ class UserPreference(Base):
     temp_unit = Column(String(10), default="celsius")       # 'celsius', 'fahrenheit'
     wind_unit = Column(String(10), default="kmh")          # 'kmh', 'mph', 'ms'
     notifications_enabled = Column(Boolean, default=True)
-    preferred_location = Column(String(100), default="Pune")
+    preferred_location = Column(String(100), default="Nashik")
     language = Column(String(10), default="en")             # 'en', 'hi', 'mr'
     risk_sensitivity = Column(String(20), default="standard") # 'standard', 'high', 'low'
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

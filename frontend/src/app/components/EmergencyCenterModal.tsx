@@ -24,7 +24,7 @@ interface EmergencyCenterModalProps {
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-export default function EmergencyCenterModal({ isOpen, onClose, location = "Pune", lang = 'en' }: EmergencyCenterModalProps) {
+export default function EmergencyCenterModal({ isOpen, onClose, location = "Nashik", lang = 'en' }: EmergencyCenterModalProps) {
   const [activeTab, setActiveTab] = useState<'shelters' | 'checklist' | 'contacts'>('shelters');
   const [locations, setLocations] = useState<EmergencyLocation[]>([]);
   const [hazard] = useState('flood');
@@ -105,7 +105,7 @@ export default function EmergencyCenterModal({ isOpen, onClose, location = "Pune
 
   useEffect(() => {
     if (!isOpen) return;
-    fetch(`${BACKEND_URL}/api/emergency/locations?city=${encodeURIComponent(location || "Pune")}`)
+    fetch(`${BACKEND_URL}/api/emergency/locations?city=${encodeURIComponent(location || "Nashik")}`)
       .then(res => res.json())
       .then(data => {
         if (data.locations) setLocations(data.locations);
@@ -115,37 +115,37 @@ export default function EmergencyCenterModal({ isOpen, onClose, location = "Pune
         setLocations([
           {
             id: "loc-1",
-            name: lang === 'hi' ? "ससून जनरल अस्पताल व इमरजेंसी केयर" : lang === 'mr' ? "ससून जनरल रुग्णालय व आपत्कालीन कक्ष" : "Sassoon General Hospital & Emergency Care",
+            name: lang === 'hi' ? "नाशिक जिला सिविल अस्पताल व आपातकालीन केंद्र" : lang === 'mr' ? "नाशिक जिल्हा सामान्य रुग्णालय व आपत्कालीन कक्ष" : "Nashik District Civil Hospital & Emergency Disaster Hub",
             category: lang === 'hi' ? "अस्पताल" : lang === 'mr' ? "रुग्णालय" : "Hospital",
-            city: "Pune",
-            address: "Station Road, Pune Station Area",
-            phone: "020-26128000",
+            city: "Nashik",
+            address: "Trimbak Road, Near CBS, Nashik",
+            phone: "0253-2578100 / 108",
             capacity: "500 beds",
-            distance_km: "2.4 km"
+            distance_km: "1.5 km"
           },
           {
             id: "loc-2",
-            name: lang === 'hi' ? "बालेवाड़ी स्पोर्ट्स कॉम्प्लेक्स शेल्टर" : lang === 'mr' ? "बालेवाडी क्रीडा संकुल निवारा" : "Balewadi Sports Complex Relief Shelter",
+            name: lang === 'hi' ? "पंचवटी म्युनिसिपल कम्युनिटी शेल्टर" : lang === 'mr' ? "पंचवटी मनपा समाज मंदिर निवारा" : "Panchavati Municipal Disaster Shelter",
             category: lang === 'hi' ? "राहत आश्रयस्थल" : lang === 'mr' ? "मदत निवारा" : "Relief Shelter",
-            city: "Pune",
-            address: "Mahalunge, Balewadi High Street",
-            phone: "020-27372000",
-            capacity: "2,500 people",
-            distance_km: "8.1 km"
+            city: "Nashik",
+            address: "Panchavati Karanja, Nashik",
+            phone: "0253-2511200",
+            capacity: "1,200 people",
+            distance_km: "2.8 km"
           },
           {
             id: "loc-3",
-            name: lang === 'hi' ? "सिविल डिफेंस कमांड सेंटर (शिवाजीनगर)" : lang === 'mr' ? "नागरी संरक्षण नियंत्रण केंद्र (शिवाजीनगर)" : "Civil Defence Command Post (Shivajinagar)",
+            name: lang === 'hi' ? "जिला आपदा नियंत्रण कक्ष (नाशिक कलेक्ट्रेट)" : lang === 'mr' ? "जिल्हा आपत्ती नियंत्रण कक्ष (नाशिक जिल्हाधिकारी कार्यालय)" : "District Disaster Control Post (Nashik Collectorate)",
             category: lang === 'hi' ? "नियंत्रण केंद्र" : lang === 'mr' ? "नियंत्रण कक्ष" : "Command Post",
-            city: "Pune",
-            address: "Near District Court, Shivajinagar",
-            phone: "020-25536300",
+            city: "Nashik",
+            address: "Old Agra Road, CBS, Nashik",
+            phone: "0253-2578100 / 1077",
             capacity: "Tactical Hub",
-            distance_km: "3.2 km"
+            distance_km: "1.8 km"
           }
         ]);
       });
-  }, [isOpen, lang]);
+  }, [isOpen, lang, location]);
 
   if (!isOpen) return null;
 

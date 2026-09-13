@@ -25,7 +25,7 @@ const POPULAR_HUBS: LocationItem[] = [
   { name: "Pune", state: "Maharashtra", country: "India", lat: 18.5204, lon: 73.8567, type: "IT Hub" },
   { name: "Mumbai", state: "Maharashtra", country: "India", lat: 19.0760, lon: 72.8777, type: "Coastal Metro" },
   { name: "Delhi", state: "Delhi", country: "India", lat: 28.7041, lon: 77.1025, type: "Capital" },
-  { name: "Nashik", state: "Maharashtra", country: "India", lat: 19.9975, lon: 73.7898, type: "Agri Hub" },
+  { name: "Nashik", state: "Maharashtra", country: "India", lat: 20.0059, lon: 73.7797, type: "Agri Hub" },
   { name: "Bengaluru", state: "Karnataka", country: "India", lat: 12.9716, lon: 77.5946, type: "Silicon Valley" },
   { name: "Jaipur", state: "Rajasthan", country: "India", lat: 26.9124, lon: 75.7873, type: "Heritage City" },
   { name: "Lonavala", state: "Maharashtra", country: "India", lat: 18.7557, lon: 73.4091, type: "Western Ghats" },
@@ -167,8 +167,8 @@ export default function LocationSearchBar({
         // Submit raw query directly
         handleSelectItem({
           name: query.trim(),
-          lat: 18.5204,
-          lon: 73.8567,
+          lat: 20.0059,
+          lon: 73.7797,
           type: "Searched City"
         });
       }
@@ -207,7 +207,7 @@ export default function LocationSearchBar({
           onChange={handleInputChange}
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
-          placeholder={placeholder || `Search any place (e.g. Pune, Jaipur, Delhi, Shimla)... [Current: ${currentLocation}]`}
+          placeholder={placeholder || `Search any place (e.g. Nashik, Pune, Jaipur, Delhi, Shimla)... [Current: ${currentLocation}]`}
           className="w-full bg-transparent py-2.5 pr-8 text-xs font-semibold text-slate-100 placeholder:text-slate-400 focus:outline-none"
         />
 
@@ -302,8 +302,8 @@ export default function LocationSearchBar({
               <button
                 onClick={() => handleSelectItem({
                   name: query.trim(),
-                  lat: 18.5204,
-                  lon: 73.8567,
+                  lat: 20.0059,
+                  lon: 73.7797,
                   type: "Live Geocoded Location"
                 })}
                 className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold transition shadow-md"

@@ -23,7 +23,7 @@ DEMO_COORDINATES = {
     "pune": {"lat": 18.5204, "lon": 73.8567, "name": "Pune", "state": "Maharashtra"},
     "mumbai": {"lat": 19.0760, "lon": 72.8777, "name": "Mumbai", "state": "Maharashtra"},
     "delhi": {"lat": 28.7041, "lon": 77.1025, "name": "Delhi", "state": "Delhi"},
-    "nashik": {"lat": 19.9975, "lon": 73.7898, "name": "Nashik", "state": "Maharashtra"},
+    "nashik": {"lat": 20.0059, "lon": 73.7797, "name": "Nashik", "state": "Maharashtra"},
     "bengaluru": {"lat": 12.9716, "lon": 77.5946, "name": "Bengaluru", "state": "Karnataka"},
     "bangalore": {"lat": 12.9716, "lon": 77.5946, "name": "Bengaluru", "state": "Karnataka"},
     "chennai": {"lat": 13.0827, "lon": 80.2707, "name": "Chennai", "state": "Tamil Nadu"},
@@ -63,7 +63,7 @@ DEMO_COORDINATES = {
 MOCK_WEATHER_DATA = {
     "nashik": {
         "location": "Nashik, Maharashtra",
-        "coordinates": {"lat": 19.9975, "lon": 73.7898},
+        "coordinates": {"lat": 20.0059, "lon": 73.7797},
         "current": {
             "temp": 26.0,
             "feels_like": 28.0,
@@ -597,7 +597,7 @@ def clean_location_string(text: str) -> str:
 def normalize_city_name(city: str) -> str:
     """Cleans up and matches city name to registry keys or standard search strings."""
     if not city:
-        return "pune"
+        return "nashik"
     cleaned = clean_location_string(city).lower()
     if "," in cleaned and any(c.isdigit() for c in cleaned):
         try:
@@ -776,7 +776,8 @@ def fetch_weather_from_open_meteo(city: str, nwp_model: str = "best_match") -> D
             lat = DEMO_COORDINATES[norm_c]["lat"]
             lon = DEMO_COORDINATES[norm_c]["lon"]
             state = DEMO_COORDINATES[norm_c].get("state", "India")
-            display_name = f"{city.title()}, {state} India"
+            c_name = DEMO_COORDINATES[norm_c].get("name", city.title() if city else "Nashik")
+            display_name = f"{c_name}, {state} India"
             _GEO_COORDS_CACHE[norm_c] = (lat, lon, display_name)
 
         # Check if city string is GPS coordinates e.g. "18.5204,73.8567"
@@ -815,9 +816,9 @@ def fetch_weather_from_open_meteo(city: str, nwp_model: str = "best_match") -> D
             geo_data = geo_res.json()
             
             if not geo_data or "results" not in geo_data or not geo_data["results"]:
-                # Check fallback coordinates for Pune
-                lat = 18.5204
-                lon = 73.8567
+                # Check fallback coordinates for default location (Nashik)
+                lat = 20.0059
+                lon = 73.7797
                 display_name = clean_location_string(city).title()
             else:
                 res_loc = geo_data["results"][0]
@@ -1168,7 +1169,7 @@ def get_weather(db: Any, location: Any = None, nwp_model: str = "best_match") ->
         location = db
         db = None
 
-    norm_city = normalize_city_name(str(location or "pune"))
+    norm_city = normalize_city_name(str(location or "nashik"))
     cache_key = norm_city if nwp_model == "best_match" else f"{norm_city}:{nwp_model}"
     now_ts = time.time()
     
@@ -1261,12 +1262,12 @@ def get_weather(db: Any, location: Any = None, nwp_model: str = "best_match") ->
         return parsed
         
     # 6. Standby Offline Data Provider
-    default_key = norm_city if norm_city in MOCK_WEATHER_DATA else "pune"
+    default_key = norm_city if norm_city in MOCK_WEATHER_DATA else "nashik"
     fallback_data = dict(MOCK_WEATHER_DATA[default_key])
     if not fallback_data.get("forecast") or len(fallback_data.get("forecast")) < 5:
         fallback_data["forecast"] = synthesize_7day_forecast(fallback_data.get("current", {}))
     clean_loc = clean_location_string(location)
-    fallback_data["location"] = clean_loc.title() if clean_loc else "Mumbai, Maharashtra"
+    fallback_data["location"] = clean_loc.title() if clean_loc else "Nashik, Maharashtra"
     cur_time = datetime.now().strftime("%I:%M %p")
     fallback_data["current"]["updated_at"] = cur_time
     return fallback_data

@@ -90,8 +90,8 @@ EMERGENCY_LOCATIONS_DATA = [
         "address": "Trimbak Road, Near CBS, Nashik",
         "phone": "+91-253-2578100",
         "capacity": "150 beds, ICU & Rapid Response Unit",
-        "lat": 19.9975,
-        "lon": 73.7898,
+        "lat": 20.0059,
+        "lon": 73.7797,
         "is_open_24x7": True,
         "distance_km": "165.0"
     }
@@ -174,8 +174,8 @@ def get_emergency_locations(city: Optional[str] = Query(None, description="City 
                 "address": f"Civil Lines, Central Zone, {title_city}",
                 "phone": "108 / 112",
                 "capacity": "200 beds & ICU",
-                "lat": 18.5204,
-                "lon": 73.8567,
+                "lat": 20.0059,
+                "lon": 73.7797,
                 "is_open_24x7": True,
                 "distance_km": "1.5"
             },

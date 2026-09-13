@@ -8,9 +8,9 @@ router = APIRouter(prefix="/location", tags=["location"])
 _GEO_SEARCH_CACHE: Dict[str, Dict[str, Any]] = {}
 
 LOCATION_REGISTRY: List[Dict[str, Any]] = [
+    {"name": "Nashik", "state": "Maharashtra", "country": "India", "lat": 20.0059, "lon": 73.7797, "type": "Wine & Agri Center"},
     {"name": "Pune", "state": "Maharashtra", "country": "India", "lat": 18.5204, "lon": 73.8567, "type": "IT & Education Hub"},
     {"name": "Mumbai", "state": "Maharashtra", "country": "India", "lat": 19.0760, "lon": 72.8777, "type": "Financial Capital"},
-    {"name": "Nashik", "state": "Maharashtra", "country": "India", "lat": 19.9975, "lon": 73.7898, "type": "Wine & Agri Center"},
     {"name": "Lonavala", "state": "Maharashtra", "country": "India", "lat": 18.7557, "lon": 73.4091, "type": "Western Ghats"},
     {"name": "Khopoli", "state": "Maharashtra", "country": "India", "lat": 18.7904, "lon": 73.3424, "type": "Industrial Corridor"},
     {"name": "Panvel", "state": "Maharashtra", "country": "India", "lat": 18.9894, "lon": 73.1175, "type": "Navi Mumbai Hub"},
@@ -110,8 +110,8 @@ def search_locations(q: str = Query(..., description="Query location text or coo
                     place_name = item.get("name", query.title())
                     admin1 = item.get("admin1", "")
                     country = item.get("country", "")
-                    item_lat = item.get("latitude", 18.5204)
-                    item_lon = item.get("longitude", 73.8567)
+                    item_lat = item.get("latitude", 20.0059)
+                    item_lon = item.get("longitude", 73.7797)
                     feature_code = item.get("feature_code", "")
                     
                     place_type = "City"
@@ -156,13 +156,13 @@ def search_locations(q: str = Query(..., description="Query location text or coo
         _GEO_SEARCH_CACHE[q_lower] = res_payload
         return res_payload
 
-    # Fallback to Title-cased query with default Pune coordinates if completely unrecognized
+    # Fallback to Title-cased query with default Nashik coordinates if completely unrecognized
     fallback_res = {
         "name": query.title(),
         "state": "India",
         "country": "India",
-        "lat": 18.5204,
-        "lon": 73.8567,
+        "lat": 20.0059,
+        "lon": 73.7797,
         "type": "Custom Search Location"
     }
     res_payload = {

@@ -39,7 +39,7 @@ interface ClimateInsightsModalProps {
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-export default function ClimateInsightsModal({ isOpen, onClose, location = "Pune", lang = 'en' }: ClimateInsightsModalProps) {
+export default function ClimateInsightsModal({ isOpen, onClose, location = "Nashik", lang = 'en' }: ClimateInsightsModalProps) {
   const [data, setData] = useState<ClimateData | null>(null);
   const t = LOCALIZATION[lang] || LOCALIZATION.en;
 

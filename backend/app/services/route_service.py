@@ -40,7 +40,7 @@ def analyze_route_weather(db: Session, from_location: str, to_location: str) -> 
             return point, w_data, r_data
         except Exception:
             # Safe offline fallback for waypoint
-            w_data = get_weather(thread_db, "pune")
+            w_data = get_weather(thread_db, "nashik")
             r_data = calculate_weather_risk(w_data)
             return point, w_data, r_data
         finally:

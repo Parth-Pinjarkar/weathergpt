@@ -33,7 +33,7 @@ interface MapLocationData {
 const INITIAL_LOCATIONS: MapLocationData[] = [
   { name: "Pune", lat: 18.5204, lon: 73.8567, temp: "27°C", condition: "Heavy Rain", wind_speed: "18 km/h", rain_prob: "92%", risk: "SEVERE", color: "red", alert: "Red Alert: Extreme Rainfall Watch" },
   { name: "Mumbai", lat: 19.0760, lon: 72.8777, temp: "29°C", condition: "Moderate Rain", wind_speed: "22 km/h", rain_prob: "80%", risk: "HIGH", color: "orange", alert: "Orange Warning: High Tide Ingress" },
-  { name: "Nashik", lat: 19.9975, lon: 73.7898, temp: "26°C", condition: "Moderate Rain", wind_speed: "16 km/h", rain_prob: "65%", risk: "MODERATE", color: "amber", alert: "Yellow Watch: Active Rainfall" },
+  { name: "Nashik", lat: 20.0059, lon: 73.7797, temp: "26°C", condition: "Moderate Rain", wind_speed: "16 km/h", rain_prob: "65%", risk: "MODERATE", color: "amber", alert: "Yellow Watch: Active Rainfall" },
   { name: "Lonavala", lat: 18.7557, lon: 73.4091, temp: "21°C", condition: "Torrential Rain", wind_speed: "28 km/h", rain_prob: "98%", risk: "SEVERE", color: "red", alert: "Red Alert: Landslide Watch" },
   { name: "Khopoli", lat: 18.7904, lon: 73.3424, temp: "25°C", condition: "Heavy Rain", wind_speed: "22 km/h", rain_prob: "90%", risk: "HIGH", color: "orange", alert: "Orange Alert: River Level Surge" },
   { name: "Panvel", lat: 18.9894, lon: 73.1175, temp: "27°C", condition: "Moderate Rain", wind_speed: "16 km/h", rain_prob: "75%", risk: "MODERATE", color: "amber", alert: "Yellow Watch: Active Precipitation" },
@@ -90,8 +90,8 @@ interface WeatherMapProps {
 
 export default function WeatherMap({ 
   activeLayer, 
-  searchCenter = [18.97, 74.5], 
-  activeLocation = "Pune",
+  searchCenter = [20.0059, 73.7797], 
+  activeLocation = "Nashik",
   onMarkerClick 
 }: WeatherMapProps) {
   const [mapLocations, setMapLocations] = useState<MapLocationData[]>(INITIAL_LOCATIONS);

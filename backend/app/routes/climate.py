@@ -4,6 +4,38 @@ from typing import Dict, Any
 router = APIRouter(prefix="/climate", tags=["climate"])
 
 CLIMATE_DATA_STORE: Dict[str, Any] = {
+    "nashik": {
+        "location": "Nashik, Maharashtra",
+        "historical_avg_temp": 25.2,
+        "historical_avg_rainfall_mm": 812,
+        "monthly_averages": [
+            {"month": "Jan", "temp_c": 19.5, "rainfall_mm": 1},
+            {"month": "Feb", "temp_c": 21.8, "rainfall_mm": 1},
+            {"month": "Mar", "temp_c": 25.4, "rainfall_mm": 3},
+            {"month": "Apr", "temp_c": 29.1, "rainfall_mm": 8},
+            {"month": "May", "temp_c": 30.5, "rainfall_mm": 22},
+            {"month": "Jun", "temp_c": 26.8, "rainfall_mm": 155},
+            {"month": "Jul", "temp_c": 24.2, "rainfall_mm": 240},
+            {"month": "Aug", "temp_c": 23.9, "rainfall_mm": 210},
+            {"month": "Sep", "temp_c": 24.5, "rainfall_mm": 125},
+            {"month": "Oct", "temp_c": 25.1, "rainfall_mm": 42},
+            {"month": "Nov", "temp_c": 22.0, "rainfall_mm": 15},
+            {"month": "Dec", "temp_c": 19.8, "rainfall_mm": 3}
+        ],
+        "yearly_trends": [
+            {"year": 2020, "avg_temp": 24.9, "extreme_rain_days": 10, "max_temp": 39.5},
+            {"year": 2021, "avg_temp": 25.1, "extreme_rain_days": 13, "max_temp": 40.0},
+            {"year": 2022, "avg_temp": 25.4, "extreme_rain_days": 15, "max_temp": 40.6},
+            {"year": 2023, "avg_temp": 25.6, "extreme_rain_days": 14, "max_temp": 41.0},
+            {"year": 2024, "avg_temp": 25.9, "extreme_rain_days": 18, "max_temp": 41.5},
+            {"year": 2025, "avg_temp": 26.1, "extreme_rain_days": 20, "max_temp": 42.0}
+        ],
+        "anomalies": {
+            "temp_anomaly_celsius": "+0.9°C above 30-year mean",
+            "rainfall_shift": "+14% precipitation variability in Godavari basin",
+            "summary": "Nashik agro-climatic zone experiences moderate elevation cooling with shifting monsoon patterns across Godavari basin vineyards."
+        }
+    },
     "pune": {
         "location": "Pune, Maharashtra",
         "historical_avg_temp": 26.5,
@@ -185,7 +217,7 @@ def generate_dynamic_climate_data(location_name: str) -> Dict[str, Any]:
 
 
 @router.get("/insights")
-def get_climate_insights(location: str = Query("Pune", description="Location name")):
+def get_climate_insights(location: str = Query("Nashik", description="Location name")):
     key = location.lower().strip()
     for k in CLIMATE_DATA_STORE:
         if k in key:

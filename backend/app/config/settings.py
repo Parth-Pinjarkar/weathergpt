@@ -21,6 +21,13 @@ class Settings(BaseSettings):
     PHOTO_ANALYSIS_MAX_SIZE_MB: int = 10
     PHOTO_ANALYSIS_RATE_LIMIT: str = "30/hour"
 
+    # ── Default Location Configuration ────────────────────────────────────────
+    DEFAULT_LOCATION_NAME: str = "Nashik"
+    DEFAULT_LOCATION_STATE: str = "Maharashtra"
+    DEFAULT_LOCATION_COUNTRY: str = "India"
+    DEFAULT_LATITUDE: float = 20.0059
+    DEFAULT_LONGITUDE: float = 73.7797
+
     # ── Security / JWT ────────────────────────────────────────────────────────
     # In production, set JWT_SECRET_KEY in your .env (never commit the real key)
     JWT_SECRET_KEY: str = secrets.token_hex(32)

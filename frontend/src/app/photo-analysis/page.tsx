@@ -103,7 +103,7 @@ interface PhotoAnalysisResult {
 export default function PhotoAnalysisPage() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [locationInput, setLocationInput] = useState<string>('Pune');
+  const [locationInput, setLocationInput] = useState<string>('Nashik');
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [loadingStep, setLoadingStep] = useState<string>('');
   const [analysisResult, setAnalysisResult] = useState<PhotoAnalysisResult | null>(null);
@@ -369,15 +369,15 @@ export default function PhotoAnalysisPage() {
                   type="text"
                   value={locationInput}
                   onChange={(e) => setLocationInput(e.target.value)}
-                  placeholder="e.g. Pune, Mumbai, Delhi, Lonavala"
+                  placeholder="e.g. Nashik, Mumbai, Pune, Delhi, Lonavala"
                   className="flex-1 bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500"
                 />
                 <button
                   type="button"
-                  onClick={() => setLocationInput('Pune')}
+                  onClick={() => setLocationInput('Nashik')}
                   className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-[11px] font-semibold text-slate-300 rounded-xl border border-slate-700"
                 >
-                  Pune
+                  Nashik
                 </button>
                 <button
                   type="button"

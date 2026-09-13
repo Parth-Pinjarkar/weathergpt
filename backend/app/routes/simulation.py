@@ -9,7 +9,7 @@ class DisasterSimRequest(BaseModel):
     intensity: Optional[float] = 1.0 # Multiplier (0.5 to 2.0)
 
 class WhatIfRequest(BaseModel):
-    location: str = "Pune"
+    location: str = "Nashik"
     rainfall_delta_percent: float = 0.0 # e.g. +30%
     temp_delta_celsius: float = 0.0 # e.g. +5 C
     wind_delta_kmh: float = 0.0 # e.g. +20 km/h
