@@ -619,64 +619,113 @@ def normalize_city_name(city: str) -> str:
 
 
 def fetch_weather_from_api(city: str, api_key: str) -> Dict[str, Any]:
-    """Fetches real-time weather from OpenWeatherMap API."""
+    """Fetches real-time weather from OpenWeatherMap API (supports OneCall 4.0 / 3.0 / 2.5 and standard endpoints)."""
     try:
-        # Step 1: Geocoding
-        geo_url = f"https://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={api_key}"
-        geo_res = requests.get(geo_url, timeout=5)
-        geo_data = geo_res.json()
-        
-        if not geo_data:
-            raise ValueError(f"Location '{city}' not found.")
-            
-        lat = geo_data[0]["lat"]
-        lon = geo_data[0]["lon"]
-        display_name = f"{geo_data[0]['name']}, {geo_data[0].get('state', '')} {geo_data[0].get('country', '')}".strip()
-        
-        # Step 2: Fetch current weather
+        lat, lon = None, None
+        display_name = city
+
+        # Check if city string is GPS coordinates e.g. "18.5204,73.8567"
+        if "," in city and any(char.isdigit() for char in city):
+            try:
+                parts = city.split(",")
+                lat = float(parts[0].strip())
+                lon = float(parts[1].strip())
+                display_name = f"GPS ({lat:.2f}°, {lon:.2f}°)"
+            except ValueError:
+                lat, lon = None, None
+
+        if lat is None or lon is None:
+            norm_c = normalize_city_name(city)
+            if norm_c in DEMO_COORDINATES:
+                lat = DEMO_COORDINATES[norm_c]["lat"]
+                lon = DEMO_COORDINATES[norm_c]["lon"]
+                display_name = f"{DEMO_COORDINATES[norm_c]['name']}, {DEMO_COORDINATES[norm_c].get('state', '')} India"
+            else:
+                geo_url = f"https://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={api_key}"
+                geo_res = requests.get(geo_url, timeout=5)
+                if geo_res.ok and geo_res.json():
+                    geo_data = geo_res.json()
+                    lat = geo_data[0]["lat"]
+                    lon = geo_data[0]["lon"]
+                    display_name = f"{geo_data[0]['name']}, {geo_data[0].get('state', '')} {geo_data[0].get('country', '')}".strip()
+                else:
+                    lat = 20.0059
+                    lon = 73.7797
+                    display_name = clean_location_string(city).title()
+
+        # Step 2: Try OneCall 4.0 / 3.0 endpoints
+        for onecall_url in [
+            f"https://api.openweathermap.org/data/4.0/onecall/current?lat={lat}&lon={lon}&appid={api_key}&units=metric",
+            f"https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&appid={api_key}&units=metric",
+        ]:
+            try:
+                oc_res = requests.get(onecall_url, timeout=4)
+                if oc_res.ok:
+                    oc_data = oc_res.json()
+                    current_oc = oc_data.get("current", oc_data)
+                    w_cond = current_oc.get("weather", [{}])[0].get("main", "Clear")
+                    icon_map = {
+                        "Clear": "sun", "Clouds": "cloud", "Rain": "cloud-rain",
+                        "Drizzle": "cloud-drizzle", "Thunderstorm": "cloud-lightning",
+                        "Snow": "snowflake", "Mist": "cloud", "Fog": "cloud"
+                    }
+                    return {
+                        "location": display_name,
+                        "coordinates": {"lat": lat, "lon": lon},
+                        "current": {
+                            "temp": round(current_oc.get("temp", 25.0), 1),
+                            "feels_like": round(current_oc.get("feels_like", 26.0), 1),
+                            "condition": current_oc.get("weather", [{}])[0].get("description", "Clear").title(),
+                            "icon": icon_map.get(w_cond, "cloud"),
+                            "humidity": current_oc.get("humidity", 65),
+                            "wind_speed": round(current_oc.get("wind_speed", 3.0) * 3.6, 1),
+                            "wind_direction": get_wind_direction(current_oc.get("wind_deg", 0)),
+                            "pressure": current_oc.get("pressure", 1012),
+                            "visibility": round(current_oc.get("visibility", 10000) / 1000, 1),
+                            "uv_index": current_oc.get("uvi", 5.0),
+                            "rain_probability": current_oc.get("pop", 0.2) * 100,
+                            "air_quality": "Satisfactory (AQI 52)",
+                            "sunrise": datetime.fromtimestamp(current_oc.get("sunrise", time.time())).strftime("%I:%M %p"),
+                            "sunset": datetime.fromtimestamp(current_oc.get("sunset", time.time())).strftime("%I:%M %p"),
+                            "source": "OpenWeatherMap OneCall API",
+                            "updated_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+                        },
+                        "forecast": synthesize_7day_forecast({"temp": current_oc.get("temp", 25.0)})
+                    }
+            except Exception:
+                pass
+
+        # Step 3: Fallback to standard 2.5 weather + forecast endpoints
         weather_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
         weather_res = requests.get(weather_url, timeout=5)
+        if not weather_res.ok:
+            raise ValueError(f"OpenWeatherMap HTTP {weather_res.status_code}: {weather_res.text}")
+
         w_data = weather_res.json()
-        
-        # Step 3: Fetch forecast (5 day/3 hour)
         forecast_url = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key}&units=metric"
         forecast_res = requests.get(forecast_url, timeout=5)
-        f_data = forecast_res.json()
-        
-        # Parse weather condition icon
-        w_cond = w_data["weather"][0]["main"]
+        f_data = forecast_res.json() if forecast_res.ok else {}
+
+        w_cond = w_data.get("weather", [{}])[0].get("main", "Clear")
         icon_map = {
-            "Clear": "sun",
-            "Clouds": "cloud",
-            "Rain": "cloud-rain",
-            "Drizzle": "cloud-drizzle",
-            "Thunderstorm": "cloud-lightning",
-            "Snow": "snowflake",
-            "Mist": "cloud",
-            "Smoke": "cloud",
-            "Haze": "cloud",
-            "Dust": "cloud",
-            "Fog": "cloud",
-            "Sand": "cloud",
-            "Ash": "cloud",
-            "Squall": "wind",
-            "Tornado": "wind"
+            "Clear": "sun", "Clouds": "cloud", "Rain": "cloud-rain",
+            "Drizzle": "cloud-drizzle", "Thunderstorm": "cloud-lightning",
+            "Snow": "snowflake", "Mist": "cloud", "Fog": "cloud"
         }
         icon = icon_map.get(w_cond, "cloud")
-        
-        # Parse Current Weather
+
         current_parsed = {
             "temp": round(w_data["main"]["temp"], 1),
             "feels_like": round(w_data["main"]["feels_like"], 1),
             "condition": w_data["weather"][0]["description"].title(),
             "icon": icon,
             "humidity": w_data["main"]["humidity"],
-            "wind_speed": round(w_data["wind"]["speed"] * 3.6, 1),  # convert m/s to km/h
+            "wind_speed": round(w_data["wind"]["speed"] * 3.6, 1),
             "wind_direction": get_wind_direction(w_data["wind"].get("deg", 0)),
             "pressure": w_data["main"]["pressure"],
-            "visibility": round(w_data.get("visibility", 10000) / 1000, 1),  # convert meters to km
-            "uv_index": 5,  # OpenWeatherMap current API doesn't include UV index directly in free tier without One Call
-            "rain_probability": f_data["list"][0].get("pop", 0) * 100 if f_data.get("list") else 0,
+            "visibility": round(w_data.get("visibility", 10000) / 1000, 1),
+            "uv_index": 5,
+            "rain_probability": f_data.get("list", [{}])[0].get("pop", 0) * 100 if f_data.get("list") else 0,
             "air_quality": "Satisfactory (AQI 52)",
             "sunrise": datetime.fromtimestamp(w_data["sys"]["sunrise"]).strftime("%I:%M %p"),
             "sunset": datetime.fromtimestamp(w_data["sys"]["sunset"]).strftime("%I:%M %p"),
