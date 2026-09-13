@@ -107,9 +107,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   ];
 
   return (
-    <div className="p-space-md lg:p-space-lg flex flex-col gap-space-md">
+    <div className="w-full min-w-0 p-space-md lg:p-space-lg flex flex-col gap-space-md">
       {/* 1. Prominent Meteorological Hubs Ticker */}
-      <section className="w-full flex items-center gap-space-sm overflow-x-auto pb-1 scrollbar-none">
+      <section className="w-full min-w-0 flex items-center gap-space-sm overflow-x-auto pb-1 scrollbar-none">
         <div className="flex items-center gap-space-xs shrink-0 px-space-sm py-1 rounded-full bg-surface-container-high text-on-surface">
           <span className="material-symbols-outlined text-primary text-[18px]">hub</span>
           <span className="font-label-mono-bold text-label-mono-bold uppercase tracking-wider text-on-surface-variant">
@@ -143,9 +143,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       </section>
 
       {/* 2. Main Macro Synoptic Split Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-md items-start">
+      <div className="w-full min-w-0 grid grid-cols-1 lg:grid-cols-12 gap-space-md items-start">
         {/* LEFT COLUMN: TELEMETRY HERO + SENSORS + OUTLOOK */}
-        <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-space-md min-w-0">
+        <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-space-md min-w-0 w-full">
           {/* Synoptic Header Card */}
           <section className="p-space-md md:p-space-lg rounded-xl bg-surface-container-lowest shadow-sm border border-surface-container-high flex flex-col gap-space-sm">
             <div className="flex flex-wrap items-center justify-between gap-space-sm">
@@ -508,7 +508,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* RIGHT COLUMN: PHOTO COPILOT + RISK SCORE + ASK WEATHERGPT */}
-        <div className="lg:col-span-5 xl:col-span-4 flex flex-col gap-space-md">
+        <div className="lg:col-span-5 xl:col-span-4 flex flex-col gap-space-md min-w-0 w-full">
           {/* Photo Weather AI Card */}
           <section className="p-space-md md:p-space-lg rounded-xl bg-surface-container-lowest shadow-sm border border-surface-container-high flex flex-col gap-space-sm relative overflow-hidden">
             <div className="flex items-start justify-between">

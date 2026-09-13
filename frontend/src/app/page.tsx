@@ -178,9 +178,9 @@ export default function WeatherGPTApp() {
   );
 
   return (
-    <div className={`min-h-screen flex flex-col bg-background font-body-md text-on-surface antialiased ${theme}`}>
+    <div className={`min-h-screen flex bg-background font-body-md text-on-surface antialiased ${theme}`}>
       {/* 1. SIDEBAR (Desktop) */}
-      <aside className="hidden md:flex fixed left-0 top-0 h-full w-64 bg-surface-container-lowest shadow-sm z-50 flex-col justify-between overflow-y-auto border-r border-surface-container-high select-none">
+      <aside className="hidden md:flex flex-col justify-between w-64 shrink-0 bg-surface-container-lowest shadow-sm z-30 overflow-y-auto border-r border-surface-container-high select-none sticky top-0 h-screen">
         <div className="p-space-md">
           {/* Logo Header */}
           <div className="flex items-center gap-space-sm pb-space-md border-b border-surface-container-high">
@@ -317,9 +317,9 @@ export default function WeatherGPTApp() {
       </aside>
 
       {/* 2. MAIN CONTAINER & TOP HEADER */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden md:pl-64 relative">
+      <div className="flex-1 min-w-0 flex flex-col min-h-screen bg-background">
         {/* Top Header */}
-        <header className="fixed top-0 left-0 md:left-64 right-0 h-14 bg-surface-glass backdrop-blur-xl border-b border-surface-container-high shadow-xs z-40 flex items-center justify-between px-space-md md:px-space-lg">
+        <header className="sticky top-0 z-20 h-14 bg-surface-glass backdrop-blur-xl border-b border-surface-container-high shadow-xs flex items-center justify-between px-space-md md:px-space-lg w-full shrink-0">
           {/* Universal Search Bar */}
           <div className="flex items-center gap-space-sm flex-1 max-w-xl mr-2">
             <div className="relative flex-1 flex items-center bg-surface-container-low rounded-lg px-space-sm py-1.5 border border-surface-container-high focus-within:border-primary transition">
@@ -406,7 +406,7 @@ export default function WeatherGPTApp() {
         </header>
 
         {/* Mobile Navigation Strip */}
-        <div className="md:hidden flex bg-surface-container-lowest border-b border-surface-container-high p-2 overflow-x-auto whitespace-nowrap select-none mt-14">
+        <div className="md:hidden flex bg-surface-container-lowest border-b border-surface-container-high p-2 overflow-x-auto whitespace-nowrap select-none shrink-0">
           <button onClick={() => setActiveTab('dashboard')} className={`px-3 py-1.5 text-xs font-bold rounded-lg ${activeTab === 'dashboard' ? 'bg-primary text-on-primary' : 'text-on-surface-variant'}`}>Live Telemetry</button>
           <button onClick={() => setActiveTab('map')} className={`px-3 py-1.5 text-xs font-bold rounded-lg ${activeTab === 'map' ? 'bg-primary text-on-primary' : 'text-on-surface-variant'}`}>Radar &amp; Maps</button>
           <button onClick={() => setActiveTab('route')} className={`px-3 py-1.5 text-xs font-bold rounded-lg ${activeTab === 'route' ? 'bg-primary text-on-primary' : 'text-on-surface-variant'}`}>Route Intel</button>
@@ -415,7 +415,7 @@ export default function WeatherGPTApp() {
         </div>
 
         {/* Dynamic Main View Router */}
-        <main className="w-full flex-1 overflow-y-auto pt-14 bg-background">
+        <main className="flex-1 min-w-0 w-full bg-background">
           {activeTab === 'dashboard' && (
             <DashboardView
               weather={weather}

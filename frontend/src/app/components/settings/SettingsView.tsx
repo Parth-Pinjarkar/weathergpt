@@ -46,7 +46,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   onOpenAuthModal,
 }) => {
   return (
-    <div className="p-space-md lg:p-space-lg flex flex-col gap-space-md max-w-4xl mx-auto">
+    <div className="w-full min-w-0 p-space-md lg:p-space-lg flex flex-col gap-space-md max-w-7xl mx-auto">
       {/* Header */}
       <div className="p-space-md md:p-space-lg rounded-xl bg-surface-container-lowest shadow-sm border border-surface-container-high flex items-center justify-between">
         <div className="flex items-center gap-space-sm">
