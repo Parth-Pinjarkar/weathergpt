@@ -10,10 +10,11 @@ router = APIRouter(prefix="/weather", tags=["weather"])
 def get_current_weather_endpoint(
     location: str = Query(..., description="City or coordinates"),
     nwp_model: str = Query("best_match", description="NWP Forecasting Model: best_match, gfs, ecmwf, icon"),
+    refresh: bool = Query(False, description="Force fresh fetch from weather provider bypassing cache"),
     db: Session = Depends(get_db)
 ):
     try:
-        data = get_weather(db, location, nwp_model=nwp_model)
+        data = get_weather(db, location, nwp_model=nwp_model, force_refresh=refresh)
         risk = calculate_weather_risk(data)
         return {
             "weather": data,

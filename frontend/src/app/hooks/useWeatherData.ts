@@ -1,12 +1,14 @@
 /**
  * WeatherGPT - useWeatherData Hook
- * Manages weather fetching, forecasting, NWP model switching, caching, and retry.
+ * ────────────────────────────────
+ * Manages weather state, caching, model switching, and race-condition-free updates.
+ * Directly integrates with weatherService for strict validation and telemetry.
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { api } from '../lib/api';
 import { WeatherData, RiskData, NwpModel } from '../lib/types';
 import { DEFAULT_LOCATION } from '../constants/location';
+import { fetchCurrentWeather } from '../services/weatherService';
 
 export function useWeatherData(initialLocation: string = DEFAULT_LOCATION.fullName) {
   const [location, setLocation] = useState<string>(() => {
@@ -23,11 +25,16 @@ export function useWeatherData(initialLocation: string = DEFAULT_LOCATION.fullNa
   const [error, setError] = useState<string | null>(null);
 
   const isMountedRef = useRef(true);
+  const activeAbortControllerRef = useRef<AbortController | null>(null);
+  const requestIdRef = useRef(0);
 
   useEffect(() => {
     isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
+      if (activeAbortControllerRef.current) {
+        activeAbortControllerRef.current.abort();
+      }
     };
   }, []);
 
@@ -36,18 +43,28 @@ export function useWeatherData(initialLocation: string = DEFAULT_LOCATION.fullNa
       const loc = (locToFetch || location || DEFAULT_LOCATION.fullName).trim();
       const nwpToUse = modelOverride || activeModel;
 
+      // Increment request ID to ignore stale responses
+      const currentRequestId = ++requestIdRef.current;
+
+      // Abort any ongoing in-flight request
+      if (activeAbortControllerRef.current) {
+        activeAbortControllerRef.current.abort();
+      }
+      const controller = new AbortController();
+      activeAbortControllerRef.current = controller;
+
       setLoading(true);
       setError(null);
 
-      // Check client-side cache
+      // Check short client-side cache (1 minute TTL) if not bypassing
       if (!bypassCache && typeof window !== 'undefined') {
         try {
           const cacheKey = `weather_cache_${loc.toLowerCase()}_${nwpToUse}`;
           const cached = localStorage.getItem(cacheKey);
           if (cached) {
             const { data, timestamp } = JSON.parse(cached);
-            if (Date.now() - timestamp < 10 * 60 * 1000) {
-              if (isMountedRef.current) {
+            if (Date.now() - timestamp < 60 * 1000) {
+              if (isMountedRef.current && currentRequestId === requestIdRef.current) {
                 setWeather(data.weather);
                 setRisk(data.risk);
                 setLoading(false);
@@ -61,16 +78,11 @@ export function useWeatherData(initialLocation: string = DEFAULT_LOCATION.fullNa
       }
 
       try {
-        const queryParams = new URLSearchParams({
-          location: loc,
-          nwp_model: nwpToUse,
-        });
+        const data = await fetchCurrentWeather(loc, nwpToUse, bypassCache, controller.signal);
 
-        const data = await api.get<{ weather: WeatherData; risk: RiskData }>(
-          `/api/weather/current?${queryParams.toString()}`
-        );
-
-        if (!isMountedRef.current) return;
+        if (!isMountedRef.current || currentRequestId !== requestIdRef.current) {
+          return;
+        }
 
         if (data && data.weather) {
           setWeather(data.weather);
@@ -97,12 +109,16 @@ export function useWeatherData(initialLocation: string = DEFAULT_LOCATION.fullNa
           setError('Weather data unavailable for this location.');
         }
       } catch (err: unknown) {
-        if (isMountedRef.current) {
-          const errorMsg = (err as Error)?.message || 'Weather network timeout or offline error';
-          setError(errorMsg);
+        if (!isMountedRef.current || currentRequestId !== requestIdRef.current) {
+          return;
         }
+        if ((err as Error)?.name === 'AbortError') {
+          return; // Intentionally aborted for newer request
+        }
+        const errorMsg = (err as Error)?.message || 'Weather network timeout or offline error';
+        setError(errorMsg);
       } finally {
-        if (isMountedRef.current) {
+        if (isMountedRef.current && currentRequestId === requestIdRef.current) {
           setLoading(false);
         }
       }
@@ -118,7 +134,7 @@ export function useWeatherData(initialLocation: string = DEFAULT_LOCATION.fullNa
       if (typeof window !== 'undefined') {
         localStorage.setItem('weathergpt_location', loc);
       }
-      fetchWeather(loc, activeModel, false);
+      fetchWeather(loc, activeModel, true);
     },
     [activeModel, fetchWeather]
   );
@@ -126,7 +142,7 @@ export function useWeatherData(initialLocation: string = DEFAULT_LOCATION.fullNa
   const changeModel = useCallback(
     (model: NwpModel) => {
       setActiveModel(model);
-      fetchWeather(location, model, false);
+      fetchWeather(location, model, true);
     },
     [location, fetchWeather]
   );

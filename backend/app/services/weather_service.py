@@ -761,6 +761,25 @@ def fetch_weather_from_api(city: str, api_key: str) -> Dict[str, Any]:
         raise e
 
 
+def get_mock_weather_for_city(city: str) -> Dict[str, Any]:
+    """Returns deterministic mock weather data for a city (SIH Offline Demo Mode)."""
+    norm_city = normalize_city_name(city)
+    default_key = norm_city if norm_city in MOCK_WEATHER_DATA else "nashik"
+    fallback_data = dict(MOCK_WEATHER_DATA[default_key])
+    if not fallback_data.get("forecast") or len(fallback_data.get("forecast")) < 5:
+        fallback_data["forecast"] = synthesize_7day_forecast(fallback_data.get("current", {}))
+    clean_loc = clean_location_string(city)
+    fallback_data["location"] = clean_loc.title() if clean_loc else "Nashik, Maharashtra"
+    cur_time = datetime.now().strftime("%I:%M %p")
+    fallback_data["current"]["updated_at"] = cur_time
+    return fallback_data
+
+
+def fetch_live_open_meteo(lat: float, lon: float, city: str = "Nashik", nwp_model: str = "best_match") -> Dict[str, Any]:
+    """Direct coordinate-based fetcher from Open-Meteo API."""
+    return fetch_weather_from_open_meteo(f"{lat},{lon}", nwp_model=nwp_model)
+
+
 def fetch_weather_from_open_meteo(city: str, nwp_model: str = "best_match") -> Dict[str, Any]:
     """Fetches real-time live weather from Open-Meteo API with support for NWP models (GFS, ECMWF, ICON/WRF) and WMO WIS 2.0 standards."""
     try:
@@ -816,7 +835,7 @@ def fetch_weather_from_open_meteo(city: str, nwp_model: str = "best_match") -> D
             geo_data = geo_res.json()
             
             if not geo_data or "results" not in geo_data or not geo_data["results"]:
-                # Check fallback coordinates for default location (Nashik)
+                # Default location: Nashik
                 lat = 20.0059
                 lon = 73.7797
                 display_name = clean_location_string(city).title()
@@ -892,10 +911,30 @@ def fetch_weather_from_open_meteo(city: str, nwp_model: str = "best_match") -> D
             icon_str = "cloud-lightning"
             
         rain_prob = daily.get("precipitation_probability_max", [50])[0] if daily.get("precipitation_probability_max") else 40
+
+        # Step 2 & 4: Current Air Temperature vs Feels Like & Unit Verification
+        temp_raw = current.get("temperature_2m")
+        if temp_raw is None or not isinstance(temp_raw, (int, float)):
+            raise ValueError(f"Invalid current temperature_2m from Open-Meteo: {temp_raw}")
+        
+        feels_raw = current.get("apparent_temperature")
+        if feels_raw is None or not isinstance(feels_raw, (int, float)):
+            feels_raw = temp_raw
+
+        current_units = w_data.get("current_units", {})
+        temp_unit = current_units.get("temperature_2m", "°C")
+        if temp_unit == "°F":
+            temp_c = (float(temp_raw) - 32.0) * 5.0 / 9.0
+            feels_c = (float(feels_raw) - 32.0) * 5.0 / 9.0
+        else:
+            temp_c = float(temp_raw)
+            feels_c = float(feels_raw)
+
+        print(f"[Open-Meteo] Live fetch for {display_name} ({lat}, {lon}): temp_2m={temp_raw}{temp_unit} -> {round(temp_c, 1)}°C, apparent={feels_raw}{temp_unit} -> {round(feels_c, 1)}°C")
         
         current_parsed = {
-            "temp": round(current.get("temperature_2m", 27.0), 1),
-            "feels_like": round(current.get("apparent_temperature", 28.0), 1),
+            "temp": round(temp_c, 1),
+            "feels_like": round(feels_c, 1),
             "condition": cond_str,
             "icon": icon_str,
             "humidity": round(current.get("relative_humidity_2m", 70)),
@@ -1160,8 +1199,8 @@ def synthesize_7day_forecast(current_dict: Dict[str, Any]) -> List[Dict[str, Any
     return result
 
 
-def get_weather(db: Any, location: Any = None, nwp_model: str = "best_match") -> Dict[str, Any]:
-    """Retrieves weather with Sub-millisecond Memory Cache, then DB, then Live API, supporting NWP models."""
+def get_weather(db: Any, location: Any = None, nwp_model: str = "best_match", force_refresh: bool = False) -> Dict[str, Any]:
+    """Retrieves weather with Sub-millisecond Memory Cache, then DB, then Live API, supporting NWP models and live refresh."""
     # Ensure parameter flexibility in case arguments are passed in reverse order (location, db)
     if isinstance(db, str) and (location is None or isinstance(location, Session)):
         db, location = location, db
@@ -1174,7 +1213,7 @@ def get_weather(db: Any, location: Any = None, nwp_model: str = "best_match") ->
     now_ts = time.time()
     
     # 1. Check Sub-millisecond In-Memory Fast Cache (TTL 180s)
-    if cache_key in _FAST_WEATHER_CACHE:
+    if not force_refresh and cache_key in _FAST_WEATHER_CACHE:
         entry = _FAST_WEATHER_CACHE[cache_key]
         if now_ts < entry["expires_at"]:
             cached_data = entry["data"]
@@ -1184,7 +1223,7 @@ def get_weather(db: Any, location: Any = None, nwp_model: str = "best_match") ->
 
     # 2. Check Database Cache (5-minute fresh cache, if standard best_match)
     cache_entry = None
-    if nwp_model == "best_match" and db is not None and isinstance(db, Session):
+    if not force_refresh and nwp_model == "best_match" and db is not None and isinstance(db, Session):
         try:
             cache_entry = db.query(WeatherCache).filter(WeatherCache.location == norm_city).first()
             if cache_entry:

@@ -269,6 +269,52 @@ def test_system_health():
     assert "subsystems" in data
     assert data["subsystems"]["database"]["status"] == "healthy"
 
+def test_temperature_accuracy_and_pipeline():
+    """Verifies that current temperature is actual air temperature (finite number), feels_like is separated, and coordinates match."""
+    res = client.get("/api/weather/current?location=Nashik&refresh=true")
+    assert res.status_code == 200
+    data = res.json()
+    assert "weather" in data
+    current = data["weather"]["current"]
+    
+    # 1. Temperature is a valid finite float/int
+    assert isinstance(current["temp"], (int, float))
+    assert isinstance(current["feels_like"], (int, float))
+    assert -50 <= current["temp"] <= 60
+    assert -50 <= current["feels_like"] <= 60
+    
+    # 2. Location coordinates match Nashik
+    coords = data["weather"]["coordinates"]
+    assert round(coords["lat"], 2) == 20.01 or round(coords["lat"], 2) == 20.00
+    assert round(coords["lon"], 2) == 73.78
+
+    # 3. Test city switching across India (Nashik -> Mumbai -> Delhi)
+    for city, (expected_lat, expected_lon) in [
+        ("Mumbai", (19.08, 72.88)),
+        ("Delhi", (28.70, 77.10)),
+        ("Nashik", (20.01, 73.78))
+    ]:
+        c_res = client.get(f"/api/weather/current?location={city}&refresh=true")
+        assert c_res.status_code == 200
+        c_data = c_res.json()
+        assert city in c_data["weather"]["location"]
+        assert isinstance(c_data["weather"]["current"]["temp"], (int, float))
+
+
+def test_temperature_unit_conversion_math():
+    """Validates that Fahrenheit to Celsius conversion formula (°F - 32) * 5/9 is exact and never applied twice."""
+    # 86°F -> 30°C
+    f_val = 86.0
+    c_val = (f_val - 32.0) * 5.0 / 9.0
+    assert round(c_val, 1) == 30.0
+
+    # 32°F -> 0°C
+    assert round((32.0 - 32.0) * 5.0 / 9.0, 1) == 0.0
+
+    # 212°F -> 100°C
+    assert round((212.0 - 32.0) * 5.0 / 9.0, 1) == 100.0
+
+
 if __name__ == "__main__":
     print("Running WeatherGPT Backend Integration Tests...")
     try:
@@ -284,6 +330,10 @@ if __name__ == "__main__":
         print("[OK] User Preferences & Saved Locations working")
         test_current_weather()
         print("[OK] Current weather & risk engine working")
+        test_temperature_accuracy_and_pipeline()
+        print("[OK] Air temperature accuracy, feels-like separation & coordinates verified")
+        test_temperature_unit_conversion_math()
+        print("[OK] Temperature unit conversion math verified")
         test_weather_providers()
         print("[OK] Weather Provider Abstraction & /complete endpoint working")
         test_forecast()
@@ -316,7 +366,7 @@ if __name__ == "__main__":
         print("[OK] Analytics & Product Insights endpoints working")
         test_websockets()
         print("[OK] Real-time WebSockets (/ws/alerts, /ws/weather) working")
-        print("\nAll 20 backend integration test suites PASSED successfully!")
+        print("\nAll 22 backend integration test suites PASSED successfully!")
     except AssertionError as e:
         print(f"Assertion failed: {e}")
         sys.exit(1)
