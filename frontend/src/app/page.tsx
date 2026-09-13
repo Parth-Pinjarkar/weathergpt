@@ -160,31 +160,31 @@ export default function WeatherGPTApp() {
   );
 
   return (
-    <div className="app-shell bg-background font-body-md text-on-surface antialiased">
+    <div className="app-shell flex w-full min-h-screen bg-background font-body-md text-on-surface antialiased">
       {/* 1. SIDEBAR (Desktop) */}
-      <aside className="app-sidebar hidden md:flex flex-col justify-between bg-surface-container-lowest shadow-sm z-30 select-none border-r border-surface-container-high">
-        <div className="p-3">
+      <aside className="hidden md:flex flex-col justify-between w-64 shrink-0 bg-surface-container-lowest shadow-sm z-30 overflow-y-auto border-r border-surface-container-high select-none sticky top-0 h-screen">
+        <div className="p-space-md">
           {/* Logo Header */}
-          <div className="flex items-center gap-2 pb-3 border-b border-surface-container-high">
-            <div className="h-8 w-8 rounded-lg bg-primary-fixed/40 border border-primary/20 flex items-center justify-center text-primary shadow-xs shrink-0">
-              <span className="material-symbols-outlined text-[20px]">cyclone</span>
+          <div className="flex items-center gap-space-sm pb-space-md border-b border-surface-container-high">
+            <div className="h-9 w-9 rounded-lg bg-primary-fixed/40 border border-primary/20 flex items-center justify-center text-primary shadow-xs">
+              <span className="material-symbols-outlined text-[22px]">cyclone</span>
             </div>
-            <div className="flex flex-col min-w-0">
-              <div className="flex items-center gap-1">
-                <span className="font-headline-sm text-sm text-primary tracking-tight font-bold truncate">WeatherGPT</span>
-                <span className="font-label-mono-sm text-[9px] px-1 py-0.2 rounded bg-primary-fixed/40 text-primary font-bold">
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1.5">
+                <span className="font-headline-sm text-headline-sm text-primary tracking-tight font-bold">WeatherGPT</span>
+                <span className="font-label-mono-sm text-[10px] px-1.5 py-0.2 rounded bg-primary-fixed/40 text-primary font-bold">
                   AI-OPS
                 </span>
               </div>
-              <span className="font-label-mono-sm text-[9px] text-outline tracking-wider uppercase truncate">
+              <span className="font-label-mono-sm text-[10px] text-outline tracking-wider uppercase">
                 IMD Copilot • MoES
               </span>
             </div>
           </div>
 
           {/* Navigation Links */}
-          <div className="pt-3">
-            <span className="font-label-mono-bold text-[10px] text-on-surface-variant uppercase tracking-wider block mb-1">
+          <div className="pt-space-md">
+            <span className="font-label-mono-bold text-label-mono-sm text-on-surface-variant uppercase tracking-wider block mb-space-xs">
               Intelligence Core
             </span>
             <nav className="flex flex-col gap-1">
@@ -198,22 +198,22 @@ export default function WeatherGPTApp() {
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id as ActiveTab)}
-                  className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer text-left ${
+                  className={`flex items-center gap-space-sm px-space-sm py-2 rounded-lg transition-colors cursor-pointer text-left ${
                     activeTab === item.id
                       ? 'bg-primary text-on-primary font-bold shadow-xs'
                       : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-[18px]">{item.icon}</span>
-                  <span className="font-body-sm text-xs">{item.label}</span>
+                  <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
+                  <span className="font-body-md text-body-md">{item.label}</span>
                 </button>
               ))}
             </nav>
           </div>
 
           {/* Operational Modes Rail */}
-          <div className="pt-3">
-            <span className="font-label-mono-bold text-[10px] text-on-surface-variant uppercase tracking-wider block mb-1">
+          <div className="pt-space-md">
+            <span className="font-label-mono-bold text-label-mono-sm text-on-surface-variant uppercase tracking-wider block mb-space-xs">
               Operational Modes
             </span>
             <div className="flex flex-col gap-1">
@@ -225,170 +225,171 @@ export default function WeatherGPTApp() {
                 <button
                   key={m.id}
                   onClick={() => handleModeChange(m.id as UserRole)}
-                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer text-left ${
+                  className={`w-full flex items-center justify-between px-space-sm py-2 rounded-lg transition-colors cursor-pointer text-left ${
                     currentMode === m.id
                       ? 'bg-surface-container-high text-primary font-bold'
                       : 'bg-surface-container-low text-on-surface hover:bg-surface-container'
                   }`}
                 >
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    <span className="material-symbols-outlined text-[16px] shrink-0">{m.icon}</span>
-                    <span className="font-body-sm text-xs truncate">{m.label}</span>
+                  <div className="flex items-center gap-space-xs">
+                    <span className="material-symbols-outlined text-[18px]">{m.icon}</span>
+                    <span className="font-body-sm text-body-sm">{m.label}</span>
                   </div>
-                  {currentMode === m.id && <span className="w-1.5 h-1.5 rounded-full bg-radar-emerald animate-pulse shrink-0"></span>}
+                  {currentMode === m.id && <span className="w-2 h-2 rounded-full bg-radar-emerald animate-pulse"></span>}
                 </button>
               ))}
             </div>
           </div>
 
           {/* Advanced Tools */}
-          <div className="pt-3">
-            <span className="font-label-mono-bold text-[10px] text-on-surface-variant uppercase tracking-wider block mb-1">
+          <div className="pt-space-md">
+            <span className="font-label-mono-bold text-label-mono-sm text-on-surface-variant uppercase tracking-wider block mb-space-xs">
               Advanced Tools
             </span>
             <div className="flex flex-col gap-1">
               <button
                 onClick={() => setSimModalOpen(true)}
-                className="flex w-full items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-rose-500 hover:bg-rose-500/10 transition cursor-pointer"
+                className="flex w-full items-center gap-2 px-space-sm py-1.5 rounded-lg text-xs font-semibold text-rose-500 hover:bg-rose-500/10 transition cursor-pointer"
               >
-                <span className="material-symbols-outlined text-[15px]">cyclone</span>
-                <span className="truncate">Disaster Simulator</span>
+                <span className="material-symbols-outlined text-[16px]">cyclone</span>
+                <span>Disaster Simulator</span>
               </button>
               <button
                 onClick={() => setEmergencyModalOpen(true)}
-                className="flex w-full items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-600/10 transition cursor-pointer"
+                className="flex w-full items-center gap-2 px-space-sm py-1.5 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-600/10 transition cursor-pointer"
               >
-                <span className="material-symbols-outlined text-[15px]">phone_in_talk</span>
-                <span className="truncate">Emergency Center</span>
+                <span className="material-symbols-outlined text-[16px]">phone_in_talk</span>
+                <span>Emergency Center</span>
               </button>
               <button
                 onClick={() => setClimateModalOpen(true)}
-                className="flex w-full items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-atmospheric-cyan hover:bg-cyan-500/10 transition cursor-pointer"
+                className="flex w-full items-center gap-2 px-space-sm py-1.5 rounded-lg text-xs font-semibold text-atmospheric-cyan hover:bg-cyan-500/10 transition cursor-pointer"
               >
-                <span className="material-symbols-outlined text-[15px]">trending_up</span>
-                <span className="truncate">Climate Insights</span>
+                <span className="material-symbols-outlined text-[16px]">trending_up</span>
+                <span>Climate Insights</span>
               </button>
               <button
                 onClick={() => setReportModalOpen(true)}
-                className="flex w-full items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-primary hover:bg-primary/10 transition cursor-pointer"
+                className="flex w-full items-center gap-2 px-space-sm py-1.5 rounded-lg text-xs font-semibold text-primary hover:bg-primary/10 transition cursor-pointer"
               >
-                <span className="material-symbols-outlined text-[15px]">description</span>
-                <span className="truncate">Export Report</span>
+                <span className="material-symbols-outlined text-[16px]">description</span>
+                <span>Export Report</span>
               </button>
             </div>
           </div>
         </div>
 
         {/* Photo Weather AI Card */}
-        <div className="p-2.5 bg-surface-container-low rounded-t-xl mx-2 mb-2 border border-surface-container-high">
-          <div className="flex items-center gap-1.5 mb-0.5">
-            <span className="material-symbols-outlined text-primary text-[18px]">photo_camera</span>
-            <span className="font-headline-sm text-xs text-on-surface font-semibold">Photo Weather AI</span>
+        <div className="p-space-md bg-surface-container-low rounded-t-xl mx-space-sm mb-space-sm border border-surface-container-high">
+          <div className="flex items-center gap-space-xs mb-1">
+            <span className="material-symbols-outlined text-primary text-[20px]">photo_camera</span>
+            <span className="font-headline-sm text-headline-sm text-on-surface font-semibold">Photo Weather AI</span>
           </div>
-          <p className="font-body-sm text-[11px] text-on-surface-variant mb-2 leading-tight">
+          <p className="font-body-sm text-body-sm text-on-surface-variant mb-space-sm leading-relaxed">
             Upload sky snapshots for automated cloud vector &amp; optical barometry estimation.
           </p>
           <Link
             href="/photo-analysis"
-            className="w-full flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg bg-primary text-on-primary font-body-sm text-xs hover:bg-primary-container transition shadow-sm cursor-pointer"
+            className="w-full flex items-center justify-center gap-space-xs py-2 px-space-sm rounded-lg bg-primary text-on-primary font-body-sm text-body-sm hover:bg-primary-container transition shadow-sm cursor-pointer"
           >
-            <span className="material-symbols-outlined text-[16px]">add_a_photo</span>
+            <span className="material-symbols-outlined text-[18px]">add_a_photo</span>
             <span>Analyze Cloudscape</span>
           </Link>
         </div>
       </aside>
 
-      {/* 2. TOP HEADER */}
-      <header className="app-header z-20 bg-surface-glass backdrop-blur-xl border-b border-surface-container-high shadow-xs flex items-center justify-between px-3 md:px-4 w-full shrink-0">
-        {/* Universal Search Bar */}
-        <div className="flex items-center gap-2 flex-1 max-w-xl mr-2">
-          <div className="relative flex-1 flex items-center bg-surface-container-low rounded-lg px-2.5 py-1 border border-surface-container-high focus-within:border-primary transition">
-            <span className="material-symbols-outlined text-outline text-[18px] mr-1.5">search</span>
-            <input
-              type="text"
-              value={searchLocation}
-              onChange={(e) => setSearchLocation(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  changeLocation(searchLocation);
-                }
-              }}
-              placeholder="Search Observatory, City or Coordinates (Default: Nashik)..."
-              className="bg-transparent border-0 outline-none w-full font-body-sm text-xs text-on-surface placeholder:text-outline"
-            />
+      {/* 2. MAIN CONTAINER & TOP HEADER */}
+      <div className="main-content flex-1 min-w-0 flex flex-col min-h-screen bg-background w-full">
+        {/* Top Header */}
+        <header className="sticky top-0 z-20 h-14 bg-surface-glass backdrop-blur-xl border-b border-surface-container-high shadow-xs flex items-center justify-between px-space-md md:px-space-lg w-full shrink-0">
+          {/* Universal Search Bar */}
+          <div className="flex items-center gap-space-sm flex-1 max-w-xl mr-2">
+            <div className="relative flex-1 flex items-center bg-surface-container-low rounded-lg px-space-sm py-1.5 border border-surface-container-high focus-within:border-primary transition">
+              <span className="material-symbols-outlined text-outline text-[20px] mr-space-xs">search</span>
+              <input
+                type="text"
+                value={searchLocation}
+                onChange={(e) => setSearchLocation(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    changeLocation(searchLocation);
+                  }
+                }}
+                placeholder="Search Observatory, City or Coordinates (Default: Nashik)..."
+                className="bg-transparent border-0 outline-none w-full font-body-sm text-body-sm text-on-surface placeholder:text-outline"
+              />
+              <button
+                onClick={handleUseCurrentLocation}
+                disabled={weatherLoading}
+                title="Acquire Current GPS Fix"
+                className="flex items-center gap-space-xs px-2 py-1 rounded bg-surface-container-highest text-on-surface hover:bg-primary hover:text-on-primary transition cursor-pointer disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined text-[16px]">my_location</span>
+                <span className="font-label-mono-sm text-label-mono-sm font-bold">GPS</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Right Header Strip */}
+          <div className="flex items-center gap-2 md:gap-space-md">
+            {/* WIS Telemetry */}
+            <div className="hidden xl:flex items-center gap-space-xs px-space-sm py-1.5 rounded-full bg-surface-container-high border border-surface-container">
+              <span className="w-2 h-2 rounded-full bg-radar-emerald animate-ping"></span>
+              <span className="font-label-mono-sm text-label-mono-sm text-on-surface">
+                WIS 2.0 / MQTT: <span className="text-primary font-bold">ACTIVE {weather?.wis2_telemetry?.latency_ms ?? 12}ms</span>
+              </span>
+              <span className="text-outline font-label-mono-sm text-label-mono-sm">• Online</span>
+            </div>
+
+            {/* Language Selector */}
+            <div className="flex items-center gap-space-xs px-2 py-1.5 rounded-lg bg-surface-container-low border border-surface-container-high">
+              <span className="material-symbols-outlined text-on-surface-variant text-[18px]">translate</span>
+              <select
+                value={currentLang}
+                onChange={(e) => handleLanguageChange(e.target.value as SupportedLanguage)}
+                className="bg-transparent border-0 outline-none font-body-sm text-body-sm text-on-surface cursor-pointer pr-1"
+              >
+                <option value="en">EN (English)</option>
+                <option value="hi">HI (हिंदी)</option>
+                <option value="mr">MR (मराठी)</option>
+                <option value="ta">TA (தமிழ்)</option>
+              </select>
+            </div>
+
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
+            {/* User Profile Pill */}
             <button
-              onClick={handleUseCurrentLocation}
-              disabled={weatherLoading}
-              title="Acquire Current GPS Fix"
-              className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface hover:bg-primary hover:text-on-primary transition cursor-pointer disabled:opacity-50"
+              onClick={() => setAuthModalOpen(true)}
+              className="flex items-center gap-space-xs pl-space-xs cursor-pointer hover:opacity-90 transition"
             >
-              <span className="material-symbols-outlined text-[14px]">my_location</span>
-              <span className="font-label-mono-sm text-[10px] font-bold">GPS</span>
+              <div className="flex flex-col text-right hidden sm:flex">
+                <span className="font-body-sm text-body-sm text-on-surface font-semibold">
+                  {currentUser ? currentUser.name : 'Guest Explorer'}
+                </span>
+                <span className="font-label-mono-sm text-label-mono-sm text-outline">
+                  {currentUser ? currentUser.role.toUpperCase() : 'IMD-CIVIL-PUBLIC'}
+                </span>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-sm">
+                <span className="material-symbols-outlined text-[18px]">person</span>
+              </div>
             </button>
           </div>
+        </header>
+
+        {/* Mobile Navigation Strip */}
+        <div className="md:hidden flex bg-surface-container-lowest border-b border-surface-container-high p-2 overflow-x-auto whitespace-nowrap select-none shrink-0">
+          <button onClick={() => setActiveTab('dashboard')} className={`px-3 py-1.5 text-xs font-bold rounded-lg ${activeTab === 'dashboard' ? 'bg-primary text-on-primary' : 'text-on-surface-variant'}`}>Live Telemetry</button>
+          <button onClick={() => setActiveTab('map')} className={`px-3 py-1.5 text-xs font-bold rounded-lg ${activeTab === 'map' ? 'bg-primary text-on-primary' : 'text-on-surface-variant'}`}>Radar &amp; Maps</button>
+          <button onClick={() => setActiveTab('route')} className={`px-3 py-1.5 text-xs font-bold rounded-lg ${activeTab === 'route' ? 'bg-primary text-on-primary' : 'text-on-surface-variant'}`}>Route Intel</button>
+          <button onClick={() => setActiveTab('alerts')} className={`px-3 py-1.5 text-xs font-bold rounded-lg ${activeTab === 'alerts' ? 'bg-primary text-on-primary' : 'text-on-surface-variant'}`}>Severe Alerts</button>
+          <button onClick={() => setActiveTab('settings')} className={`px-3 py-1.5 text-xs font-bold rounded-lg ${activeTab === 'settings' ? 'bg-primary text-on-primary' : 'text-on-surface-variant'}`}>Settings</button>
         </div>
 
-        {/* Right Header Strip */}
-        <div className="flex items-center gap-2 md:gap-3">
-          {/* WIS Telemetry */}
-          <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high border border-surface-container">
-            <span className="w-2 h-2 rounded-full bg-radar-emerald animate-ping"></span>
-            <span className="font-label-mono-sm text-[11px] text-on-surface">
-              WIS 2.0 / MQTT: <span className="text-primary font-bold">ACTIVE {weather?.wis2_telemetry?.latency_ms ?? 12}ms</span>
-            </span>
-            <span className="text-outline font-label-mono-sm text-[11px]">• Online</span>
-          </div>
-
-          {/* Language Selector */}
-          <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-surface-container-low border border-surface-container-high">
-            <span className="material-symbols-outlined text-on-surface-variant text-[16px]">translate</span>
-            <select
-              value={currentLang}
-              onChange={(e) => handleLanguageChange(e.target.value as SupportedLanguage)}
-              className="bg-transparent border-0 outline-none font-body-sm text-xs text-on-surface cursor-pointer pr-1"
-            >
-              <option value="en">EN (English)</option>
-              <option value="hi">HI (हिंदी)</option>
-              <option value="mr">MR (मराठी)</option>
-              <option value="ta">TA (தமிழ்)</option>
-            </select>
-          </div>
-
-          {/* Theme Toggle */}
-          <ThemeToggle />
-
-          {/* User Profile Pill */}
-          <button
-            onClick={() => setAuthModalOpen(true)}
-            className="flex items-center gap-1.5 pl-1 cursor-pointer hover:opacity-90 transition"
-          >
-            <div className="flex flex-col text-right hidden sm:flex">
-              <span className="font-body-sm text-xs text-on-surface font-semibold">
-                {currentUser ? currentUser.name : 'Guest Explorer'}
-              </span>
-              <span className="font-label-mono-sm text-[10px] text-outline">
-                {currentUser ? currentUser.role.toUpperCase() : 'IMD-CIVIL-PUBLIC'}
-              </span>
-            </div>
-            <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-sm">
-              <span className="material-symbols-outlined text-[16px]">person</span>
-            </div>
-          </button>
-        </div>
-      </header>
-
-      {/* Mobile Navigation Strip */}
-      <div className="md:hidden flex bg-surface-container-lowest border-b border-surface-container-high p-2 overflow-x-auto whitespace-nowrap select-none shrink-0">
-        <button onClick={() => setActiveTab('dashboard')} className={`px-3 py-1.5 text-xs font-bold rounded-lg ${activeTab === 'dashboard' ? 'bg-primary text-on-primary' : 'text-on-surface-variant'}`}>Live Telemetry</button>
-        <button onClick={() => setActiveTab('map')} className={`px-3 py-1.5 text-xs font-bold rounded-lg ${activeTab === 'map' ? 'bg-primary text-on-primary' : 'text-on-surface-variant'}`}>Radar &amp; Maps</button>
-        <button onClick={() => setActiveTab('route')} className={`px-3 py-1.5 text-xs font-bold rounded-lg ${activeTab === 'route' ? 'bg-primary text-on-primary' : 'text-on-surface-variant'}`}>Route Intel</button>
-        <button onClick={() => setActiveTab('alerts')} className={`px-3 py-1.5 text-xs font-bold rounded-lg ${activeTab === 'alerts' ? 'bg-primary text-on-primary' : 'text-on-surface-variant'}`}>Severe Alerts</button>
-        <button onClick={() => setActiveTab('settings')} className={`px-3 py-1.5 text-xs font-bold rounded-lg ${activeTab === 'settings' ? 'bg-primary text-on-primary' : 'text-on-surface-variant'}`}>Settings</button>
-      </div>
-
-      {/* 3. DYNAMIC MAIN VIEW CONTAINER */}
-      <div className="app-dashboard-container w-full bg-background">
-        <main className="h-full w-full">
+        {/* Dynamic Main View Router */}
+        <main className="flex-1 min-w-0 w-full bg-background">
           {activeTab === 'dashboard' && (
             <DashboardView
               weather={weather}
