@@ -42,7 +42,7 @@ import {
   saveLanguagePreference,
 } from './i18n';
 
-import { useTheme } from './context/ThemeContext';
+import { ThemeToggle } from './components/ThemeToggle';
 
 // Dynamically import WeatherMap with SSR disabled (Leaflet requires window)
 const WeatherMap = dynamic(() => import('./components/WeatherMap'), {
@@ -56,7 +56,6 @@ const WeatherMap = dynamic(() => import('./components/WeatherMap'), {
 });
 
 export default function WeatherGPTApp() {
-  const { theme, toggleTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
   const [currentLang, setCurrentLang] = useState<SupportedLanguage>(() => getSavedLanguage());
   const [currentMode, setCurrentMode] = useState<UserRole>(() => {
@@ -159,7 +158,7 @@ export default function WeatherGPTApp() {
   );
 
   return (
-    <div className={`min-h-screen flex bg-background font-body-md text-on-surface antialiased ${theme}`}>
+    <div className="min-h-screen flex bg-background font-body-md text-on-surface antialiased">
       {/* 1. SIDEBAR (Desktop) */}
       <aside className="hidden md:flex flex-col justify-between w-64 shrink-0 bg-surface-container-lowest shadow-sm z-30 overflow-y-auto border-r border-surface-container-high select-none sticky top-0 h-screen">
         <div className="p-space-md">
@@ -356,15 +355,7 @@ export default function WeatherGPTApp() {
             </div>
 
             {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition cursor-pointer"
-              title="Toggle Interface Lighting Mode"
-            >
-              <span className="material-symbols-outlined text-[20px]">
-                {theme === 'dark' ? 'light_mode' : 'dark_mode'}
-              </span>
-            </button>
+            <ThemeToggle />
 
             {/* User Profile Pill */}
             <button
@@ -448,12 +439,10 @@ export default function WeatherGPTApp() {
           {activeTab === 'settings' && (
             <SettingsView
               currentLang={currentLang}
-              theme={theme}
               currentMode={currentMode}
               activeModel={activeModel}
               currentUser={currentUser}
               onLanguageChange={handleLanguageChange}
-              onThemeToggle={toggleTheme}
               onModeChange={handleModeChange}
               onModelChange={changeModel}
               onOpenAuthModal={() => setAuthModalOpen(true)}

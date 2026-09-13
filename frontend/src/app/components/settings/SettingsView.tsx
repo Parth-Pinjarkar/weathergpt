@@ -9,7 +9,6 @@ import {
   Settings as SettingsIcon,
   Globe,
   Sun,
-  Moon,
   Layers,
   User,
   CheckCircle2,
@@ -19,15 +18,16 @@ import {
   SupportedLanguage,
   SUPPORTED_LANGUAGES,
 } from '../../i18n';
+import { ThemeToggle } from '../ThemeToggle';
 
 interface SettingsViewProps {
   currentLang: SupportedLanguage;
-  theme: 'light' | 'dark';
+  theme?: 'light' | 'dark';
   currentMode: UserRole;
   activeModel: NwpModel;
   currentUser: UserProfile | null;
   onLanguageChange: (lang: SupportedLanguage) => void;
-  onThemeToggle: () => void;
+  onThemeToggle?: () => void;
   onModeChange: (mode: UserRole) => void;
   onModelChange: (model: NwpModel) => void;
   onOpenAuthModal?: () => void;
@@ -35,12 +35,10 @@ interface SettingsViewProps {
 
 export const SettingsView: React.FC<SettingsViewProps> = ({
   currentLang,
-  theme,
   currentMode,
   activeModel,
   currentUser,
   onLanguageChange,
-  onThemeToggle,
   onModeChange,
   onModelChange,
   onOpenAuthModal,
@@ -177,32 +175,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-2 mt-4">
-            <button
-              type="button"
-              onClick={onThemeToggle}
-              className={`flex-1 py-2 px-3 rounded-lg border text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer ${
-                theme === 'light'
-                  ? 'bg-primary text-on-primary border-primary'
-                  : 'bg-surface-container-low text-on-surface border-surface-container-high'
-              }`}
-            >
-              <Sun className="h-4 w-4" />
-              <span>Light Mode</span>
-            </button>
-            <button
-              type="button"
-              onClick={onThemeToggle}
-              className={`flex-1 py-2 px-3 rounded-lg border text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer ${
-                theme === 'dark'
-                  ? 'bg-primary text-on-primary border-primary'
-                  : 'bg-surface-container-low text-on-surface border-surface-container-high'
-              }`}
-            >
-              <Moon className="h-4 w-4" />
-              <span>Dark Mode</span>
-            </button>
-          </div>
+          <ThemeToggle variant="button" className="mt-4" />
         </section>
 
         {/* NWP Forecasting Model */}

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { 
   CloudRain, Lock, Mail, User as UserIcon, ArrowLeft, 
   CheckCircle2, AlertCircle, ArrowRight, UserCheck, 
-  Car, Wheat, Flame, GraduationCap, Sun, Moon, Globe
+  Car, Wheat, Flame, GraduationCap, Globe
 } from 'lucide-react';
 import { 
   LOCALIZATION, 
@@ -17,12 +17,10 @@ import {
 } from '../i18n';
 import { setAuthToken, setStoredUser, setStoredRole } from '../lib/auth';
 import { UserProfile, UserRole } from '../lib/types';
-
-import { useTheme } from '../context/ThemeContext';
+import { ThemeToggle } from '../components/ThemeToggle';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
   const [lang, setLang] = useState<SupportedLanguage>(() => getSavedLanguage());
   const [activeTab, setActiveTab] = useState<'login' | 'register' | 'guest'>('login');
 
@@ -226,13 +224,7 @@ export default function LoginPage() {
           </div>
 
           {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition cursor-pointer"
-            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          >
-            {theme === 'dark' ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-cyan-400" />}
-          </button>
+          <ThemeToggle variant="icon" />
         </div>
       </header>
 

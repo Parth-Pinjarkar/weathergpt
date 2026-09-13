@@ -15,11 +15,9 @@ import {
   Info,
   RefreshCw,
   Compass,
-  Globe,
-  Sun,
-  Moon
+  Globe
 } from 'lucide-react';
-import { useTheme } from '../context/ThemeContext';
+import { ThemeToggle } from '../components/ThemeToggle';
 
 import { 
   getSavedLanguage, 
@@ -92,7 +90,6 @@ interface PhotoAnalysisResult {
 }
 
 export default function PhotoAnalysisPage() {
-  const { theme, toggleTheme } = useTheme();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [locationInput, setLocationInput] = useState<string>('Nashik');
@@ -264,13 +261,7 @@ export default function PhotoAnalysisPage() {
           </div>
 
           {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition cursor-pointer"
-            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          >
-            {theme === 'dark' ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-cyan-400" />}
-          </button>
+          <ThemeToggle variant="icon" />
         </div>
       </div>
 
