@@ -132,8 +132,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               >
                 <span className="text-sm">{hub.icon}</span>
                 <span className="font-body-md text-body-md font-semibold">{hub.name}</span>
-                <span className={`font-label-mono-sm text-label-mono-sm ${isCurrent ? 'opacity-90' : 'text-on-surface-variant'}`}>
-                  {hub.badge}
+                <span className={`font-label-mono-sm text-label-mono-sm ${isCurrent ? 'opacity-90 font-bold' : 'text-on-surface-variant'}`}>
+                  {isCurrent ? `${formatTemperature(current.temp)} • Live` : hub.badge}
                 </span>
                 {isCurrent && <span className="w-2 h-2 rounded-full bg-primary-fixed ml-0.5 animate-pulse"></span>}
               </button>
@@ -249,18 +249,36 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </div>
 
               {/* Temperature Display */}
-              <div className="my-4 flex items-baseline justify-between relative z-10">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-5xl md:text-6xl font-headline-lg font-extrabold text-on-surface tracking-tighter">
-                    {formatTemperature(current.temp)}
-                  </span>
+              <div className="my-4 flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+                <div className="flex flex-col">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-5xl md:text-6xl font-headline-lg font-extrabold text-on-surface tracking-tighter">
+                      {formatTemperature(current.temp)}
+                    </span>
+                    <span className="text-xs px-2 py-0.5 rounded bg-primary-fixed/40 text-primary font-bold uppercase tracking-wider">
+                      Current Temperature
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                    <span className="font-label-mono-bold text-xs uppercase text-on-surface font-semibold tracking-wider">
+                      Feels like <strong className="text-primary">{formatTemperature(current.feels_like)}</strong>
+                    </span>
+                    {forecast[0] && (
+                      <>
+                        <span className="text-outline text-xs">•</span>
+                        <span className="font-label-mono-sm text-xs text-on-surface-variant">
+                          Today&apos;s High: <strong className="text-on-surface">{formatTemperature(forecast[0].temp_max ?? forecast[0].temp)}</strong> / Low: <strong className="text-on-surface">{formatTemperature(forecast[0].temp_min ?? (forecast[0].temp - 5))}</strong>
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-x-space-md gap-y-1 font-label-mono-sm text-label-mono-sm text-on-surface-variant">
-                  <div>Feels: <strong className="text-on-surface">{formatTemperature(current.feels_like)}</strong></div>
+                <div className="grid grid-cols-2 gap-x-space-md gap-y-1.5 font-label-mono-sm text-label-mono-sm text-on-surface-variant bg-surface-container-low/70 p-3 rounded-xl border border-surface-container-high">
                   <div>Humidity: <strong className="text-on-surface">{current.humidity}%</strong></div>
                   <div>Wind: <strong className="text-on-surface">{formatWindSpeed(current.wind_speed)} {current.wind_direction || 'WNW'}</strong></div>
                   <div>Rain Prob: <strong className="text-primary font-bold">{current.rain_probability}%</strong></div>
+                  <div>Sync: <strong className="text-on-surface">{current.updated_at || 'Live Telemetry'}</strong></div>
                 </div>
               </div>
 

@@ -932,6 +932,9 @@ def fetch_weather_from_open_meteo(city: str, nwp_model: str = "best_match") -> D
 
         print(f"[Open-Meteo] Live fetch for {display_name} ({lat}, {lon}): temp_2m={temp_raw}{temp_unit} -> {round(temp_c, 1)}°C, apparent={feels_raw}{temp_unit} -> {round(feels_c, 1)}°C")
         
+        uv_maxs = daily.get("uv_index_max", [])
+        uv_current = round(uv_maxs[0], 1) if uv_maxs else 4
+
         current_parsed = {
             "temp": round(temp_c, 1),
             "feels_like": round(feels_c, 1),
@@ -942,12 +945,12 @@ def fetch_weather_from_open_meteo(city: str, nwp_model: str = "best_match") -> D
             "wind_direction": get_wind_direction(current.get("wind_direction_10m", 0)),
             "pressure": round(current.get("surface_pressure", 1012)),
             "visibility": 10.0,
-            "uv_index": 6,
+            "uv_index": uv_current,
             "rain_probability": rain_prob,
             "air_quality": "Satisfactory (AQI 48)",
             "sunrise": "06:15 AM",
             "sunset": "06:45 PM",
-            "source": "Open-Meteo Live Service",
+            "source": "Open-Meteo Live Telemetry",
             "updated_at": datetime.now().strftime("%I:%M %p")
         }
         
@@ -1049,11 +1052,12 @@ def fetch_weather_from_open_meteo(city: str, nwp_model: str = "best_match") -> D
                             "wind": round(h_winds[h_i]) if h_i < len(h_winds) else 10
                         })
                     
+                day_metric_temp = current_parsed["temp"] if idx == 0 else t_max
                 forecast_list.append({
                     "day": day_name,
                     "date": date_formatted,
                     "date_iso": date_iso,
-                    "temp": t_max,
+                    "temp": day_metric_temp,
                     "temp_max": t_max,
                     "temp_min": t_min,
                     "condition": f_cond,

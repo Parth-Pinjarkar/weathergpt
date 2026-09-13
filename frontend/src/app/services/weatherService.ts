@@ -10,6 +10,17 @@ import { api } from '../lib/api';
 import { WeatherData, RiskData, NwpModel } from '../lib/types';
 import { DEFAULT_LOCATION } from '../constants/location';
 
+export interface CurrentWeather {
+  temperature: number;
+  feelsLike: number;
+  humidity: number;
+  windSpeed: number;
+  precipitation: number;
+  weatherCode: number;
+  updatedAt: string;
+  source: string;
+}
+
 export interface CurrentWeatherNormalized {
   temp: number; // Actual current air temperature in °C
   feels_like: number; // Apparent/feels-like temperature in °C
