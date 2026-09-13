@@ -61,7 +61,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({
   const alerts = weather?.alerts || [];
 
   return (
-    <div className="w-full min-w-0 p-space-md lg:p-space-lg flex flex-col gap-space-md max-w-7xl mx-auto">
+    <div className="w-full min-w-0 p-space-md lg:p-space-lg flex flex-col gap-space-md">
       {/* Header Banner */}
       <div className="p-space-md md:p-space-lg rounded-xl bg-surface-container-lowest shadow-sm border border-surface-container-high flex flex-wrap items-center justify-between gap-space-sm">
         <div className="flex items-center gap-space-sm">

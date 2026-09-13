@@ -109,21 +109,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   return (
     <div className="w-full min-w-0 p-space-md lg:p-space-lg flex flex-col gap-space-md">
       {/* 1. Prominent Meteorological Hubs Ticker */}
-      <section className="w-full min-w-0 flex items-center gap-space-sm overflow-x-auto pb-1 scrollbar-none">
+      <section className="w-full min-w-0 max-w-full flex items-center gap-space-sm pb-1">
         <div className="flex items-center gap-space-xs shrink-0 px-space-sm py-1 rounded-full bg-surface-container-high text-on-surface">
           <span className="material-symbols-outlined text-primary text-[18px]">hub</span>
           <span className="font-label-mono-bold text-label-mono-bold uppercase tracking-wider text-on-surface-variant">
             Prominent Hubs:
           </span>
         </div>
-        <div className="flex items-center gap-space-xs shrink-0">
+        <div className="hub-container flex items-center gap-space-xs min-w-0 max-w-full overflow-x-auto scrollbar-none py-1">
           {prominentHubs.map((hub) => {
             const isCurrent = weather.location.toLowerCase().includes(hub.name.toLowerCase());
             return (
               <button
                 key={hub.name}
                 onClick={() => onSelectHub(hub.name)}
-                className={`flex items-center gap-space-xs px-3 py-1.5 rounded-full transition-all text-left cursor-pointer ${
+                className={`flex items-center gap-space-xs px-3 py-1.5 rounded-full transition-all text-left cursor-pointer shrink-0 ${
                   isCurrent
                     ? 'bg-primary text-on-primary shadow-sm hover:brightness-105'
                     : 'bg-surface-container-lowest text-on-surface hover:bg-surface-container-high'
@@ -143,9 +143,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       </section>
 
       {/* 2. Main Macro Synoptic Split Layout */}
-      <div className="w-full min-w-0 grid grid-cols-1 lg:grid-cols-12 gap-space-md items-start">
+      <div className="dashboard-grid w-full min-w-0 grid grid-cols-1 lg:grid-cols-12 gap-space-md items-start">
         {/* LEFT COLUMN: TELEMETRY HERO + SENSORS + OUTLOOK */}
-        <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-space-md min-w-0 w-full">
+        <div className="weather-card lg:col-span-7 xl:col-span-8 flex flex-col gap-space-md min-w-0 w-full">
           {/* Synoptic Header Card */}
           <section className="p-space-md md:p-space-lg rounded-xl bg-surface-container-lowest shadow-sm border border-surface-container-high flex flex-col gap-space-sm">
             <div className="flex flex-wrap items-center justify-between gap-space-sm">
@@ -153,7 +153,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <div className="flex items-center gap-space-xs">
                   <span className="font-label-mono-bold text-label-mono-sm text-primary uppercase tracking-wider flex items-center gap-1">
                     <span className="w-2 h-2 rounded-full bg-radar-emerald animate-ping"></span>
-                    IMD / Open-Meteo (Live Telemetry)
+                    {current.source || 'Open-Meteo Live Telemetry'}
                   </span>
                   <span className="text-outline font-label-mono-sm text-label-mono-sm">
                     • {current.updated_at ? `Updated ${current.updated_at}` : 'Real-Time Sync'}
@@ -508,7 +508,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* RIGHT COLUMN: PHOTO COPILOT + RISK SCORE + ASK WEATHERGPT */}
-        <div className="lg:col-span-5 xl:col-span-4 flex flex-col gap-space-md min-w-0 w-full">
+        <div className="photo-weather-card lg:col-span-5 xl:col-span-4 flex flex-col gap-space-md min-w-0 w-full">
           {/* Photo Weather AI Card */}
           <section className="p-space-md md:p-space-lg rounded-xl bg-surface-container-lowest shadow-sm border border-surface-container-high flex flex-col gap-space-sm relative overflow-hidden">
             <div className="flex items-start justify-between">

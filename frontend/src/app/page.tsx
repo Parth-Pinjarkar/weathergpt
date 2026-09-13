@@ -43,6 +43,7 @@ import {
 } from './i18n';
 
 import { ThemeToggle } from './components/ThemeToggle';
+import { WeatherDebugPanel } from './components/WeatherDebugPanel';
 
 // Dynamically import WeatherMap with SSR disabled (Leaflet requires window)
 const WeatherMap = dynamic(() => import('./components/WeatherMap'), {
@@ -158,7 +159,7 @@ export default function WeatherGPTApp() {
   );
 
   return (
-    <div className="min-h-screen flex bg-background font-body-md text-on-surface antialiased">
+    <div className="app-shell min-h-screen bg-background font-body-md text-on-surface antialiased">
       {/* 1. SIDEBAR (Desktop) */}
       <aside className="hidden md:flex flex-col justify-between w-64 shrink-0 bg-surface-container-lowest shadow-sm z-30 overflow-y-auto border-r border-surface-container-high select-none sticky top-0 h-screen">
         <div className="p-space-md">
@@ -297,7 +298,7 @@ export default function WeatherGPTApp() {
       </aside>
 
       {/* 2. MAIN CONTAINER & TOP HEADER */}
-      <div className="flex-1 min-w-0 flex flex-col min-h-screen bg-background">
+      <div className="main-content flex flex-col min-h-screen bg-background w-full min-w-0">
         {/* Top Header */}
         <header className="sticky top-0 z-20 h-14 bg-surface-glass backdrop-blur-xl border-b border-surface-container-high shadow-xs flex items-center justify-between px-space-md md:px-space-lg w-full shrink-0">
           {/* Universal Search Bar */}
@@ -484,6 +485,9 @@ export default function WeatherGPTApp() {
         onSpeakText={speak}
         onStopSpeaking={stopSpeaking}
       />
+
+      {/* Development Mode Weather Data Debug Panel */}
+      <WeatherDebugPanel weather={weather} loading={weatherLoading} />
 
       {/* Modals */}
       <AuthModal

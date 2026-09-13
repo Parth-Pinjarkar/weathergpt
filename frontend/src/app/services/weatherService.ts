@@ -55,15 +55,26 @@ export function normalizeWeatherResponse(data: WeatherData): WeatherData {
 
   // Verify telemetry in development
   if (process.env.NODE_ENV === 'development') {
-    console.log('[WeatherService] Telemetry:', {
-      location: data.location || DEFAULT_LOCATION.fullName,
-      coordinates: data.coordinates || { lat: DEFAULT_LOCATION.lat, lon: DEFAULT_LOCATION.lon },
-      provider: data.current.source || 'Open-Meteo NWP',
-      timestamp: data.current.updated_at || new Date().toLocaleTimeString(),
-      rawCurrentTemperature: currentTemp,
-      rawApparentTemperature: feelsLike,
-      unit: '°C',
-      displayedTemperature: currentTemp,
+    const coords = data.coordinates || { lat: DEFAULT_LOCATION.lat, lon: DEFAULT_LOCATION.lon };
+    console.debug('[WeatherDebug] location', {
+      city: data.location || DEFAULT_LOCATION.fullName,
+      latitude: coords.lat,
+      longitude: coords.lon,
+    });
+    console.debug('[WeatherDebug] temperature fields', {
+      temperature_2m: currentTemp,
+      apparent_temperature: feelsLike,
+      relative_humidity_2m: data.current.humidity,
+      wind_speed_10m: data.current.wind_speed,
+      precipitation_probability: data.current.rain_probability,
+      condition: data.current.condition,
+      time: data.current.updated_at,
+    });
+    console.debug('[WeatherDebug] normalized', {
+      temperature: currentTemp,
+      feelsLike: feelsLike,
+      updatedAt: data.current.updated_at || new Date().toISOString(),
+      source: data.current.source || 'Open-Meteo Live Service',
     });
   }
 
@@ -97,6 +108,7 @@ export async function fetchCurrentWeather(
   }
 
   const endpoint = `/api/weather/current?${queryParams.toString()}`;
+  const startTime = Date.now();
   const response = await api.get<{ weather: WeatherData; risk: RiskData }>(endpoint, {
     signal,
     timeoutMs: 15000,
@@ -104,6 +116,18 @@ export async function fetchCurrentWeather(
 
   if (!response || !response.weather) {
     throw new Error(`[WeatherService] No weather data returned for location: ${loc}`);
+  }
+
+  if (process.env.NODE_ENV === 'development') {
+    console.debug('[WeatherDebug] RAW API', {
+      provider: response.weather.current?.source || 'Open-Meteo NWP',
+      requestUrl: endpoint,
+      city: response.weather.location || loc,
+      latitude: response.weather.coordinates?.lat ?? DEFAULT_LOCATION.lat,
+      longitude: response.weather.coordinates?.lon ?? DEFAULT_LOCATION.lon,
+      responseTimeMs: Date.now() - startTime,
+      current: response.weather.current,
+    });
   }
 
   const normalizedWeather = normalizeWeatherResponse(response.weather);
