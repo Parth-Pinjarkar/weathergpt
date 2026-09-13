@@ -28,6 +28,8 @@ export interface HourlyForecastItem {
   icon: string;
   rain_probability: number;
   wind: number;
+  rain?: number;
+  cc?: string;
 }
 
 export interface WeatherForecastItem {

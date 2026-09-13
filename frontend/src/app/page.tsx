@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import {
@@ -98,12 +98,6 @@ export default function WeatherGPTApp() {
     refresh: refreshWeather,
   } = useWeatherData(DEFAULT_LOCATION.fullName);
 
-  // Synchronize search input with active weather location to prevent location mismatch
-  useEffect(() => {
-    if (location) {
-      setSearchLocation(location);
-    }
-  }, [location]);
 
   const {
     isListening,
