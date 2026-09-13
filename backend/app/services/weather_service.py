@@ -14,9 +14,10 @@ _HTTP_ADAPTER = requests.adapters.HTTPAdapter(pool_connections=20, pool_maxsize=
 _HTTP_SESSION.mount("https://", _HTTP_ADAPTER)
 _HTTP_SESSION.mount("http://", _HTTP_ADAPTER)
 
-# Sub-millisecond in-memory cache for weather data (TTL 3 minutes)
+# Sub-millisecond in-memory cache for weather data (TTL 15 minutes)
 _FAST_WEATHER_CACHE: Dict[str, Dict[str, Any]] = {}
 _GEO_COORDS_CACHE: Dict[str, tuple] = {}
+_OPEN_METEO_COOLDOWN_UNTIL: float = 0.0
 
 # Coordinates registry for instant lookup
 DEMO_COORDINATES = {
@@ -782,6 +783,11 @@ def fetch_live_open_meteo(lat: float, lon: float, city: str = "Nashik", nwp_mode
 
 def fetch_weather_from_open_meteo(city: str, nwp_model: str = "best_match") -> Dict[str, Any]:
     """Fetches real-time live weather from Open-Meteo API with support for NWP models (GFS, ECMWF, ICON/WRF) and WMO WIS 2.0 standards."""
+    global _OPEN_METEO_COOLDOWN_UNTIL
+    now_t = time.time()
+    if now_t < _OPEN_METEO_COOLDOWN_UNTIL:
+        raise ValueError(f"Open-Meteo rate-limit cooldown active ({int(_OPEN_METEO_COOLDOWN_UNTIL - now_t)}s remaining)")
+
     try:
         lat, lon = None, None
         display_name = city
@@ -830,7 +836,9 @@ def fetch_weather_from_open_meteo(city: str, nwp_model: str = "best_match") -> D
             geo_url = f"https://geocoding-api.open-meteo.com/v1/search?name={city}&count=1&language=en&format=json"
             geo_res = _HTTP_SESSION.get(geo_url, timeout=4.0)
             if not geo_res.ok:
-                raise ValueError(f"Geocoding failed for {city}")
+                if geo_res.status_code == 429:
+                    _OPEN_METEO_COOLDOWN_UNTIL = time.time() + 120.0
+                raise ValueError(f"Geocoding failed for {city} (HTTP {geo_res.status_code})")
             
             geo_data = geo_res.json()
             
@@ -877,6 +885,9 @@ def fetch_weather_from_open_meteo(city: str, nwp_model: str = "best_match") -> D
         )
         w_res = _HTTP_SESSION.get(weather_url, timeout=5.0)
         if not w_res.ok:
+            if w_res.status_code == 429:
+                _OPEN_METEO_COOLDOWN_UNTIL = time.time() + 120.0
+                raise ValueError("Open-Meteo HTTP 429 (Rate-Limited, 120s Cooldown Triggered)")
             raise ValueError(f"Open-Meteo HTTP {w_res.status_code}")
         
         w_data = w_res.json()
@@ -1216,10 +1227,10 @@ def get_weather(db: Any, location: Any = None, nwp_model: str = "best_match", fo
     cache_key = norm_city if nwp_model == "best_match" else f"{norm_city}:{nwp_model}"
     now_ts = time.time()
     
-    # 1. Check Sub-millisecond In-Memory Fast Cache (TTL 180s)
-    if not force_refresh and cache_key in _FAST_WEATHER_CACHE:
+    # 1. Check Sub-millisecond In-Memory Fast Cache (TTL 15 minutes)
+    if cache_key in _FAST_WEATHER_CACHE:
         entry = _FAST_WEATHER_CACHE[cache_key]
-        if now_ts < entry["expires_at"]:
+        if not force_refresh and (now_ts < entry["expires_at"] or now_ts < _OPEN_METEO_COOLDOWN_UNTIL):
             cached_data = entry["data"]
             if not cached_data.get("forecast") or len(cached_data.get("forecast")) < 5:
                 cached_data["forecast"] = synthesize_7day_forecast(cached_data.get("current", {}))
@@ -1232,7 +1243,7 @@ def get_weather(db: Any, location: Any = None, nwp_model: str = "best_match", fo
             cache_entry = db.query(WeatherCache).filter(WeatherCache.location == norm_city).first()
             if cache_entry:
                 age = datetime.utcnow() - cache_entry.updated_at
-                if age < timedelta(minutes=5):
+                if age < timedelta(minutes=15) or now_ts < _OPEN_METEO_COOLDOWN_UNTIL:
                     parsed = json.loads(cache_entry.data)
                     if not parsed.get("forecast") or len(parsed.get("forecast")) < 5:
                         parsed["forecast"] = synthesize_7day_forecast(parsed.get("current", {}))
@@ -1242,18 +1253,18 @@ def get_weather(db: Any, location: Any = None, nwp_model: str = "best_match", fo
                         except Exception:
                             pass
                     parsed["current"]["updated_at"] = f"Cached, {(age.seconds // 60)}m ago"
-                    _FAST_WEATHER_CACHE[cache_key] = {"data": parsed, "expires_at": now_ts + 180}
+                    _FAST_WEATHER_CACHE[cache_key] = {"data": parsed, "expires_at": now_ts + 900}
                     return parsed
         except Exception:
             pass
 
     # 3. OpenWeatherMap API (if key explicitly provided and standard model)
-    if settings.OPENWEATHER_API_KEY and nwp_model == "best_match":
+    if settings.OPENWEATHER_API_KEY and nwp_model == "best_match" and now_ts >= _OPEN_METEO_COOLDOWN_UNTIL:
         try:
             api_data = fetch_weather_from_api(location, settings.OPENWEATHER_API_KEY)
             if not api_data.get("forecast") or len(api_data.get("forecast")) < 5:
                 api_data["forecast"] = synthesize_7day_forecast(api_data.get("current", {}))
-            _FAST_WEATHER_CACHE[cache_key] = {"data": api_data, "expires_at": now_ts + 180}
+            _FAST_WEATHER_CACHE[cache_key] = {"data": api_data, "expires_at": now_ts + 900}
             if db is not None and isinstance(db, Session):
                 try:
                     if cache_entry:
@@ -1274,7 +1285,7 @@ def get_weather(db: Any, location: Any = None, nwp_model: str = "best_match", fo
         live_data = fetch_weather_from_open_meteo(location, nwp_model=nwp_model)
         if not live_data.get("forecast") or len(live_data.get("forecast")) < 5:
             live_data["forecast"] = synthesize_7day_forecast(live_data.get("current", {}))
-        _FAST_WEATHER_CACHE[cache_key] = {"data": live_data, "expires_at": now_ts + 180}
+        _FAST_WEATHER_CACHE[cache_key] = {"data": live_data, "expires_at": now_ts + 900}
         if nwp_model == "best_match" and db is not None and isinstance(db, Session):
             try:
                 if cache_entry:
