@@ -150,7 +150,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         ];
 
   return (
-    <div className="main-content w-full min-w-0 p-gutter-desktop flex flex-col gap-space-lg max-w-[1720px] mx-auto">
+    <div className="dashboard-content w-full flex flex-col gap-3">
       {/* 1. PROMINENT METEOROLOGICAL HUBS TICKER */}
       <section className="w-full min-w-0 max-w-full flex items-center gap-space-sm pb-1">
         <div className="flex items-center gap-space-xs shrink-0 px-space-sm py-1 rounded-full bg-surface-container-high text-on-surface border border-surface-container">
@@ -484,315 +484,378 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* 4. MAIN COCKPIT: DOPPLER RADAR CONSOLE (LEFT 8) + SYNOPTIC AI COPILOT (RIGHT 4) */}
-      <div className="dashboard-grid grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
-        {/* LEFT: INTERACTIVE DOPPLER RADAR & REFLECTIVITY MATRIX (8 Cols) */}
-        <div className="weather-card lg:col-span-8 flex flex-col rounded-xl bg-surface-container-lowest border border-surface-container-high shadow-xs overflow-hidden">
-          {/* Doppler Control Header */}
-          <div className="p-space-md bg-surface-container-low border-b border-surface-container-high flex flex-wrap items-center justify-between gap-space-sm">
-            <div className="flex items-center gap-space-sm">
-              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container-lowest border border-surface-container-high">
-                <span className="material-symbols-outlined text-secondary text-[16px] animate-spin" style={{ animationDuration: '6s' }}>
-                  radar
-                </span>
-                <span className="font-label-mono-bold text-label-mono-sm uppercase tracking-wider text-on-surface">
-                  Doppler Core: S-BAND 2.8GHz
-                </span>
-              </div>
-              <span className="font-label-mono-sm text-label-mono-sm text-outline hidden sm:inline">
-                Range: {radarRange === '50k' ? '50 km' : radarRange === '150k' ? '150 km Radius' : '250 km Extended'}
-              </span>
-            </div>
-
-            {/* Product Filter Tabs */}
-            <div className="flex items-center gap-1 bg-surface-container-lowest border border-surface-container-high p-1 rounded-lg">
-              {(
-                [
-                  { id: 'reflectivity', label: 'Reflectivity (dBZ)' },
-                  { id: 'velocity', label: 'Radial Vel' },
-                  { id: 'echotops', label: 'Echo Tops' },
-                  { id: 'motion', label: 'Storm Motion' },
-                ] as const
-              ).map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setRadarProduct(tab.id)}
-                  className={`px-2.5 py-1 rounded font-label-mono-sm text-label-mono-sm transition cursor-pointer ${
-                    radarProduct === tab.id
-                      ? 'bg-secondary text-on-secondary font-bold shadow-xs'
-                      : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Radar Viewport Screen with Simulated Geospatial Display */}
-          <div className="relative w-full h-[460px] bg-slate-950 overflow-hidden flex items-center justify-center select-none">
-            {/* Synthetic Radar Grid Overlays */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <radialGradient cx="50%" cy="50%" id="radarSweepGlow" r="50%">
-                  <stop offset="0%" stopColor="#0284c7" stopOpacity="0.18" />
-                  <stop offset="85%" stopColor="#059669" stopOpacity="0.08" />
-                  <stop offset="100%" stopColor="#0f172a" stopOpacity="0" />
-                </radialGradient>
-              </defs>
-              {/* Distance Rings */}
-              <circle cx="50%" cy="50%" fill="none" opacity="0.5" r="70" stroke="#475569" strokeDasharray="3 3" strokeWidth="1" />
-              <circle cx="50%" cy="50%" fill="none" opacity="0.5" r="140" stroke="#475569" strokeDasharray="4 4" strokeWidth="1" />
-              <circle cx="50%" cy="50%" fill="none" opacity="0.4" r="210" stroke="#475569" strokeDasharray="4 4" strokeWidth="1" />
-              <circle cx="50%" cy="50%" fill="url(#radarSweepGlow)" r="210" />
-
-              {/* Axis crosshairs */}
-              <line opacity="0.3" stroke="#64748b" strokeDasharray="2 4" strokeWidth="1" x1="50%" x2="50%" y1="0%" y2="100%" />
-              <line opacity="0.3" stroke="#64748b" strokeDasharray="2 4" strokeWidth="1" x1="0%" x2="100%" y1="50%" y2="50%" />
-
-              {/* Rotating Scanning Beam line */}
-              {isRadarPlaying && (
-                <g className="origin-center animate-spin" style={{ transformOrigin: '50% 50%', animationDuration: '4s' }}>
-                  <line opacity="0.85" stroke="#10b981" strokeWidth="2" x1="50%" x2="50%" y1="50%" y2="5%" />
-                  <polygon fill="#10b981" opacity="0.18" points="50% 50%, 50% 5%, 68% 12%" />
-                </g>
-              )}
-
-              {/* Dispersed Reflectivity Weather Echo Blobs */}
-              <path d="M 280,210 Q 310,190 340,220 T 380,260 T 320,270 Z" fill="#0284c7" filter="blur(6px)" opacity="0.45" />
-              <path d="M 290,215 Q 315,200 330,225 T 350,250 Z" fill="#10b981" filter="blur(4px)" opacity="0.5" />
-              <circle cx="58%" cy="42%" fill="#38bdf8" filter="blur(5px)" opacity="0.35" r="18" />
-              <circle cx="58%" cy="42%" fill="#10b981" filter="blur(2px)" opacity="0.4" r="8" />
-            </svg>
-
-            {/* Center Station HUD Marker */}
-            <div className="relative z-20 flex flex-col items-center pointer-events-none">
-              <div className="w-4 h-4 rounded-full bg-radar-emerald flex items-center justify-center shadow-[0_0_12px_#34d399]">
-                <div className="w-1.5 h-1.5 rounded-full bg-slate-900"></div>
-              </div>
-              <span className="mt-1 px-2 py-0.5 rounded bg-white/90 backdrop-blur-md text-[10px] font-mono text-slate-900 font-bold shadow-md">
-                {weather.location.toUpperCase()} HQ (VAOZ)
-              </span>
-            </div>
-
-            {/* Overlay Range Markers */}
-            <div className="absolute top-4 left-4 z-20 flex flex-col gap-1 pointer-events-none">
-              <span className="px-2 py-0.5 rounded bg-white/90 backdrop-blur-md font-mono text-label-sm text-sky-800 font-bold shadow-xs">
-                AZIMUTH: 245° WSW • {formatWindSpeed(current.wind_speed)}
-              </span>
-              <span className="px-2 py-0.5 rounded bg-white/90 backdrop-blur-md font-mono text-label-sm text-slate-700 font-semibold shadow-xs">
-                CELL ECHO: 18.2 dBZ (NON-CONVECTIVE)
-              </span>
-            </div>
-
-            {/* dBZ Reflectivity Scale Legend on Right */}
-            <div className="absolute right-4 top-4 bottom-16 z-20 w-8 rounded-lg bg-white/95 backdrop-blur-md border border-border-subtle p-1.5 flex flex-col justify-between items-center text-[9px] font-mono shadow-md">
-              <span className="text-red-600 font-bold">65</span>
-              <div className="w-2.5 h-full rounded-full bg-gradient-to-b from-purple-500 via-red-500 via-yellow-400 via-green-400 via-cyan-400 to-transparent my-1"></div>
-              <span className="text-slate-500 font-bold">5</span>
-              <span className="text-[8px] text-slate-500 font-sans font-bold">dBZ</span>
-            </div>
-
-            {/* Bottom Floating Radar Control HUD Bar */}
-            <div className="absolute bottom-4 left-4 right-14 z-20 p-space-xs rounded-xl bg-white/95 backdrop-blur-md border border-border-subtle flex items-center justify-between gap-space-sm shadow-lg">
-              <div className="flex items-center gap-space-xs">
-                <button
-                  onClick={() => setIsRadarPlaying(!isRadarPlaying)}
-                  className="p-1.5 rounded bg-primary text-white hover:bg-primary-container transition-colors shadow-xs cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-[18px]">
-                    {isRadarPlaying ? 'pause' : 'play_arrow'}
+      {/* 4. MAIN COCKPIT: DOPPLER RADAR & TIMELINE (LEFT) + SYNOPTIC AI COPILOT (RIGHT) */}
+      <div className="dashboard-grid w-full">
+        {/* LEFT COLUMN: DOPPLER RADAR CONSOLE & 24-HOUR SCRUBBER */}
+        <div className="flex flex-col gap-3 min-w-0 w-full">
+          {/* INTERACTIVE DOPPLER RADAR & REFLECTIVITY MATRIX */}
+          <div className="weather-card flex flex-col rounded-xl bg-surface-container-lowest border border-surface-container-high shadow-xs overflow-hidden">
+            {/* Doppler Control Header */}
+            <div className="p-3 bg-surface-container-low border-b border-surface-container-high flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container-lowest border border-surface-container-high">
+                  <span className="material-symbols-outlined text-secondary text-[16px] animate-spin" style={{ animationDuration: '6s' }}>
+                    radar
                   </span>
-                </button>
-                <span className="font-label-mono-sm text-label-mono-sm text-slate-900 font-mono pl-1 font-bold">
-                  LOOP: -60m → NOW
+                  <span className="font-label-mono-bold text-xs uppercase tracking-wider text-on-surface">
+                    Doppler Core: S-BAND 2.8GHz
+                  </span>
+                </div>
+                <span className="font-label-mono-sm text-xs text-outline hidden sm:inline">
+                  Range: {radarRange === '50k' ? '50 km' : radarRange === '150k' ? '150 km Radius' : '250 km Extended'}
                 </span>
               </div>
 
-              {/* Time Scrubber Range */}
-              <div className="flex-1 max-w-md flex items-center gap-space-xs">
-                <span className="font-mono text-label-sm text-slate-500">11:30</span>
-                <div className="relative w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-                  <div className="bg-gradient-to-r from-secondary to-primary h-full rounded-full" style={{ width: '82%' }}></div>
-                </div>
-                <span className="font-mono text-label-sm text-primary font-bold">12:30 IST</span>
-              </div>
-
-              <div className="hidden sm:flex items-center gap-1 font-label-mono-sm text-label-mono-sm">
-                {(['50k', '150k', '250k'] as const).map((r) => (
+              {/* Product Filter Tabs */}
+              <div className="flex items-center gap-1 bg-surface-container-lowest border border-surface-container-high p-1 rounded-lg">
+                {(
+                  [
+                    { id: 'reflectivity', label: 'Reflectivity (dBZ)' },
+                    { id: 'velocity', label: 'Radial Vel' },
+                    { id: 'echotops', label: 'Echo Tops' },
+                    { id: 'motion', label: 'Storm Motion' },
+                  ] as const
+                ).map((tab) => (
                   <button
-                    key={r}
-                    onClick={() => setRadarRange(r)}
-                    className={`px-2 py-0.5 rounded font-mono font-medium transition cursor-pointer ${
-                      radarRange === r ? 'bg-secondary text-white font-bold shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
+                    key={tab.id}
+                    onClick={() => setRadarProduct(tab.id)}
+                    className={`px-2 py-0.5 rounded font-label-mono-sm text-xs transition cursor-pointer ${
+                      radarProduct === tab.id
+                        ? 'bg-secondary text-on-secondary font-bold shadow-xs'
+                        : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low'
                     }`}
                   >
-                    {r}
+                    {tab.label}
                   </button>
                 ))}
               </div>
             </div>
+
+            {/* Radar Viewport Screen with Simulated Geospatial Display */}
+            <div className="relative w-full h-[380px] md:h-[420px] bg-slate-950 overflow-hidden flex items-center justify-center select-none">
+              {/* Synthetic Radar Grid Overlays */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <radialGradient cx="50%" cy="50%" id="radarSweepGlow" r="50%">
+                    <stop offset="0%" stopColor="#0284c7" stopOpacity="0.18" />
+                    <stop offset="85%" stopColor="#059669" stopOpacity="0.08" />
+                    <stop offset="100%" stopColor="#0f172a" stopOpacity="0" />
+                  </radialGradient>
+                </defs>
+                {/* Distance Rings */}
+                <circle cx="50%" cy="50%" fill="none" opacity="0.5" r="70" stroke="#475569" strokeDasharray="3 3" strokeWidth="1" />
+                <circle cx="50%" cy="50%" fill="none" opacity="0.5" r="140" stroke="#475569" strokeDasharray="4 4" strokeWidth="1" />
+                <circle cx="50%" cy="50%" fill="none" opacity="0.4" r="210" stroke="#475569" strokeDasharray="4 4" strokeWidth="1" />
+                <circle cx="50%" cy="50%" fill="url(#radarSweepGlow)" r="210" />
+
+                {/* Axis crosshairs */}
+                <line opacity="0.3" stroke="#64748b" strokeDasharray="2 4" strokeWidth="1" x1="50%" x2="50%" y1="0%" y2="100%" />
+                <line opacity="0.3" stroke="#64748b" strokeDasharray="2 4" strokeWidth="1" x1="0%" x2="100%" y1="50%" y2="50%" />
+
+                {/* Rotating Scanning Beam line */}
+                {isRadarPlaying && (
+                  <g className="origin-center animate-spin" style={{ transformOrigin: '50% 50%', animationDuration: '4s' }}>
+                    <line opacity="0.85" stroke="#10b981" strokeWidth="2" x1="50%" x2="50%" y1="50%" y2="5%" />
+                    <polygon fill="#10b981" opacity="0.18" points="50% 50%, 50% 5%, 68% 12%" />
+                  </g>
+                )}
+
+                {/* Dispersed Reflectivity Weather Echo Blobs */}
+                <path d="M 280,210 Q 310,190 340,220 T 380,260 T 320,270 Z" fill="#0284c7" filter="blur(6px)" opacity="0.45" />
+                <path d="M 290,215 Q 315,200 330,225 T 350,250 Z" fill="#10b981" filter="blur(4px)" opacity="0.5" />
+                <circle cx="58%" cy="42%" fill="#38bdf8" filter="blur(5px)" opacity="0.35" r="18" />
+                <circle cx="58%" cy="42%" fill="#10b981" filter="blur(2px)" opacity="0.4" r="8" />
+              </svg>
+
+              {/* Center Station HUD Marker */}
+              <div className="relative z-20 flex flex-col items-center pointer-events-none">
+                <div className="w-4 h-4 rounded-full bg-radar-emerald flex items-center justify-center shadow-[0_0_12px_#34d399]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-slate-900"></div>
+                </div>
+                <span className="mt-1 px-2 py-0.5 rounded bg-white/90 backdrop-blur-md text-[10px] font-mono text-slate-900 font-bold shadow-md">
+                  {weather.location.toUpperCase()} HQ (VAOZ)
+                </span>
+              </div>
+
+              {/* Overlay Range Markers */}
+              <div className="absolute top-4 left-4 z-20 flex flex-col gap-1 pointer-events-none">
+                <span className="px-2 py-0.5 rounded bg-white/90 backdrop-blur-md font-mono text-[11px] text-sky-800 font-bold shadow-xs">
+                  AZIMUTH: 245° WSW • {formatWindSpeed(current.wind_speed)}
+                </span>
+                <span className="px-2 py-0.5 rounded bg-white/90 backdrop-blur-md font-mono text-[11px] text-slate-700 font-semibold shadow-xs">
+                  CELL ECHO: 18.2 dBZ (NON-CONVECTIVE)
+                </span>
+              </div>
+
+              {/* dBZ Reflectivity Scale Legend on Right */}
+              <div className="absolute right-4 top-4 bottom-16 z-20 w-8 rounded-lg bg-white/95 backdrop-blur-md border border-border-subtle p-1.5 flex flex-col justify-between items-center text-[9px] font-mono shadow-md">
+                <span className="text-red-600 font-bold">65</span>
+                <div className="w-2.5 h-full rounded-full bg-gradient-to-b from-purple-500 via-red-500 via-yellow-400 via-green-400 via-cyan-400 to-transparent my-1"></div>
+                <span className="text-slate-500 font-bold">5</span>
+                <span className="text-[8px] text-slate-500 font-sans font-bold">dBZ</span>
+              </div>
+
+              {/* Bottom Floating Radar Control HUD Bar */}
+              <div className="absolute bottom-4 left-4 right-14 z-20 p-2 rounded-xl bg-white/95 backdrop-blur-md border border-border-subtle flex items-center justify-between gap-2 shadow-lg">
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => setIsRadarPlaying(!isRadarPlaying)}
+                    className="p-1.5 rounded bg-primary text-white hover:bg-primary-container transition-colors shadow-xs cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">
+                      {isRadarPlaying ? 'pause' : 'play_arrow'}
+                    </span>
+                  </button>
+                  <span className="font-label-mono-sm text-xs text-slate-900 font-mono pl-1 font-bold">
+                    LOOP: -60m → NOW
+                  </span>
+                </div>
+
+                {/* Time Scrubber Range */}
+                <div className="flex-1 max-w-md flex items-center gap-2">
+                  <span className="font-mono text-[11px] text-slate-500">11:30</span>
+                  <div className="relative w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                    <div className="bg-gradient-to-r from-secondary to-primary h-full rounded-full" style={{ width: '82%' }}></div>
+                  </div>
+                  <span className="font-mono text-[11px] text-primary font-bold">12:30 IST</span>
+                </div>
+
+                <div className="hidden sm:flex items-center gap-1 font-label-mono-sm text-xs">
+                  {(['50k', '150k', '250k'] as const).map((r) => (
+                    <button
+                      key={r}
+                      onClick={() => setRadarRange(r)}
+                      className={`px-2 py-0.5 rounded font-mono font-medium transition cursor-pointer ${
+                        radarRange === r ? 'bg-secondary text-white font-bold shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
+                      }`}
+                    >
+                      {r}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Radar Bottom Telemetry Diagnostics Bar */}
+            <div className="p-3 bg-surface-container-low border-t border-surface-container-high flex flex-wrap items-center justify-between gap-2 text-on-surface-variant font-label-mono-sm text-xs">
+              <div className="flex items-center gap-3">
+                <span className="flex items-center gap-1 text-primary font-semibold">
+                  <span className="material-symbols-outlined text-[16px]">verified</span>
+                  <span>Cell Monitor: No Convective Fronts &lt;45km</span>
+                </span>
+                <span className="text-outline-variant hidden md:inline">•</span>
+                <span className="hidden md:inline font-medium">
+                  Ground Clutter Filter: <strong className="text-on-surface font-mono">DOPPLER CLUTTER-V8 ACTIVE</strong>
+                </span>
+              </div>
+              <div className="flex items-center gap-1 font-mono text-outline font-medium">
+                <span>Beam Elev: 0.5° • Pulse: Short (0.8µs)</span>
+              </div>
+            </div>
           </div>
 
-          {/* Radar Bottom Telemetry Diagnostics Bar */}
-          <div className="p-space-md bg-surface-container-low border-t border-surface-container-high flex flex-wrap items-center justify-between gap-space-md text-on-surface-variant font-label-mono-sm text-label-mono-sm">
-            <div className="flex items-center gap-space-md">
-              <span className="flex items-center gap-1 text-primary font-semibold">
-                <span className="material-symbols-outlined text-[16px]">verified</span>
-                <span>Cell Monitor: No Convective Fronts &lt;45km</span>
-              </span>
-              <span className="text-outline-variant hidden md:inline">•</span>
-              <span className="hidden md:inline font-medium">
-                Ground Clutter Filter: <strong className="text-on-surface font-mono">DOPPLER CLUTTER-V8 ACTIVE</strong>
-              </span>
+          {/* 24-HOUR MICRO-FORECAST SCRUBBER & SYNOPTIC TIMELINE */}
+          <div className="flex flex-col rounded-xl bg-surface-container-lowest border border-surface-container-high shadow-xs p-3.5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-2.5 gap-2 border-b border-surface-container-high">
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <h2 className="font-headline-md text-sm font-bold text-on-surface">
+                    24-Hour Synoptic Micro-Timeline
+                  </h2>
+                  <span className="px-1.5 py-0.5 rounded bg-primary-fixed/30 border border-primary/30 text-primary font-label-mono-sm text-[10px] font-mono font-bold">
+                    IMD-WRF 3km
+                  </span>
+                </div>
+                <p className="font-body-sm text-[11px] text-outline mt-0.5 font-medium">
+                  High-resolution hourly assimilation with ensemble boundary conditions
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="px-2 py-0.5 rounded bg-tertiary-fixed/30 border border-tertiary/30 flex items-center gap-1 font-label-mono-sm text-[11px] text-tertiary font-semibold">
+                  <span className="material-symbols-outlined text-[15px] text-severe-amber">info</span>
+                  <span>Yellow Watch: Mild inland thermal turbulence 14:00 - 16:30 IST</span>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-space-xs font-mono text-outline font-medium">
-              <span>Beam Elev: 0.5° • Pulse: Short (0.8µs)</span>
+
+            {/* Scroller Cards Grid (8 steps) */}
+            <div className="forecast-grid gap-1.5 pt-3 overflow-x-auto">
+              {hourlySteps.map((slot, idx) => (
+                <div
+                  key={idx}
+                  className={`forecast-day-card rounded-lg border flex flex-col items-center text-center gap-1 transition-colors ${
+                    idx === 0
+                      ? 'bg-primary-fixed/20 border-2 border-primary shadow-xs'
+                      : 'bg-surface-container-low border-surface-container-high hover:bg-surface-container'
+                  }`}
+                >
+                  <span className={`font-label-mono-bold text-[11px] ${idx === 0 ? 'text-primary' : 'text-on-surface-variant'}`}>
+                    {slot.time}
+                  </span>
+                  <span className="material-symbols-outlined text-severe-amber text-[22px] my-0.5">
+                    {slot.icon || 'partly_cloudy_day'}
+                  </span>
+                  <span className="font-headline-sm text-xs font-bold text-on-surface">
+                    {formatTemperature(slot.temp)}
+                  </span>
+                  <span className="font-label-mono-sm text-[9px] text-outline font-mono font-medium">
+                    {slot.rain ?? 0}% Rain
+                  </span>
+                  <span className="font-label-mono-sm text-[9px] text-secondary font-mono font-semibold">
+                    {slot.wind} km/h
+                  </span>
+                  <span className="text-[8px] font-mono text-outline font-medium">
+                    CC: {slot.cc || '25%'}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* RIGHT: WEATHERGPT AI SYNOPTIC COPILOT & INTELLIGENCE STREAM (4 Cols) */}
-        <div className="photo-weather-card lg:col-span-4 flex flex-col rounded-xl bg-surface-container-lowest border border-surface-container-high shadow-xs overflow-hidden">
-          {/* Copilot Header */}
-          <div className="p-space-md bg-surface-container-low border-b border-surface-container-high flex items-center justify-between">
-            <div className="flex items-center gap-space-sm">
-              <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-on-primary shadow-xs">
-                <span className="material-symbols-outlined text-[18px]">psychology</span>
-              </div>
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="font-headline-sm text-headline-sm font-bold text-on-surface leading-none">
-                    Synoptic AI
-                  </span>
-                  <span className="px-1.5 py-0.2 rounded bg-primary-fixed/40 text-primary border border-primary/30 font-label-mono-sm text-[10px] font-bold">
-                    GPT-NWP 4o
+        {/* RIGHT PANEL: WEATHERGPT AI SYNOPTIC COPILOT & INTELLIGENCE STREAM */}
+        <div className="right-panel">
+          <div className="photo-weather-card flex flex-col rounded-xl bg-surface-container-lowest border border-surface-container-high shadow-xs overflow-hidden">
+            {/* Copilot Header */}
+            <div className="p-3 bg-surface-container-low border-b border-surface-container-high flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-lg bg-primary flex items-center justify-center text-on-primary shadow-xs">
+                  <span className="material-symbols-outlined text-[16px]">psychology</span>
+                </div>
+                <div>
+                  <div className="flex items-center gap-1">
+                    <span className="font-headline-sm text-xs font-bold text-on-surface leading-none">
+                      Synoptic AI
+                    </span>
+                    <span className="px-1 py-0.2 rounded bg-primary-fixed/40 text-primary border border-primary/30 font-label-mono-sm text-[9px] font-bold">
+                      GPT-NWP 4o
+                    </span>
+                  </div>
+                  <span className="font-label-mono-sm text-[9px] text-outline font-mono font-medium">
+                    Model Consensus: 96.4%
                   </span>
                 </div>
-                <span className="font-label-mono-sm text-[10px] text-outline font-mono font-medium">
-                  Model Consensus: 96.4%
-                </span>
               </div>
-            </div>
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
-            </span>
-          </div>
-
-          {/* Copilot Body */}
-          <div className="p-space-md flex flex-col gap-space-md flex-1 bg-surface-container-lowest">
-            {/* Natural Language Synopsis */}
-            <div className="p-space-md rounded-xl bg-surface-container-low border border-surface-container-high text-on-surface flex flex-col gap-space-xs shadow-xs">
-              <div className="flex items-center justify-between font-label-mono-sm text-label-mono-sm text-secondary font-bold">
-                <span className="flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[15px]">neurology</span>
-                  METEOROLOGICAL SYNTHESIS
-                </span>
-                <span className="font-mono text-outline font-medium">{current.updated_at || '12:28 IST UPDATE'}</span>
-              </div>
-              <p className="font-body-md text-body-md text-on-surface leading-relaxed mt-1">
-                Dry continental tropospheric air converges with mild maritime moisture across western ridgelines. High barometric pressure ridge keeps {weather.location.split(',')[0]} division predominantly stable.{' '}
-                <strong className="text-primary font-semibold">Nil convective precipitation hazard</strong> expected for the subsequent 18 hours.
-              </p>
-            </div>
-
-            {/* Sector-Specific Operational Advisories */}
-            <div className="flex flex-col gap-space-xs">
-              <span className="font-label-mono-bold text-label-mono-sm uppercase tracking-wider text-outline px-1 font-semibold">
-                Tactical Sector Action Items
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
               </span>
-
-              {/* Sector 1: Agriculture / Kisan */}
-              <div className="p-space-sm rounded-lg bg-primary-fixed/20 border border-primary/20 hover:bg-primary-fixed/30 transition-colors flex items-start gap-space-sm">
-                <div className="p-1.5 rounded bg-primary-fixed/40 text-primary mt-0.5">
-                  <span className="material-symbols-outlined text-[18px]">agriculture</span>
-                </div>
-                <div className="flex flex-col min-w-0 flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-label-mono-bold text-xs font-bold text-on-surface">Kisan &amp; Viticulture</span>
-                    <span className="font-label-mono-bold text-[10px] text-primary font-mono font-bold">OPTIMAL</span>
-                  </div>
-                  <p className="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-0.5">
-                    {weather.kisan_advisory?.spraying_window || 'Favorable spray window for table grapes. Atmospheric moisture curtails fungal sporulation risk through 19:00 IST.'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Sector 2: Aviation VFR */}
-              <div className="p-space-sm rounded-lg bg-secondary-fixed/20 border border-secondary/20 hover:bg-secondary-fixed/30 transition-colors flex items-start gap-space-sm">
-                <div className="p-1.5 rounded bg-secondary-fixed/40 text-secondary mt-0.5">
-                  <span className="material-symbols-outlined text-[18px]">flight_takeoff</span>
-                </div>
-                <div className="flex flex-col min-w-0 flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-label-mono-bold text-xs font-bold text-on-surface">Ozar Airport (VAOZ)</span>
-                    <span className="font-label-mono-bold text-[10px] text-secondary font-mono font-bold">VFR CLEAR</span>
-                  </div>
-                  <p className="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-0.5">
-                    Ceiling &gt;4,000ft, horizontal visibility 9,000m. Mild thermal updraft turbulence expected inland post 14:30.
-                  </p>
-                </div>
-              </div>
-
-              {/* Sector 3: Municipal & Catchment */}
-              <div className="p-space-sm rounded-lg bg-tertiary-fixed/20 border border-tertiary/20 hover:bg-tertiary-fixed/30 transition-colors flex items-start gap-space-sm">
-                <div className="p-1.5 rounded bg-tertiary-fixed/40 text-tertiary mt-0.5">
-                  <span className="material-symbols-outlined text-[18px]">water_drop</span>
-                </div>
-                <div className="flex flex-col min-w-0 flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-label-mono-bold text-xs font-bold text-on-surface">Gangapur Dam Catchment</span>
-                    <span className="font-label-mono-bold text-[10px] text-tertiary font-mono font-bold">NOMINAL</span>
-                  </div>
-                  <p className="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-0.5">
-                    Catchment inflow steady. Zero flash runoff threat detected across Trimbak watershed boundaries.
-                  </p>
-                </div>
-              </div>
             </div>
 
-            {/* Photo Weather AI Link Card */}
-            <div className="p-space-sm rounded-xl bg-surface-container-low border border-surface-container-high flex items-center justify-between">
-              <div className="flex items-center gap-space-xs">
-                <Camera className="h-4 w-4 text-primary" />
-                <span className="font-label-mono-bold text-xs text-on-surface font-semibold">Photo Weather Intelligence</span>
+            {/* Copilot Body */}
+            <div className="p-3 flex flex-col gap-2.5 flex-1 bg-surface-container-lowest">
+              {/* Natural Language Synopsis */}
+              <div className="p-2.5 rounded-xl bg-surface-container-low border border-surface-container-high text-on-surface flex flex-col gap-1 shadow-xs">
+                <div className="flex items-center justify-between font-label-mono-sm text-[10px] text-secondary font-bold">
+                  <span className="flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[14px]">neurology</span>
+                    METEOROLOGICAL SYNTHESIS
+                  </span>
+                  <span className="font-mono text-outline font-medium">{current.updated_at || '12:28 IST UPDATE'}</span>
+                </div>
+                <p className="font-body-sm text-xs text-on-surface leading-normal mt-0.5">
+                  Dry continental tropospheric air converges with mild maritime moisture across western ridgelines. High barometric pressure ridge keeps {weather.location.split(',')[0]} division predominantly stable.{' '}
+                  <strong className="text-primary font-semibold">Nil convective precipitation hazard</strong> expected for the subsequent 18 hours.
+                </p>
               </div>
-              <Link
-                href="/photo-analysis"
-                className="px-2.5 py-1 rounded bg-primary text-on-primary font-label-mono-bold text-[10px] hover:bg-primary-container transition"
-              >
-                Analyze Sky
-              </Link>
-            </div>
 
-            {/* Prompt Interactive Ask Field */}
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (promptInput.trim() && onSendChatPrompt) {
-                  onSendChatPrompt(promptInput.trim());
-                  setPromptInput('');
-                }
-              }}
-              className="mt-auto pt-space-xs"
-            >
-              <div className="relative flex items-center bg-surface-container-low border border-surface-container-high rounded-lg p-space-xs">
-                <input
-                  type="text"
-                  value={promptInput}
-                  onChange={(e) => setPromptInput(e.target.value)}
-                  placeholder={`Ask AI Copilot for ${weather.location.split(',')[0]} synoptic data...`}
-                  className="bg-transparent border-none outline-none font-body-sm text-body-sm text-on-surface px-space-sm w-full placeholder:text-outline font-medium"
-                />
-                <button
-                  type="submit"
-                  className="p-1.5 rounded-lg bg-primary text-on-primary hover:bg-primary-container transition-colors shadow-xs cursor-pointer"
+              {/* Sector-Specific Operational Advisories */}
+              <div className="flex flex-col gap-1.5">
+                <span className="font-label-mono-bold text-[10px] uppercase tracking-wider text-outline px-1 font-semibold">
+                  Tactical Sector Action Items
+                </span>
+
+                {/* Sector 1: Agriculture / Kisan */}
+                <div className="p-2 rounded-lg bg-primary-fixed/20 border border-primary/20 hover:bg-primary-fixed/30 transition-colors flex items-start gap-2">
+                  <div className="p-1 rounded bg-primary-fixed/40 text-primary mt-0.5">
+                    <span className="material-symbols-outlined text-[16px]">agriculture</span>
+                  </div>
+                  <div className="flex flex-col min-w-0 flex-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-label-mono-bold text-[11px] font-bold text-on-surface">Kisan &amp; Viticulture</span>
+                      <span className="font-label-mono-bold text-[9px] text-primary font-mono font-bold">OPTIMAL</span>
+                    </div>
+                    <p className="font-body-sm text-[11px] text-on-surface-variant line-clamp-2 mt-0.5">
+                      {weather.kisan_advisory?.spraying_window || 'Favorable spray window for table grapes. Atmospheric moisture curtails fungal sporulation risk through 19:00 IST.'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Sector 2: Aviation VFR */}
+                <div className="p-2 rounded-lg bg-secondary-fixed/20 border border-secondary/20 hover:bg-secondary-fixed/30 transition-colors flex items-start gap-2">
+                  <div className="p-1 rounded bg-secondary-fixed/40 text-secondary mt-0.5">
+                    <span className="material-symbols-outlined text-[16px]">flight_takeoff</span>
+                  </div>
+                  <div className="flex flex-col min-w-0 flex-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-label-mono-bold text-[11px] font-bold text-on-surface">Ozar Airport (VAOZ)</span>
+                      <span className="font-label-mono-bold text-[9px] text-secondary font-mono font-bold">VFR CLEAR</span>
+                    </div>
+                    <p className="font-body-sm text-[11px] text-on-surface-variant line-clamp-2 mt-0.5">
+                      Ceiling &gt;4,000ft, horizontal visibility 9,000m. Mild thermal updraft turbulence expected inland post 14:30.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Sector 3: Municipal & Catchment */}
+                <div className="p-2 rounded-lg bg-tertiary-fixed/20 border border-tertiary/20 hover:bg-tertiary-fixed/30 transition-colors flex items-start gap-2">
+                  <div className="p-1 rounded bg-tertiary-fixed/40 text-tertiary mt-0.5">
+                    <span className="material-symbols-outlined text-[16px]">water_drop</span>
+                  </div>
+                  <div className="flex flex-col min-w-0 flex-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-label-mono-bold text-[11px] font-bold text-on-surface">Gangapur Dam Catchment</span>
+                      <span className="font-label-mono-bold text-[9px] text-tertiary font-mono font-bold">NOMINAL</span>
+                    </div>
+                    <p className="font-body-sm text-[11px] text-on-surface-variant line-clamp-2 mt-0.5">
+                      Catchment inflow steady. Zero flash runoff threat detected across Trimbak watershed boundaries.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Photo Weather AI Link Card */}
+              <div className="p-2 rounded-xl bg-surface-container-low border border-surface-container-high flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <Camera className="h-3.5 w-3.5 text-primary" />
+                  <span className="font-label-mono-bold text-[11px] text-on-surface font-semibold">Photo Weather Intelligence</span>
+                </div>
+                <Link
+                  href="/photo-analysis"
+                  className="px-2 py-0.5 rounded bg-primary text-on-primary font-label-mono-bold text-[9px] hover:bg-primary-container transition"
                 >
-                  <Send className="h-4 w-4" />
-                </button>
+                  Analyze Sky
+                </Link>
               </div>
-            </form>
+
+              {/* Prompt Interactive Ask Field */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (promptInput.trim() && onSendChatPrompt) {
+                    onSendChatPrompt(promptInput.trim());
+                    setPromptInput('');
+                  }
+                }}
+                className="mt-auto pt-1"
+              >
+                <div className="relative flex items-center bg-surface-container-low border border-surface-container-high rounded-lg p-1">
+                  <input
+                    type="text"
+                    value={promptInput}
+                    onChange={(e) => setPromptInput(e.target.value)}
+                    placeholder={`Ask AI Copilot for ${weather.location.split(',')[0]} synoptic data...`}
+                    className="bg-transparent border-none outline-none font-body-sm text-xs text-on-surface px-2 w-full placeholder:text-outline font-medium"
+                  />
+                  <button
+                    type="submit"
+                    className="p-1 rounded-lg bg-primary text-on-primary hover:bg-primary-container transition-colors shadow-xs cursor-pointer"
+                  >
+                    <Send className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
