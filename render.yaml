@@ -26,7 +26,7 @@ services:
           name: weathergpt-db
           property: connectionString
       - key: ALLOWED_ORIGINS
-        value: "https://weathergpt-frontend.onrender.com,https://weathergpt.vercel.app,http://localhost:3000"
+        value: "https://weathergpt-frontend.onrender.com,https://weathergpt-ai-alpha.vercel.app,https://weathergpt.vercel.app,http://localhost:3000"
       - key: JWT_SECRET_KEY
         generateValue: true       # Render auto-generates a secure random value
       - key: JWT_EXPIRE_MINUTES

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Search, MapPin, Compass, X, Loader2, Sparkles, History, Building2, Mountain, Flame, Clock } from 'lucide-react';
+import { Search, MapPin, Compass, X, Loader2, Sparkles, History, Flame, Clock } from 'lucide-react';
 
 export interface LocationItem {
   name: string;
@@ -49,25 +49,23 @@ export default function LocationSearchBar({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [suggestions, setSuggestions] = useState<LocationItem[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
-  const [recentSearches, setRecentSearches] = useState<LocationItem[]>([]);
-  
-  const containerRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Load recent searches from localStorage
-  useEffect(() => {
+  const [recentSearches, setRecentSearches] = useState<LocationItem[]>(() => {
     if (typeof window !== 'undefined') {
       try {
         const saved = localStorage.getItem('weathergpt_recent_searches');
         if (saved) {
-          setRecentSearches(JSON.parse(saved).slice(0, 5));
+          return JSON.parse(saved).slice(0, 5);
         }
       } catch (e) {
         console.error(e);
       }
     }
-  }, []);
+    return [];
+  });
+  
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Save recent search
   const saveRecentSearch = (item: LocationItem) => {

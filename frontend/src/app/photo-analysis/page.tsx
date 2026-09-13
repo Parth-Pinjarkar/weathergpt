@@ -6,22 +6,14 @@ import {
   Camera,
   Upload,
   ArrowLeft,
-  CloudRain,
-  Sun,
   AlertTriangle,
   CheckCircle2,
   XCircle,
-  HelpCircle,
-  Eye,
-  Wind,
-  Droplets,
   ShieldAlert,
   Send,
-  Trash2,
   Sparkles,
   Info,
   RefreshCw,
-  Clock,
   Compass,
   Globe
 } from 'lucide-react';
@@ -30,14 +22,10 @@ import {
   getSavedLanguage, 
   saveLanguagePreference, 
   SupportedLanguage, 
-  SUPPORTED_LANGUAGES, 
-  LANGUAGE_MAP,
-  translateCondition,
-  translateRiskCategory,
+  SUPPORTED_LANGUAGES,
   t 
 } from '../i18n';
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+import { api } from '../lib/api';
 
 interface PhotoAnalysisResult {
   analysis_id: string;
@@ -108,11 +96,12 @@ export default function PhotoAnalysisPage() {
   const [loadingStep, setLoadingStep] = useState<string>('');
   const [analysisResult, setAnalysisResult] = useState<PhotoAnalysisResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [currentLang, setCurrentLang] = useState<SupportedLanguage>('en');
-
-  React.useEffect(() => {
-    setCurrentLang(getSavedLanguage());
-  }, []);
+  const [currentLang, setCurrentLang] = useState<SupportedLanguage>(() => {
+    if (typeof window !== 'undefined') {
+      return getSavedLanguage();
+    }
+    return 'en';
+  });
   
   // Q&A State
   const [questionInput, setQuestionInput] = useState<string>('');
@@ -175,27 +164,11 @@ export default function PhotoAnalysisPage() {
       }
       formData.append('mode', 'demo');
 
-      const token = typeof window !== 'undefined' ? localStorage.getItem('weathergpt_token') : null;
-      const headers: Record<string, string> = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      const res = await fetch(`${BACKEND_URL}/api/photo-analysis/analyze`, {
-        method: 'POST',
-        headers,
-        body: formData
-      });
-
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.detail || `Analysis failed with HTTP ${res.status}`);
-      }
-
-      const data: PhotoAnalysisResult = await res.json();
+      const data = await api.post<PhotoAnalysisResult>('/api/photo-analysis/analyze', formData);
       setAnalysisResult(data);
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Error occurred during photo weather analysis.');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error occurred during photo weather analysis.';
+      setErrorMsg(msg);
     } finally {
       setIsAnalyzing(false);
       setLoadingStep('');
@@ -209,22 +182,26 @@ export default function PhotoAnalysisPage() {
 
     setIsAsking(true);
     try {
-      const res = await fetch(`${BACKEND_URL}/api/photo-analysis/ask`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          analysis_id: analysisResult.analysis_id,
-          question: q.trim(),
-          lang: currentLang
-        })
+      interface AskResponse {
+        answer: string;
+      }
+      const data = await api.post<AskResponse>('/api/photo-analysis/ask', {
+        analysis_id: analysisResult.analysis_id,
+        question: q.trim(),
+        lang: currentLang,
       });
 
-      if (!res.ok) throw new Error('Failed to retrieve answer');
-      const data = await res.json();
-      setChatHistory(prev => [...prev, { q: q.trim(), a: data.answer }]);
+      setChatHistory((prev) => [
+        ...prev,
+        { q: q.trim(), a: data.answer || 'No analysis available.' },
+      ]);
       setQuestionInput('');
-    } catch (err) {
-      setChatHistory(prev => [...prev, { q: q.trim(), a: 'Unable to connect to AI contextual assistant.' }]);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to retrieve answer';
+      setChatHistory((prev) => [
+        ...prev,
+        { q: q.trim(), a: `⚠️ ${msg}` },
+      ]);
     } finally {
       setIsAsking(false);
     }

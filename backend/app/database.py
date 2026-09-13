@@ -63,3 +63,61 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+def init_db():
+    """Create all tables and perform non-destructive schema migrations."""
+    Base.metadata.create_all(bind=engine)
+    if settings.DATABASE_URL.startswith("sqlite"):
+        try:
+            with engine.begin() as conn:
+                # users
+                user_cols = [row[1] for row in conn.exec_driver_sql("PRAGMA table_info(users)").fetchall()]
+                if user_cols:
+                    if "is_active" not in user_cols:
+                        conn.exec_driver_sql("ALTER TABLE users ADD COLUMN is_active BOOLEAN DEFAULT 1")
+                    if "last_login" not in user_cols:
+                        conn.exec_driver_sql("ALTER TABLE users ADD COLUMN last_login DATETIME")
+
+                # official_alerts
+                alert_cols = [row[1] for row in conn.exec_driver_sql("PRAGMA table_info(official_alerts)").fetchall()]
+                if alert_cols:
+                    if "expires_at" not in alert_cols:
+                        conn.exec_driver_sql("ALTER TABLE official_alerts ADD COLUMN expires_at DATETIME")
+                    if "is_active" not in alert_cols:
+                        conn.exec_driver_sql("ALTER TABLE official_alerts ADD COLUMN is_active BOOLEAN DEFAULT 1")
+
+                # weather_cache
+                cache_cols = [row[1] for row in conn.exec_driver_sql("PRAGMA table_info(weather_cache)").fetchall()]
+                if cache_cols and "ttl_expires_at" not in cache_cols:
+                    conn.exec_driver_sql("ALTER TABLE weather_cache ADD COLUMN ttl_expires_at DATETIME")
+
+                # chat_sessions
+                session_cols = [row[1] for row in conn.exec_driver_sql("PRAGMA table_info(chat_sessions)").fetchall()]
+                if session_cols and "user_id" not in session_cols:
+                    conn.exec_driver_sql("ALTER TABLE chat_sessions ADD COLUMN user_id INTEGER")
+
+                # chat_messages
+                chat_cols = [row[1] for row in conn.exec_driver_sql("PRAGMA table_info(chat_messages)").fetchall()]
+                if chat_cols and "metadata_json" not in chat_cols:
+                    conn.exec_driver_sql("ALTER TABLE chat_messages ADD COLUMN metadata_json TEXT")
+
+                # emergency_locations
+                loc_cols = [row[1] for row in conn.exec_driver_sql("PRAGMA table_info(emergency_locations)").fetchall()]
+                if loc_cols:
+                    if "is_active" not in loc_cols:
+                        conn.exec_driver_sql("ALTER TABLE emergency_locations ADD COLUMN is_active BOOLEAN DEFAULT 1")
+                    if "available_capacity" not in loc_cols:
+                        conn.exec_driver_sql("ALTER TABLE emergency_locations ADD COLUMN available_capacity INTEGER")
+                    if "is_accepting" not in loc_cols:
+                        conn.exec_driver_sql("ALTER TABLE emergency_locations ADD COLUMN is_accepting BOOLEAN DEFAULT 1")
+                    if "updated_at" not in loc_cols:
+                        conn.exec_driver_sql("ALTER TABLE emergency_locations ADD COLUMN updated_at DATETIME")
+        except Exception as e:
+            print(f"[DB] SQLite migration note: {e}")
+
+
+# Initialize schema on startup / test import
+init_db()
+
+

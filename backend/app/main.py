@@ -27,7 +27,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
-from app.database import Base, engine
+from app.database import Base, engine, init_db
 from app.routes import weather, chat, route, alerts, disaster, emergency, simulation, climate, location, report, auth
 from app.config.settings import settings
 
@@ -39,7 +39,7 @@ limiter = Limiter(key_func=get_remote_address, default_limits=["120/minute"])
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    Base.metadata.create_all(bind=engine)
+    init_db()
     print(f"[OK] WeatherGPT API started | DB: {settings.DATABASE_URL.split(':///')[0]} | Port: {settings.PORT}")
     yield
     # Shutdown

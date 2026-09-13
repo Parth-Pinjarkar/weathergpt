@@ -5,9 +5,10 @@ import Link from 'next/link';
 import { 
   X, User, LogIn, UserPlus, ShieldCheck, CheckCircle2, Lock, 
   Mail, Sparkles, AlertCircle, LogOut, ArrowRight, Wheat, Car, 
-  Flame, GraduationCap, RefreshCw 
+  Flame, GraduationCap 
 } from 'lucide-react';
 import { LOCALIZATION, SupportedLanguage } from '../i18n';
+import { setAuthToken } from '../lib/auth';
 
 export interface UserProfile {
   id?: number;
@@ -112,15 +113,15 @@ export default function AuthModal({
       if (!res.ok) {
         throw new Error(data.detail || 'Invalid email or password.');
       }
-      localStorage.setItem('weathergpt_token', data.token);
+      setAuthToken(data.token);
       onLogin({
         id: data.user.id,
         name: data.user.name,
         email: data.user.email,
-        role: (data.user.role as any) || role,
+        role: (data.user.role as 'general' | 'traveller' | 'farmer' | 'disaster' | 'school') || role,
         isGuest: false
       });
-    } catch (err: unknown) {
+    } catch {
       // Fallback offline mock login if server unreachable
       const fallbackUser: UserProfile = {
         name: email.split('@')[0] || "User",
@@ -160,15 +161,15 @@ export default function AuthModal({
       if (!res.ok) {
         throw new Error(data.detail || 'Registration failed.');
       }
-      localStorage.setItem('weathergpt_token', data.token);
+      setAuthToken(data.token);
       onLogin({
         id: data.user.id,
         name: data.user.name,
         email: data.user.email,
-        role: (data.user.role as any) || role,
+        role: (data.user.role as 'general' | 'traveller' | 'farmer' | 'disaster' | 'school') || role,
         isGuest: false
       });
-    } catch (err: unknown) {
+    } catch {
       // Fallback offline
       const registeredUser: UserProfile = {
         name: name,
@@ -189,7 +190,11 @@ export default function AuthModal({
     }, 600);
   };
 
-  const personaOptions = [
+  const personaOptions: Array<{
+    id: 'general' | 'traveller' | 'farmer' | 'disaster' | 'school';
+    icon: React.ComponentType<{ className?: string }>;
+    label: string;
+  }> = [
     { id: 'general', icon: User, label: t.auth_persona_general },
     { id: 'farmer', icon: Wheat, label: t.auth_persona_farmer },
     { id: 'traveller', icon: Car, label: t.auth_persona_traveller },
@@ -335,7 +340,7 @@ export default function AuthModal({
                         <button
                           key={p.id}
                           type="button"
-                          onClick={() => setRole(p.id as any)}
+                          onClick={() => setRole(p.id)}
                           className={`p-2.5 rounded-xl border text-xs font-bold flex items-center gap-2 transition cursor-pointer ${
                             role === p.id 
                               ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-sm ring-1 ring-emerald-500' 
@@ -462,7 +467,7 @@ export default function AuthModal({
                         <button
                           key={p.id}
                           type="button"
-                          onClick={() => setRole(p.id as any)}
+                          onClick={() => setRole(p.id)}
                           className={`p-2 rounded-xl border text-[11px] font-bold flex flex-col items-center justify-center text-center transition cursor-pointer ${
                             role === p.id 
                               ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-sm ring-1 ring-emerald-500' 

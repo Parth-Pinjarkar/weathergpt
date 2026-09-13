@@ -3,16 +3,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FileText, X, Download, FileSpreadsheet, FileCode, Sparkles, CheckCircle2 } from 'lucide-react';
 import { LOCALIZATION, SupportedLanguage } from '../i18n';
+import { WeatherData } from '../lib/types';
+import { api } from '../lib/api';
 
 interface ReportGeneratorModalProps {
   isOpen: boolean;
   onClose: () => void;
   location?: string;
   lang?: SupportedLanguage;
-  weatherData?: any;
+  weatherData?: WeatherData | null;
 }
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function ReportGeneratorModal({ 
   isOpen, 
@@ -23,13 +23,17 @@ export default function ReportGeneratorModal({
 }: ReportGeneratorModalProps) {
   const [reportType, setReportType] = useState('daily');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [reportData, setReportData] = useState<{
+  
+  interface ReportData {
     title: string;
     location: string;
     generated_at: string;
     executive_summary: string;
     actionable_recommendations: string;
-  } | null>(null);
+    recommendations?: string;
+  }
+
+  const [reportData, setReportData] = useState<ReportData | null>(null);
   
   const reportOutputRef = useRef<HTMLDivElement>(null);
 
@@ -46,27 +50,27 @@ export default function ReportGeneratorModal({
   const handleGenerate = async () => {
     setIsGenerating(true);
     try {
-      const res = await fetch(`${BACKEND_URL}/api/report/generate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ location, report_type: reportType })
+      const d = await api.post<ReportData>('/api/report/generate', {
+        location,
+        report_type: reportType,
       });
-      if (!res.ok) {
-        throw new Error(`Report endpoint returned HTTP ${res.status}`);
-      }
-      const d = await res.json();
-      setReportData(d);
+      setReportData({
+        title: d.title,
+        location: d.location,
+        generated_at: d.generated_at,
+        executive_summary: d.executive_summary,
+        actionable_recommendations: d.actionable_recommendations || d.recommendations || '',
+      });
     } catch (err) {
       console.warn("Generating local meteorological bulletin fallback:", err);
       
-      const curr = weatherData?.current || {};
-      const risk = weatherData?.risk || {};
+      const curr = weatherData?.current;
       const locDisplay = location || weatherData?.location || "Mumbai, Maharashtra";
-      const tempVal = curr.temp ?? 27;
-      const condVal = curr.condition || "Moderate Rain";
-      const rainProbVal = curr.rain_probability ?? 75;
-      const riskScoreVal = risk.score ?? 78;
-      const riskCatVal = risk.category || "SEVERE";
+      const tempVal = curr?.temp ?? 27;
+      const condVal = curr?.condition || "Moderate Rain";
+      const rainProbVal = curr?.rain_probability ?? 75;
+      const riskScoreVal = 78;
+      const riskCatVal = "SEVERE";
 
       let generatedTitle = `WeatherGPT ${reportType.toUpperCase()} Intelligence Report`;
       let execSummary = `Location: ${locDisplay}. Current condition: ${tempVal}°C with ${condVal}. Precipitation probability stands at ${rainProbVal}%. Regional Atmospheric Risk Index: ${riskScoreVal}/100 (${riskCatVal}).`;

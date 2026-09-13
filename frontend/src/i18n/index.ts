@@ -1,8 +1,8 @@
 // WeatherGPT Core Internationalization Engine
 // Provides multi-lingual translations, formatters, and persistence for 10 languages
 
-import { SupportedLanguage, LanguageInfo, UnitTemperature, UnitWind, UnitDistance } from './types';
-import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES, LANGUAGE_MAP } from './config';
+import { SupportedLanguage, UnitTemperature, UnitWind, UnitDistance } from './types';
+import { DEFAULT_LANGUAGE, LANGUAGE_MAP } from './config';
 
 // Import all 10 locale bundles
 import enCommon from './locales/en/common.json';
@@ -19,7 +19,8 @@ import paCommon from './locales/pa/common.json';
 export * from './types';
 export * from './config';
 
-export const LOCALES: Record<SupportedLanguage, Record<string, any>> = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const LOCALES: Record<SupportedLanguage, any> = {
   en: enCommon,
   hi: hiCommon,
   mr: mrCommon,
@@ -38,13 +39,13 @@ export const LOCALIZATION = LOCALES;
 /**
  * Deep key lookup in a dictionary object (e.g. 'nav.dashboard')
  */
-function getNestedValue(obj: Record<string, any>, path: string): string | undefined {
+function getNestedValue(obj: Record<string, unknown>, path: string): string | undefined {
   if (!obj) return undefined;
   const keys = path.split('.');
-  let current: any = obj;
+  let current: unknown = obj;
   for (const k of keys) {
     if (current && typeof current === 'object' && k in current) {
-      current = current[k];
+      current = (current as Record<string, unknown>)[k];
     } else {
       return undefined;
     }
@@ -60,12 +61,12 @@ export function t(key: string, lang: SupportedLanguage = DEFAULT_LANGUAGE, fallb
   const englishLocale = LOCALES[DEFAULT_LANGUAGE];
 
   // 1. Direct path in selected language
-  let val = getNestedValue(currentLocale, key) || currentLocale[key];
+  let val = getNestedValue(currentLocale as Record<string, unknown>, key) || (currentLocale as Record<string, unknown>)[key];
   if (val !== undefined && typeof val === 'string') return val;
 
   // 2. Fallback to English
   if (lang !== DEFAULT_LANGUAGE) {
-    val = getNestedValue(englishLocale, key) || englishLocale[key];
+    val = getNestedValue(englishLocale as Record<string, unknown>, key) || (englishLocale as Record<string, unknown>)[key];
     if (val !== undefined && typeof val === 'string') return val;
   }
 

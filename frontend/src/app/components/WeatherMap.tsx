@@ -102,7 +102,7 @@ export default function WeatherMap({
     const fetchLiveMapData = async () => {
       try {
         // Ensure activeLocation is included in markers list if not already present
-        let targetList = [...INITIAL_LOCATIONS];
+        const targetList = [...INITIAL_LOCATIONS];
         const exists = targetList.some(l => l.name.toLowerCase() === activeLocation.toLowerCase());
         
         if (!exists && activeLocation && searchCenter) {
@@ -129,8 +129,27 @@ export default function WeatherMap({
           });
           if (batchRes.ok) {
             const batchData = await batchRes.json();
-            const resultMap = new Map<string, any>();
-            (batchData.results || []).forEach((r: any) => {
+            interface BatchItemResult {
+              success: boolean;
+              location: string;
+              weather?: {
+                current?: {
+                  temp?: number;
+                  condition?: string;
+                  wind_speed?: number;
+                  rain_probability?: number;
+                };
+                coordinates?: {
+                  lat?: number;
+                  lon?: number;
+                };
+              };
+              risk?: {
+                score?: number;
+              };
+            }
+            const resultMap = new Map<string, BatchItemResult>();
+            (batchData.results || []).forEach((r: BatchItemResult) => {
               if (r.success) {
                 resultMap.set(r.location.toLowerCase(), r);
               }

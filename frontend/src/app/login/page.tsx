@@ -4,16 +4,29 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
-  CloudRain, Shield, Lock, Mail, User as UserIcon, ArrowLeft, 
-  Sparkles, CheckCircle2, AlertCircle, ArrowRight, UserCheck, 
+  CloudRain, Lock, Mail, User as UserIcon, ArrowLeft, 
+  CheckCircle2, AlertCircle, ArrowRight, UserCheck, 
   Car, Wheat, Flame, GraduationCap, Sun, Moon, Globe
 } from 'lucide-react';
-import { LOCALIZATION, SupportedLanguage, SUPPORTED_LANGUAGES, getSavedLanguage, saveLanguagePreference } from '../i18n';
+import { 
+  LOCALIZATION, 
+  SupportedLanguage, 
+  SUPPORTED_LANGUAGES, 
+  getSavedLanguage, 
+  saveLanguagePreference 
+} from '../i18n';
+import { setAuthToken, setStoredUser, setStoredRole } from '../lib/auth';
+import { UserProfile, UserRole } from '../lib/types';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [lang, setLang] = useState<SupportedLanguage>('en');
-  const [theme, setTheme] = useState<'dark' | 'light'>('light');
+  const [lang, setLang] = useState<SupportedLanguage>(() => getSavedLanguage());
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('weathergpt_theme') as 'dark' | 'light') || 'light';
+    }
+    return 'light';
+  });
   const [activeTab, setActiveTab] = useState<'login' | 'register' | 'guest'>('login');
 
   // Form Fields
@@ -30,21 +43,14 @@ export default function LoginPage() {
   const t = LOCALIZATION[lang] || LOCALIZATION.en;
   const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-  // Load language and theme preference
+  // Sync theme class
   useEffect(() => {
-    setLang(getSavedLanguage());
-    const savedTheme = localStorage.getItem('weathergpt_theme') as 'dark' | 'light';
-    if (savedTheme) {
-      setTheme(savedTheme);
-      if (savedTheme === 'light') {
-        document.documentElement.classList.add('light-mode');
-      } else {
-        document.documentElement.classList.remove('light-mode');
-      }
-    } else {
+    if (theme === 'light') {
       document.documentElement.classList.add('light-mode');
+    } else {
+      document.documentElement.classList.remove('light-mode');
     }
-  }, []);
+  }, [theme]);
 
   const toggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
@@ -62,7 +68,12 @@ export default function LoginPage() {
     saveLanguagePreference(newLang);
   };
 
-  const personaOptions = [
+  const personaOptions: Array<{
+    id: 'general' | 'traveller' | 'farmer' | 'disaster' | 'school';
+    icon: React.ComponentType<{ className?: string }>;
+    label: string;
+    desc: string;
+  }> = [
     { id: 'general', icon: UserIcon, label: t.mode_pill_public, desc: 'Everyday weather, rainfall probability & hourly forecast' },
     { id: 'farmer', icon: Wheat, label: t.mode_pill_farmer, desc: 'Agro-meteorology, irrigation alerts, crop protection & fertilizer advice' },
     { id: 'traveller', icon: Car, label: t.mode_pill_traveller, desc: 'Highway fog visibility, hydroplaning risk & ghat landslide warnings' },
@@ -93,25 +104,23 @@ export default function LoginPage() {
         throw new Error(data.detail || 'Login failed.');
       }
 
-      localStorage.setItem('weathergpt_user', JSON.stringify(data.user));
-      localStorage.setItem('weathergpt_token', data.token);
-      localStorage.setItem('weathergpt_mode', data.user.role || role);
+      setStoredUser(data.user);
+      setAuthToken(data.token);
+      setStoredRole((data.user.role as UserRole) || 'general');
 
       setSuccessMsg(data.message || 'Signed in successfully! Redirecting...');
       setTimeout(() => {
         router.push('/');
       }, 700);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Invalid email or password.';
+    } catch {
       // Fallback local auth for offline/demo resilience
-      const fallbackUser = {
+      const fallbackUser: UserProfile = {
         name: email.split('@')[0] || "User",
         email: email,
-        role: role,
-        is_guest: false
+        role: role as UserRole,
       };
-      localStorage.setItem('weathergpt_user', JSON.stringify(fallbackUser));
-      localStorage.setItem('weathergpt_mode', role);
+      setStoredUser(fallbackUser);
+      setStoredRole(role as UserRole);
       setSuccessMsg('Signed in! (Offline/Demo Mode). Redirecting...');
       setTimeout(() => {
         router.push('/');
@@ -152,8 +161,7 @@ export default function LoginPage() {
       setTimeout(() => {
         router.push('/');
       }, 700);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Registration error.';
+    } catch {
       // Fallback local registration
       const fallbackUser = {
         name: name,
@@ -418,7 +426,7 @@ export default function LoginPage() {
                       <button
                         type="button"
                         key={p.id}
-                        onClick={() => setRole(p.id as any)}
+                        onClick={() => setRole(p.id)}
                         className={`p-2.5 rounded-xl border text-xs font-bold flex flex-col items-center justify-center text-center transition cursor-pointer ${
                           role === p.id
                             ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-sm ring-1 ring-emerald-500'
@@ -461,7 +469,7 @@ export default function LoginPage() {
                       <button
                         type="button"
                         key={p.id}
-                        onClick={() => setRole(p.id as any)}
+                        onClick={() => setRole(p.id)}
                         className={`w-full p-3.5 rounded-2xl border text-left flex items-center gap-3 transition cursor-pointer ${
                           role === p.id
                             ? 'bg-emerald-500/15 border-emerald-500 text-slate-100 ring-2 ring-emerald-500/30'
