@@ -160,7 +160,7 @@ export default function WeatherGPTApp() {
   );
 
   return (
-    <div className="app-shell min-h-screen bg-background font-body-md text-on-surface antialiased">
+    <div className="app-shell flex w-full min-h-screen bg-background font-body-md text-on-surface antialiased">
       {/* 1. SIDEBAR (Desktop) */}
       <aside className="hidden md:flex flex-col justify-between w-64 shrink-0 bg-surface-container-lowest shadow-sm z-30 overflow-y-auto border-r border-surface-container-high select-none sticky top-0 h-screen">
         <div className="p-space-md">
@@ -299,7 +299,7 @@ export default function WeatherGPTApp() {
       </aside>
 
       {/* 2. MAIN CONTAINER & TOP HEADER */}
-      <div className="main-content flex flex-col min-h-screen bg-background w-full min-w-0">
+      <div className="main-content flex-1 min-w-0 flex flex-col min-h-screen bg-background w-full">
         {/* Top Header */}
         <header className="sticky top-0 z-20 h-14 bg-surface-glass backdrop-blur-xl border-b border-surface-container-high shadow-xs flex items-center justify-between px-space-md md:px-space-lg w-full shrink-0">
           {/* Universal Search Bar */}
