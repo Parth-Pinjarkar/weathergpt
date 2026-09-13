@@ -1421,9 +1421,9 @@ export default function WeatherGPT() {
                 </section>
 
                 {/* 2. Main Meteorological Grid: 12-Column System (8 Col Primary Telemetry + 4 Col AI Intelligence) */}
-                <div className="grid grid-cols-1 xl:grid-cols-12 gap-space-md items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
                   {/* LEFT 8 COLUMNS: Primary NWP, Synoptic Telemetry, Sector Advisory & 7-Day Inspection */}
-                  <div className="xl:col-span-8 flex flex-col gap-space-md">
+                  <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-4">
                     {/* Primary Synoptic Card */}
                     <div className="bg-surface-container-lowest rounded-xl p-space-md lg:p-space-lg shadow-sm border border-surface-container-high flex flex-col gap-space-md relative overflow-hidden">
                       <div className="absolute -right-16 -top-16 w-64 h-64 bg-primary-fixed/20 rounded-full blur-3xl pointer-events-none" />
@@ -1449,11 +1449,11 @@ export default function WeatherGPT() {
                         </div>
 
                         {/* NWP Consensus, WIS Status & Voice Query */}
-                        <div className="flex flex-wrap items-center gap-space-xs">
+                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                           {/* NWP Model Dropdown */}
-                          <div className="flex items-center gap-1.5 px-space-sm py-1.5 rounded-lg bg-surface-container-low text-on-surface border border-surface-container-high">
-                            <span className="material-symbols-outlined text-secondary text-[18px]">public</span>
-                            <span className="font-label-mono-bold text-label-mono-bold text-secondary">NWP:</span>
+                          <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-surface-container-low text-on-surface border border-surface-container-high text-xs">
+                            <span className="material-symbols-outlined text-secondary text-[16px]">public</span>
+                            <span className="font-label-mono-bold text-label-mono-bold text-secondary text-[11px]">NWP:</span>
                             <select
                               value={selectedNwpModel}
                               onChange={(e) => {
@@ -1461,7 +1461,7 @@ export default function WeatherGPT() {
                                 setSelectedNwpModel(m);
                                 fetchWeatherData(searchLocation, m);
                               }}
-                              className="bg-transparent border-0 outline-none font-body-sm text-body-sm text-on-surface cursor-pointer pr-1"
+                              className="bg-transparent border-0 outline-none text-xs text-on-surface cursor-pointer pr-1 max-w-[140px] sm:max-w-none truncate"
                             >
                               <option value="best_match">Ensemble Consensus (GFS+ECMWF+WRF)</option>
                               <option value="gfs">NOAA GFS (0.25° Global)</option>
@@ -1471,9 +1471,9 @@ export default function WeatherGPT() {
                           </div>
 
                           {/* WIS 2.0 Realtime Status Badge */}
-                          <div className="flex items-center gap-1.5 px-space-sm py-1.5 rounded-lg bg-primary-container text-on-primary-container shadow-xs">
-                            <span className="material-symbols-outlined text-[16px] text-primary-fixed animate-pulse">cell_tower</span>
-                            <span className="font-label-mono-sm text-label-mono-sm font-semibold">WIS 2.0 / MQTT: ACTIVE ({weather?.wis2_telemetry?.latency_ms ?? 12}ms)</span>
+                          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-primary-container text-on-primary-container shadow-xs text-xs">
+                            <span className="material-symbols-outlined text-[15px] text-primary-fixed animate-pulse">cell_tower</span>
+                            <span className="font-label-mono-sm text-label-mono-sm font-semibold">WIS 2.0: ACTIVE ({weather?.wis2_telemetry?.latency_ms ?? 12}ms)</span>
                           </div>
 
                           {/* Rural Voice Assistant Query */}
@@ -1482,11 +1482,11 @@ export default function WeatherGPT() {
                               setChatOpen(true);
                               setVoicePlayback(true);
                             }}
-                            className="flex items-center gap-1 px-space-sm py-1.5 rounded-lg bg-tertiary-fixed text-on-tertiary-fixed hover:bg-tertiary-fixed-dim transition-colors cursor-pointer"
+                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-tertiary-fixed text-on-tertiary-fixed hover:bg-tertiary-fixed-dim transition-colors cursor-pointer text-xs font-semibold"
                             type="button"
                           >
-                            <span className="material-symbols-outlined text-[18px]">mic</span>
-                            <span className="font-body-sm text-body-sm font-semibold">
+                            <span className="material-symbols-outlined text-[16px]">mic</span>
+                            <span>
                               {currentLang === 'hi' ? 'बोलकर पूछें' : (currentLang === 'mr' ? 'बोलून विचारा' : 'Voice Query')}
                             </span>
                           </button>
@@ -1784,8 +1784,8 @@ export default function WeatherGPT() {
                     })()}
                   </div>
 
-                  {/* RIGHT 4 COLUMNS: AI Photo Weather Intelligence & Risk Engine */}
-                  <div className="xl:col-span-4 flex flex-col gap-space-md">
+                  {/* RIGHT COLUMNS: AI Photo Weather Intelligence & Risk Engine */}
+                  <div className="lg:col-span-5 xl:col-span-4 flex flex-col gap-4">
                     {/* Multimodal Photo Weather Intelligence Card */}
                     <div className="rounded-xl p-space-md shadow-sm bg-gradient-to-br from-surface-container to-surface-container-highest border border-surface-container-high flex flex-col gap-space-sm relative overflow-hidden">
                       <div className="flex items-center gap-space-xs">
