@@ -143,9 +143,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       </section>
 
       {/* 2. Main Macro Synoptic Split Layout */}
-      <div className="grid grid-cols-1 xl:grid-cols-16 gap-space-md items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-md items-start">
         {/* LEFT COLUMN: TELEMETRY HERO + SENSORS + OUTLOOK */}
-        <div className="xl:col-span-10 flex flex-col gap-space-md min-w-0">
+        <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-space-md min-w-0">
           {/* Synoptic Header Card */}
           <section className="p-space-md md:p-space-lg rounded-xl bg-surface-container-lowest shadow-sm border border-surface-container-high flex flex-col gap-space-sm">
             <div className="flex flex-wrap items-center justify-between gap-space-sm">
@@ -508,7 +508,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* RIGHT COLUMN: PHOTO COPILOT + RISK SCORE + ASK WEATHERGPT */}
-        <div className="xl:col-span-6 flex flex-col gap-space-md">
+        <div className="lg:col-span-5 xl:col-span-4 flex flex-col gap-space-md">
           {/* Photo Weather AI Card */}
           <section className="p-space-md md:p-space-lg rounded-xl bg-surface-container-lowest shadow-sm border border-surface-container-high flex flex-col gap-space-sm relative overflow-hidden">
             <div className="flex items-start justify-between">
