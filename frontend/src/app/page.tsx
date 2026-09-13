@@ -160,7 +160,6 @@ export default function WeatherGPTApp() {
   );
 
   return (
-  return (
     <div className="app-shell bg-background font-body-md text-on-surface antialiased">
       {/* 1. SIDEBAR (Desktop) */}
       <aside className="app-sidebar hidden md:flex flex-col justify-between bg-surface-container-lowest shadow-sm z-30 select-none border-r border-surface-container-high">
