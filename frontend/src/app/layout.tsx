@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegistrar from "./components/ServiceWorkerRegistrar";
+import { ThemeProvider } from "./context/ThemeContext";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -47,6 +48,29 @@ export const metadata: Metadata = {
   },
 };
 
+const themeInitScript = `
+(function() {
+  try {
+    var stored = localStorage.getItem('weathergpt_theme');
+    var isDark = stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var root = document.documentElement;
+    if (isDark) {
+      root.classList.add('dark');
+      root.classList.add('dark-mode');
+      root.classList.remove('light-mode');
+      root.setAttribute('data-theme', 'dark');
+      root.style.colorScheme = 'dark';
+    } else {
+      root.classList.remove('dark');
+      root.classList.remove('dark-mode');
+      root.classList.add('light-mode');
+      root.setAttribute('data-theme', 'light');
+      root.style.colorScheme = 'light';
+    }
+  } catch(e) {}
+})();
+`;
+
 export default function RootLayout({
   children,
 }: {
@@ -55,19 +79,22 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${spaceGrotesk.variable} ${plusJakartaSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         />
       </head>
       <body className="min-h-full font-body text-on-surface bg-background antialiased flex flex-col">
-        <ServiceWorkerRegistrar />
-        {children}
+        <ThemeProvider>
+          <ServiceWorkerRegistrar />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
 }
-

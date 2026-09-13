@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import {
@@ -42,6 +42,8 @@ import {
   saveLanguagePreference,
 } from './i18n';
 
+import { useTheme } from './context/ThemeContext';
+
 // Dynamically import WeatherMap with SSR disabled (Leaflet requires window)
 const WeatherMap = dynamic(() => import('./components/WeatherMap'), {
   ssr: false,
@@ -54,13 +56,8 @@ const WeatherMap = dynamic(() => import('./components/WeatherMap'), {
 });
 
 export default function WeatherGPTApp() {
+  const { theme, toggleTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('weathergpt_theme') as 'light' | 'dark') || 'light';
-    }
-    return 'light';
-  });
   const [currentLang, setCurrentLang] = useState<SupportedLanguage>(() => getSavedLanguage());
   const [currentMode, setCurrentMode] = useState<UserRole>(() => {
     if (typeof window !== 'undefined') {
@@ -120,22 +117,6 @@ export default function WeatherGPTApp() {
     language: currentLang,
     currentLocation: location,
   });
-
-  // Sync theme class to document
-  useEffect(() => {
-    if (typeof document !== 'undefined') {
-      document.documentElement.classList.toggle('dark', theme === 'dark');
-    }
-  }, [theme]);
-
-  const toggleTheme = useCallback(() => {
-    const nextTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(nextTheme);
-    document.documentElement.classList.toggle('dark', nextTheme === 'dark');
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('weathergpt_theme', nextTheme);
-    }
-  }, [theme]);
 
   const handleLanguageChange = useCallback((lang: SupportedLanguage) => {
     setCurrentLang(lang);

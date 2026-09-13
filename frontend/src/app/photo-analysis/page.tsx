@@ -15,8 +15,11 @@ import {
   Info,
   RefreshCw,
   Compass,
-  Globe
+  Globe,
+  Sun,
+  Moon
 } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 import { 
   getSavedLanguage, 
@@ -89,6 +92,7 @@ interface PhotoAnalysisResult {
 }
 
 export default function PhotoAnalysisPage() {
+  const { theme, toggleTheme } = useTheme();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [locationInput, setLocationInput] = useState<string>('Nashik');
@@ -237,24 +241,36 @@ export default function PhotoAnalysisPage() {
           </div>
         </div>
 
-        {/* Language Selector Dropdown */}
+        {/* Right Header: Language Selector & Theme Toggle */}
         <div className="flex items-center gap-2">
-          <Globe className="h-3.5 w-3.5 text-emerald-400" />
-          <select
-            value={currentLang}
-            onChange={(e) => {
-              const l = e.target.value as SupportedLanguage;
-              setCurrentLang(l);
-              saveLanguagePreference(l);
-            }}
-            className="px-2.5 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-xs font-bold text-slate-200 focus:outline-none cursor-pointer"
+          {/* Language Selector Dropdown */}
+          <div className="flex items-center gap-2">
+            <Globe className="h-3.5 w-3.5 text-emerald-400" />
+            <select
+              value={currentLang}
+              onChange={(e) => {
+                const l = e.target.value as SupportedLanguage;
+                setCurrentLang(l);
+                saveLanguagePreference(l);
+              }}
+              className="px-2.5 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-xs font-bold text-slate-200 focus:outline-none cursor-pointer"
+            >
+              {SUPPORTED_LANGUAGES.map((lang) => (
+                <option key={lang.code} value={lang.code} className="bg-slate-900 text-slate-200">
+                  {lang.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition cursor-pointer"
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           >
-            {SUPPORTED_LANGUAGES.map((lang) => (
-              <option key={lang.code} value={lang.code} className="bg-slate-900 text-slate-200">
-                {lang.name}
-              </option>
-            ))}
-          </select>
+            {theme === 'dark' ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-cyan-400" />}
+          </button>
         </div>
       </div>
 

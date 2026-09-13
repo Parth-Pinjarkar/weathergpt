@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
@@ -18,15 +18,12 @@ import {
 import { setAuthToken, setStoredUser, setStoredRole } from '../lib/auth';
 import { UserProfile, UserRole } from '../lib/types';
 
+import { useTheme } from '../context/ThemeContext';
+
 export default function LoginPage() {
   const router = useRouter();
+  const { theme, toggleTheme } = useTheme();
   const [lang, setLang] = useState<SupportedLanguage>(() => getSavedLanguage());
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('weathergpt_theme') as 'dark' | 'light') || 'light';
-    }
-    return 'light';
-  });
   const [activeTab, setActiveTab] = useState<'login' | 'register' | 'guest'>('login');
 
   // Form Fields
@@ -42,26 +39,6 @@ export default function LoginPage() {
 
   const t = LOCALIZATION[lang] || LOCALIZATION.en;
   const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
-  // Sync theme class
-  useEffect(() => {
-    if (theme === 'light') {
-      document.documentElement.classList.add('light-mode');
-    } else {
-      document.documentElement.classList.remove('light-mode');
-    }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nextTheme);
-    localStorage.setItem('weathergpt_theme', nextTheme);
-    if (nextTheme === 'light') {
-      document.documentElement.classList.add('light-mode');
-    } else {
-      document.documentElement.classList.remove('light-mode');
-    }
-  };
 
   const handleLanguageChange = (newLang: SupportedLanguage) => {
     setLang(newLang);
